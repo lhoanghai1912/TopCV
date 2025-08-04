@@ -1,30 +1,31 @@
 import { StyleSheet } from 'react-native';
 import { Fonts } from '../utils/fontSize';
-import { Colors } from '../utils/color';
-import { Spacing } from '../utils/spacing';
+import { colors } from '../utils/color';
+import { spacing } from '../utils/spacing';
 
 const AppStyles = StyleSheet.create({
-  header: { flex: 0.7, marginTop: Spacing.xxxlarge },
-  body: { flex: 3 },
-  footer: { flex: 0.3 },
-
   title: {
     fontSize: Fonts.xlarge,
-    color: Colors.black,
+    color: colors.black,
     textAlign: 'center',
     fontWeight: 500,
-    marginBottom: Spacing.medium,
+    marginBottom: spacing.medium,
   },
   label: {
     fontSize: Fonts.large,
-    marginBottom: Spacing.small,
+    marginBottom: spacing.small,
     color: '#333',
+  },
+  line: {
+    borderColor: colors.Gray,
+    borderWidth: 0.5,
+    width: '100%',
   },
   input: {
     height: 50,
     backgroundColor: '#fff',
     borderRadius: 10,
-    paddingHorizontal: Spacing.medium,
+    paddingHorizontal: spacing.medium,
     verticalAlign: 'middle',
     fontSize: Fonts.normal,
     borderWidth: 1,
@@ -34,14 +35,14 @@ const AppStyles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 6,
     elevation: 2,
-    marginBottom: Spacing.medium,
+    marginBottom: spacing.medium,
   },
   disable: {
     opacity: 0.5,
     height: 50,
     backgroundColor: '#fff',
     borderRadius: 10,
-    paddingHorizontal: Spacing.medium,
+    paddingHorizontal: spacing.medium,
     verticalAlign: 'middle',
     fontSize: Fonts.normal,
     borderWidth: 1,
@@ -51,7 +52,7 @@ const AppStyles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 6,
     elevation: 2,
-    marginBottom: Spacing.medium,
+    marginBottom: spacing.medium,
   },
   avartar: {
     width: 100,
@@ -63,17 +64,17 @@ const AppStyles = StyleSheet.create({
   },
   whitetext: {
     fontSize: Fonts.normal,
-    color: Colors.white,
+    color: colors.white,
   },
 
-  icon: { width: 30, height: 30 },
+  icon: { width: 35, height: 35 },
 
   iconSingle: {
     width: 30,
     flexDirection: 'row',
     position: 'absolute',
     resizeMode: 'contain',
-    right: Spacing.small,
+    right: spacing.small,
     top: '20%',
     justifyContent: 'space-between',
   },
@@ -85,22 +86,22 @@ const AppStyles = StyleSheet.create({
     resizeMode: 'contain',
     top: '20%',
     justifyContent: 'space-between',
-    right: Spacing.small,
+    right: spacing.small,
   },
 
   buttonGroup: {
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: Spacing.medium,
+    marginTop: spacing.medium,
   },
 
   scrollView: {
     flex: 1,
-    paddingHorizontal: Spacing.medium,
+    paddingHorizontal: spacing.medium,
   },
   scrollContent: {
-    paddingBottom: Spacing.large, // Đảm bảo có đủ không gian khi cuộn
+    paddingBottom: spacing.large, // Đảm bảo có đủ không gian khi cuộn
   },
   dropdownWrapper: {
     position: 'relative', // Quan trọng để định vị dropdown tuyệt đối bên trong
@@ -123,11 +124,11 @@ const AppStyles = StyleSheet.create({
   },
 
   linkText: {
-    color: Colors.primary,
+    color: colors.primary,
     textAlign: 'center',
     fontSize: Fonts.normal,
     textDecorationLine: 'underline',
-    textDecorationColor: Colors.blue,
+    textDecorationColor: colors.blue,
   },
 });
 

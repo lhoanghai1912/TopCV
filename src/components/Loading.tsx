@@ -1,10 +1,9 @@
 import React from 'react';
 import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
-import { Colors } from '../utils/color';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { Spacing } from '../utils/spacing';
 import { Fonts } from '../utils/fontSize';
+import { spacing } from '../utils/spacing';
 const LoadingScreen = () => {
   const isLoading = useSelector((state: RootState) => state.loading.isLoading);
 
@@ -24,7 +23,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    marginTop: Spacing.small,
+    marginTop: spacing.small,
     fontSize: Fonts.normal,
     color: '#000',
   },

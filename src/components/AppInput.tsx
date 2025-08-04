@@ -11,18 +11,21 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import AppStyles from './AppStyle';
-import { ICONS } from '../utils/constants';
-import { Spacing } from '../utils/spacing';
 import { Fonts } from '../utils/fontSize';
-import { Colors } from '../utils/color';
+import icons from '../assets/icons';
+import { ms, spacing } from '../utils/spacing';
+import { colors } from '../utils/color';
+import { ImageSourcePropType } from 'react-native';
 
 interface AppInputProps extends TextInputProps {
+  leftIcon?: ImageSourcePropType;
   label?: string;
   error?: string;
   style?: StyleProp<TextStyle>;
 }
 
 const AppInput: React.FC<AppInputProps> = ({
+  leftIcon,
   placeholder,
   value,
   onChangeText,
@@ -44,7 +47,14 @@ const AppInput: React.FC<AppInputProps> = ({
   return (
     <View style={styles.wrapper}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <View>
+      <View style={styles.input}>
+        {leftIcon && (
+          <Image
+            source={leftIcon}
+            style={[AppStyles.icon, { marginRight: spacing.small }]}
+            resizeMode="contain"
+          />
+        )}
         <TextInput
           editable={editable}
           placeholder={placeholder}
@@ -52,8 +62,8 @@ const AppInput: React.FC<AppInputProps> = ({
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry && !isShow}
           keyboardType={keyboardType}
-          style={[styles.input, style, error && styles.errorBorder]}
-          placeholderTextColor="#999"
+          style={[style, error && styles.errorBorder]}
+          placeholderTextColor="#999999"
           {...props}
         />
         {editable && (
@@ -62,7 +72,7 @@ const AppInput: React.FC<AppInputProps> = ({
               <View style={AppStyles.iconGroup}>
                 <TouchableOpacity onPress={handleShowHide}>
                   <Image
-                    source={isShow ? ICONS.show : ICONS.hide}
+                    source={isShow ? icons.show_pass : icons.hide}
                     style={[
                       AppStyles.icon,
                       { display: value ? 'flex' : 'none' },
@@ -71,7 +81,7 @@ const AppInput: React.FC<AppInputProps> = ({
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleClear}>
                   <Image
-                    source={ICONS.clear}
+                    source={icons.clear}
                     style={[
                       AppStyles.icon,
                       { display: value ? 'flex' : 'none' },
@@ -83,7 +93,7 @@ const AppInput: React.FC<AppInputProps> = ({
               <View style={AppStyles.iconSingle}>
                 <TouchableOpacity onPress={handleClear}>
                   <Image
-                    source={ICONS.clear}
+                    source={icons.clear}
                     style={[
                       AppStyles.icon,
                       { display: value ? 'flex' : 'none' },
@@ -103,20 +113,22 @@ const AppInput: React.FC<AppInputProps> = ({
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginBottom: Spacing.medium,
+    marginBottom: spacing.medium,
     width: '100%',
   },
   label: {
     fontSize: Fonts.large,
-    marginBottom: Spacing.small,
-    color: Colors.white,
+    marginBottom: spacing.small,
+    color: colors.black,
   },
   input: {
+    flexDirection: 'row',
+    alignItems: 'center',
     height: 50,
-    backgroundColor: 'rgba(255,255,255,0.9)',
     borderRadius: 20,
-    paddingHorizontal: Spacing.medium,
-    color: '#000',
+    paddingHorizontal: spacing.medium,
+    color: '999999',
+    backgroundColor: '#F4F5F5',
   },
   errorBorder: {
     borderColor: '#ff5a5f',
@@ -124,7 +136,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#ff5a5f',
     fontSize: Fonts.small,
-    marginTop: Spacing.small,
+    marginTop: ms(8),
   },
 });
 
