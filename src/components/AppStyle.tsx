@@ -7,13 +7,11 @@ const AppStyles = StyleSheet.create({
   title: {
     fontSize: Fonts.xlarge,
     color: colors.black,
-    textAlign: 'center',
+    textAlign: 'left',
     fontWeight: 500,
-    marginBottom: spacing.medium,
   },
   label: {
     fontSize: Fonts.large,
-    marginBottom: spacing.small,
     color: '#333',
   },
   line: {

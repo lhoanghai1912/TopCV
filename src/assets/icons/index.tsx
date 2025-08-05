@@ -1,5 +1,5 @@
 import add from './add.png';
-import back from './add.png';
+import back from './back.png';
 
 import clear from './clear.png';
 import edit from './edit.png';
@@ -13,7 +13,6 @@ import hide from './hide.png';
 import home_focus from './home_focus.png';
 import home from './home.png';
 import logout from './logout.png';
-import loupe from './loupe.png';
 import noti_focus from './noti_focus.png';
 import noti from './noti.png';
 import notification from './notification.png';
@@ -27,7 +26,14 @@ import username_focus from './username_focus.png';
 import facebook from './facebook.png';
 import google from './google.png';
 import apple from './apple.png';
+import valid from './valid.png';
+import dot from './dot.png';
+import phone from './phone.png';
+import role from './role.png';
+import search from './search.png';
 export default {
+  search,
+  back,
   clear,
   edit,
   chat,
@@ -39,7 +45,6 @@ export default {
   home_focus,
   home,
   logout,
-  loupe,
   noti_focus,
   noti,
   notification,
@@ -54,4 +59,8 @@ export default {
   google,
   apple,
   mail,
+  valid,
+  dot,
+  phone,
+  role,
 };

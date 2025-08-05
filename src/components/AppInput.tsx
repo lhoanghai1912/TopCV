@@ -62,7 +62,14 @@ const AppInput: React.FC<AppInputProps> = ({
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry && !isShow}
           keyboardType={keyboardType}
-          style={[style, error && styles.errorBorder]}
+          style={[
+            style,
+            error && styles.errorBorder,
+            {
+              fontSize: Fonts.normal,
+              flex: 1,
+            },
+          ]}
           placeholderTextColor="#999999"
           {...props}
         />
@@ -129,6 +136,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.medium,
     color: '999999',
     backgroundColor: '#F4F5F5',
+    fontSize: Fonts.normal,
   },
   errorBorder: {
     borderColor: '#ff5a5f',

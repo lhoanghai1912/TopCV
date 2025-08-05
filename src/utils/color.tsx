@@ -11,7 +11,7 @@ export const colors = {
   Gray: '#abb8c3',
   lightGray: '#EAEFEF',
   darkGray: '#333333',
-  blue: '#598CD2',
+  blue: '#095286',
   red: '#E4080A',
   button: '#095286',
   buttonDisable: '#F0EFF4',

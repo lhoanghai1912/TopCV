@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import images from '../../assets/images';
 import { ms, spacing } from '../../utils/spacing';
@@ -20,14 +21,43 @@ import { Fonts } from '../../utils/fontSize';
 import AppButton from '../../components/AppButton';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
+import { login } from '../../services/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
+import { useDispatch } from 'react-redux';
+import { setToken } from '../../store/reducers/userSlice';
 
 const LoginScreen = () => {
   const insets = useSafeAreaInsets();
+  const dispatch = useDispatch();
   const { t } = useTranslation();
-  const [mail, setMail] = useState('');
-  const [password, setPassword] = useState('');
+  const [mail, setMail] = useState('hoanghai191202@gmail.com');
+  const [password, setPassword] = useState('123456Ab@');
+  const [loading, setLoading] = useState(false);
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      const res = await login(mail, password);
+      console.log(res);
 
-  const handleLogin = () => {};
+      await AsyncStorage.setItem('accessToken', res.token);
+      await AsyncStorage.setItem('userData', JSON.stringify(res.profile));
+      dispatch(setToken({ token: res.token }));
+
+      navigate(Screen_Name.BottomTab_Navigator, {
+        screen: Screen_Name.Home_Screen,
+      });
+
+      Toast.show({
+        type: 'success',
+        text1: `${t('message.welcome')} `,
+        text2: `${t('message.welcome_back')} ${res.profile.fullName}`,
+      });
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top }]}>
@@ -176,6 +206,19 @@ const LoginScreen = () => {
           </Text>
         </TouchableOpacity>
       </View>
+      {loading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10,
+          }}
+        >
+          <ActivityIndicator size="large" color="#E53935" />
+        </View>
+      )}
     </View>
   );
 };

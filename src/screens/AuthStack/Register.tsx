@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import images from '../../assets/images';
 import { ms, spacing } from '../../utils/spacing';
@@ -20,15 +21,30 @@ import { Fonts } from '../../utils/fontSize';
 import AppButton from '../../components/AppButton';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
+import ModalEnterOtp from '../../components/modal/ModalEnterOtp';
+import { enterOtp, register } from '../../services/auth';
 
 const RegisterScreen = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirm_password, setConfirm_password] = useState('');
+  const [mail, setMail] = useState('hoanghai191202@gmail.com');
+  const [modalEnterOtp, setModalEnterOtp] = useState(false);
+  const [resetOtp, setResetOtp] = useState('');
+  const [Loading, setLoading] = useState(false);
 
-  const handleregister = () => {};
+  const handleregister = async () => {
+    try {
+      setLoading(true);
+      const res = await register(mail);
+      console.log(res);
+
+      setModalEnterOtp(true);
+    } catch (error) {
+      console.log('error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top }]}>
@@ -56,33 +72,10 @@ const RegisterScreen = () => {
         <Text style={AppStyles.title}>{t('title.register')}</Text>
         <View>
           <AppInput
-            leftIcon={icons.username}
-            value={username}
-            placeholder={t('label.username')}
-            onChangeText={setUsername}
-            style={{ fontSize: Fonts.normal }}
-          />
-          <AppInput
             leftIcon={icons.mail}
-            value={username}
+            value={mail}
             placeholder={t('label.mail')}
-            onChangeText={setUsername}
-            style={{ fontSize: Fonts.normal }}
-          />
-          <AppInput
-            leftIcon={icons.password}
-            placeholder={t('label.password')}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            style={{ fontSize: Fonts.normal }}
-          />
-          <AppInput
-            leftIcon={icons.password}
-            placeholder={t('label.confirm_password')}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
+            onChangeText={setMail}
             style={{ fontSize: Fonts.normal }}
           />
         </View>
@@ -192,6 +185,29 @@ const RegisterScreen = () => {
           </Text>
         </TouchableOpacity>
       </View>
+      <ModalEnterOtp
+        visible={modalEnterOtp}
+        onClose={() => setModalEnterOtp(false)}
+        onSuccess={otp => {
+          setResetOtp(otp);
+          setModalEnterOtp(false);
+          navigate(Screen_Name.SetPassword_Screen, { mail, otp });
+        }}
+        contact={mail}
+      />
+      {Loading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10,
+          }}
+        >
+          <ActivityIndicator size="large" color="#E53935" />
+        </View>
+      )}
     </View>
   );
 };
