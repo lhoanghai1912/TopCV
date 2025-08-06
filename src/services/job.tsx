@@ -18,3 +18,13 @@ export const getJob = async (params: JobSearchParams) => {
     throw error;
   }
 };
+
+export const getJobDetails = async (id: string) => {
+  try {
+    const response = await apiClient.get(`/Job/GetById/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};

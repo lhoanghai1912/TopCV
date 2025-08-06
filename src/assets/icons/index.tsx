@@ -33,7 +33,15 @@ import role from './role.png';
 import search from './search.png';
 import heart from './heart.png';
 import heart_like from './heart_like.png';
+import more from './more.png';
+import salary from './salary.png';
+import exep from './exep.png';
+import location from './location.png';
 export default {
+  exep,
+  location,
+  salary,
+  more,
   heart,
   heart_like,
   search,

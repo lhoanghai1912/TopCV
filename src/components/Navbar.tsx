@@ -38,7 +38,13 @@ const NavBar = ({
     <View style={[styles.navBar, ...customStyle, { paddingTop: insets.top }]}>
       {/* Back button */}
       <TouchableOpacity onPress={onPress} style={styles.iconButton}>
-        <Image source={icons.back} style={AppStyles.icon} />
+        <Image
+          source={icons.back}
+          style={[
+            AppStyles.icon,
+            { backgroundColor: colors.white, borderRadius: 50 },
+          ]}
+        />
       </TouchableOpacity>
 
       {/* Title */}
@@ -52,7 +58,10 @@ const NavBar = ({
           <TouchableOpacity onPress={onRightPress1} style={styles.iconButton}>
             <Image
               source={icon1}
-              style={[AppStyles.icon, { tintColor: colors.black }]}
+              style={[
+                AppStyles.icon,
+                { backgroundColor: colors.white, borderRadius: 50 },
+              ]}
             />
           </TouchableOpacity>
         )}

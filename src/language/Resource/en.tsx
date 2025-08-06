@@ -26,8 +26,8 @@ export default {
 
   price: {
     deal: 'Deal',
-    bilion: 'Bilion',
-    milion: 'Milion',
-    thousand: 'Thousand',
+    bilion: 'B',
+    milion: 'M',
+    thousand: 'T',
   },
 };
