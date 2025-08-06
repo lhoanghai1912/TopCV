@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.medium,
   },
   body: {
-    marginBottom: spacing.medium,
+    paddingBottom: ms(150),
   },
   text: {
     fontSize: 24,

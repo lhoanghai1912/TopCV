@@ -34,4 +34,5 @@ export const spacing = {
   large: ms(24),
   xlarge: ms(32),
   xxlarge: ms(40),
+  xxxlarge: ms(56),
 };

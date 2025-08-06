@@ -6,7 +6,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
     marginBottom: spacing.medium,
-    height: ms(200),
   },
   overview: {
     height: ms(250),
@@ -33,6 +32,7 @@ const styles = StyleSheet.create({
   body: {
     backgroundColor: colors.white,
     paddingTop: spacing.medium,
+    marginBottom: spacing.medium,
   },
   jobOverview: {
     alignItems: 'center',
@@ -43,6 +43,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.small,
     borderColor: colors.Gray,
   },
+  detailItem: { marginBottom: spacing.medium },
+  requirement: {},
+  benefit: {},
   mainContent: {},
 });
 export default styles;
