@@ -31,7 +31,11 @@ import dot from './dot.png';
 import phone from './phone.png';
 import role from './role.png';
 import search from './search.png';
+import heart from './heart.png';
+import heart_like from './heart_like.png';
 export default {
+  heart,
+  heart_like,
   search,
   back,
   clear,

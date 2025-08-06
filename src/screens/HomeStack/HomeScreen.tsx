@@ -1,5 +1,12 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ms, spacing } from '../../utils/spacing';
 import LinearGradient from 'react-native-linear-gradient';
@@ -8,12 +15,46 @@ import AppStyles from '../../components/AppStyle';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import Card from './Card';
+import styles from './styles';
+import { getJob } from '../../services/job';
+import { jobList, JobSearchParams } from '../../type/type';
+import { FlatList } from 'react-native-gesture-handler';
 
 const HomeScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
+  const [listJob, setListJob] = useState([]);
+  const [page, setPage] = useState('1');
+  const [pageSize, setPageSize] = useState('20');
+  const [oderBy, setOderBy] = useState();
+  const [filter, setFilter] = useState();
+  const [search, setSearch] = useState();
   const token = useSelector((state: any) => state.user.token);
   const { t } = useTranslation();
+  const params: JobSearchParams = {
+    Page: page,
+    PageSize: pageSize,
+    OderBy: oderBy,
+    Filter: filter,
+    Search: search,
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const fetchData = async () => {
+    const data = await getJob(params);
+    setListJob(data.result);
+    console.log('data', data);
+  };
 
+  const renderJob = ({ item }: { item: jobList }) => {
+    const key = item.id ? item.id.toString() : `${Math.random()}`;
+    return (
+      <>
+        <Card job={item} key={key} />
+        <View style={{ marginBottom: spacing.medium }} />
+      </>
+    );
+  };
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -28,45 +69,32 @@ const HomeScreen: React.FC = () => {
           <Text style={AppStyles.text}>{t('message.find')}</Text>
         </TouchableOpacity>
       </LinearGradient>
-      <View style={styles.category}></View>
+      <View style={styles.category}>
+        <TouchableOpacity></TouchableOpacity>
+      </View>
       <View style={styles.body}>
-        <Card />
+        {/* <Card /> */}
+        <FlatList
+          data={listJob}
+          ListEmptyComponent={
+            <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
+              No data
+            </Text>
+          }
+          keyExtractor={item =>
+            item.id ? item.id.toString() : `${Math.random()}`
+          }
+          // refreshControl={
+          //   <RefreshControl
+          //     refreshing={refreshing}
+          //     // onRefresh={onRefresh}
+          //   />
+          // }
+          renderItem={renderJob}
+        />
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    paddingHorizontal: spacing.medium,
-    height: ms(120), // Đặt chiều cao cho header, bạn có thể thay đổi theo nhu cầu
-    justifyContent: 'flex-end',
-    marginBottom: spacing.medium,
-  },
-  search: {
-    borderRadius: 20,
-    paddingHorizontal: spacing.medium,
-    paddingVertical: spacing.small,
-    flexDirection: 'row',
-    borderWidth: 1,
-    alignItems: 'center',
-    height: ms(50),
-  },
-  category: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.medium,
-  },
-  body: {
-    marginBottom: spacing.medium,
-  },
-  text: {
-    fontSize: 24,
-  },
-});
 
 export default HomeScreen;

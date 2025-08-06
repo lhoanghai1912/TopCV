@@ -19,3 +19,8 @@ export const TITLES = {
   report: 'Report',
   user: 'User',
 };
+
+export const link = {
+  url: 'https://bds.foxai.com.vn:3456',
+  company: 'https://fox.ai.vn/',
+};

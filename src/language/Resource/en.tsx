@@ -23,4 +23,11 @@ export default {
     confirm_password: 'Confirm password',
     mail: 'Mail',
   },
+
+  price: {
+    deal: 'Deal',
+    bilion: 'Bilion',
+    milion: 'Milion',
+    thousand: 'Thousand',
+  },
 };

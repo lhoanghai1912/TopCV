@@ -16,17 +16,20 @@ import {
   initialWindowMetrics,
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 enableScreens(); // Bật tính năng screens để sử dụng trong navigation
 function App() {
   return (
-    <Provider store={store}>
-      <StatusBar barStyle="light-content" translucent={false} />
-      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-        <AppNavigator />
-        <Toast />
-      </SafeAreaProvider>
-    </Provider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Provider store={store}>
+        <StatusBar barStyle="light-content" translucent={false} />
+        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+          <AppNavigator />
+          <Toast />
+        </SafeAreaProvider>
+      </Provider>
+    </GestureHandlerRootView>
   );
 }
 
