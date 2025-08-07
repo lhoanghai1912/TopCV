@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ViewStyle,
+  TextStyle,
 } from 'react-native';
 import AppStyles from './AppStyle';
 import { Fonts } from '../utils/fontSize';
@@ -22,6 +23,7 @@ interface NavBarProps {
   onRightPress1?: () => void;
   onRightPress2?: () => void;
   customStyle?: ViewStyle[];
+  textStyle?: TextStyle;
 }
 
 const NavBar = ({
@@ -31,6 +33,7 @@ const NavBar = ({
   icon2,
   onRightPress1,
   onRightPress2,
+  textStyle,
   customStyle = [],
 }: NavBarProps) => {
   const insets = useSafeAreaInsets();
@@ -48,7 +51,7 @@ const NavBar = ({
       </TouchableOpacity>
 
       {/* Title */}
-      <Text style={styles.navTitle} numberOfLines={1}>
+      <Text style={[styles.navTitle, textStyle]} numberOfLines={2}>
         {title}
       </Text>
 

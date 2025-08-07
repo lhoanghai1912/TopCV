@@ -47,5 +47,33 @@ const styles = StyleSheet.create({
   requirement: {},
   benefit: {},
   mainContent: {},
+  fixedHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    elevation: 10,
+    backgroundColor: colors.white,
+  },
+  jobOverviewContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  jobOverviewItem: {
+    flexDirection: 'row',
+    width: '48%', // Make each item take 48% of the row's width
+    marginBottom: spacing.small,
+    alignItems: 'center',
+  },
+  skillsItem: {
+    backgroundColor: colors.Gray,
+    padding: spacing.small,
+    borderRadius: 20,
+    marginBottom: spacing.small,
+  },
+  companyName: {},
+  companyIntroduction: {},
 });
 export default styles;

@@ -1,7 +1,7 @@
 // app/utils/colors.ts
 
 export const colors = {
-  primary: '#BC7F56',
+  primary: '#598CD2',
   secondary: '#A5A5A5',
   background: '#f5f5f5',
   white: '#ffffff',

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   RefreshControl,
+  FlatList,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ms, spacing } from '../../utils/spacing';
@@ -18,7 +19,7 @@ import Card from './Card';
 import styles from './styles';
 import { getJob } from '../../services/job';
 import { jobList, JobSearchParams } from '../../type/type';
-import { FlatList } from 'react-native-gesture-handler';
+import { useFocusEffect } from '@react-navigation/native';
 
 const HomeScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
@@ -28,6 +29,9 @@ const HomeScreen: React.FC = () => {
   const [oderBy, setOderBy] = useState();
   const [filter, setFilter] = useState();
   const [search, setSearch] = useState();
+  const [refreshing, setRefreshing] = useState(false); // State to track refreshing
+  const [loadingMore, setLoadingMore] = useState(false); // State to track loading more
+  const flatListRef = useRef<FlatList>(null);
   const token = useSelector((state: any) => state.user.token);
   const { t } = useTranslation();
   const params: JobSearchParams = {
@@ -40,10 +44,23 @@ const HomeScreen: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      onRefresh(); // Call onRefresh when screen is focused
+    }, []),
+  );
+
   const fetchData = async () => {
     const data = await getJob(params);
     setListJob(data.result);
-    console.log('data', data);
+    console.log('datta', data);
+  };
+
+  const onRefresh = () => {
+    // flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    setRefreshing(true); // Set refreshing to true
+    fetchData().finally(() => setRefreshing(false)); // Fetch data and stop refreshing once done
   };
 
   const renderJob = ({ item }: { item: jobList }) => {
@@ -72,25 +89,21 @@ const HomeScreen: React.FC = () => {
       <View style={styles.category}>
         <TouchableOpacity></TouchableOpacity>
       </View>
-      <View style={styles.body}>
+      <View style={[styles.body]}>
         {/* <Card /> */}
         <FlatList
+          ref={flatListRef}
           data={listJob}
           ListEmptyComponent={
             <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
               No data
             </Text>
           }
-          keyExtractor={item =>
-            item.id ? item.id.toString() : `${Math.random()}`
-          }
-          // refreshControl={
-          //   <RefreshControl
-          //     refreshing={refreshing}
-          //     // onRefresh={onRefresh}
-          //   />
-          // }
           renderItem={renderJob}
+          keyExtractor={item => item.id}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       </View>
     </View>

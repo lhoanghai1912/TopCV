@@ -37,7 +37,9 @@ import more from './more.png';
 import salary from './salary.png';
 import exep from './exep.png';
 import location from './location.png';
+import internet from './internet.png';
 export default {
+  internet,
   exep,
   location,
   salary,

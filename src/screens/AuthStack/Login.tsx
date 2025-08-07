@@ -40,13 +40,9 @@ const LoginScreen = () => {
       const res = await login(mail, password);
       console.log(res);
 
-      await AsyncStorage.setItem('accessToken', res.token);
-      await AsyncStorage.setItem('userData', JSON.stringify(res.profile));
       dispatch(setToken({ token: res.token }));
 
-      navigate(Screen_Name.BottomTab_Navigator, {
-        screen: Screen_Name.Home_Screen,
-      });
+      navigate(Screen_Name.BottomTab_Navigator);
 
       Toast.show({
         type: 'success',
