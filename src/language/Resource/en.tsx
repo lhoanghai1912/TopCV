@@ -8,6 +8,8 @@ export default {
     guest: 'Use as a guest',
     enter_otp: 'Please enter OTP',
     find: 'Find job',
+    loadingMore: 'Loading more...',
+    noMoreJob: 'No more jobs available',
   },
 
   title: {

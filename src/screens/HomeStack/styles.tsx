@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { ms, spacing } from '../../utils/spacing';
+import { Fonts } from '../../utils/fontSize';
 
 const styles = StyleSheet.create({
   container: {
@@ -30,7 +31,21 @@ const styles = StyleSheet.create({
     paddingBottom: ms(150),
   },
   text: {
-    fontSize: 24,
+    fontSize: Fonts.normal,
+  },
+  footerLoader: {
+    paddingVertical: spacing.medium,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: Fonts.normal,
+    color: '#666',
+  },
+  noMoreText: {
+    fontSize: Fonts.normal,
+    color: '#999',
+    fontStyle: 'italic',
   },
 });
 export default styles;

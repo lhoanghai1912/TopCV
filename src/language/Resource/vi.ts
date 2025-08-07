@@ -5,6 +5,9 @@ export default {
     nothave_account: 'Bạn chưa có tài khoản?',
     have_account: 'Bạn đã có tài khoản?',
     guest: 'Sử dụng với tư cách khách',
+    find: 'Tìm việc làm',
+    loadingMore: 'Đang tải thêm...',
+    noMoreJob: 'Không còn việc làm nào',
   },
 
   title: {

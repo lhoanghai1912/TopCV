@@ -23,44 +23,85 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const HomeScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
-  const [listJob, setListJob] = useState([]);
-  const [page, setPage] = useState('1');
-  const [pageSize, setPageSize] = useState('20');
-  const [oderBy, setOderBy] = useState();
-  const [filter, setFilter] = useState();
-  const [search, setSearch] = useState();
-  const [refreshing, setRefreshing] = useState(false); // State to track refreshing
-  const [loadingMore, setLoadingMore] = useState(false); // State to track loading more
+  const [listJob, setListJob] = useState<jobList[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [oderBy, setOderBy] = useState<string | undefined>();
+  const [filter, setFilter] = useState<string | undefined>();
+  const [search, setSearch] = useState<string | undefined>();
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [noMoreData, setNoMoreData] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const token = useSelector((state: any) => state.user.token);
   const { t } = useTranslation();
-  const params: JobSearchParams = {
-    Page: page,
-    PageSize: pageSize,
-    OderBy: oderBy,
-    Filter: filter,
-    Search: search,
+
+  const fetchData = async (currentPage: number, isRefresh: boolean = false) => {
+    if (loadingMore && !isRefresh) return;
+
+    if (isRefresh) {
+      setIsLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
+
+    try {
+      const params: JobSearchParams = {
+        Page: currentPage.toString(),
+        PageSize: pageSize.toString(),
+        OderBy: oderBy,
+        Filter: filter,
+        Search: search,
+      };
+
+      const data = await getJob(params);
+      console.log('Fetched data:', data);
+
+      if (data.result && Array.isArray(data.result)) {
+        if (data.result.length < pageSize) {
+          setNoMoreData(true);
+        }
+
+        setListJob(prevState => {
+          if (isRefresh || currentPage === 1) {
+            return data.result;
+          } else {
+            return [...prevState, ...data.result];
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    } finally {
+      setIsLoading(false);
+      setLoadingMore(false);
+    }
   };
+
   useEffect(() => {
-    fetchData();
+    fetchData(1, true);
   }, []);
 
   useFocusEffect(
     useCallback(() => {
-      onRefresh(); // Call onRefresh when screen is focused
+      fetchData(1, true);
     }, []),
   );
 
-  const fetchData = async () => {
-    const data = await getJob(params);
-    setListJob(data.result);
-    console.log('datta', data);
+  const onRefresh = () => {
+    setRefreshing(true);
+    setPage(1);
+    setNoMoreData(false);
+    fetchData(1, true).finally(() => setRefreshing(false));
   };
 
-  const onRefresh = () => {
-    // flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-    setRefreshing(true); // Set refreshing to true
-    fetchData().finally(() => setRefreshing(false)); // Fetch data and stop refreshing once done
+  const loadMoreData = () => {
+    if (!loadingMore && !noMoreData && !isLoading) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchData(nextPage, false);
+    }
   };
 
   const renderJob = ({ item }: { item: jobList }) => {
@@ -72,10 +113,29 @@ const HomeScreen: React.FC = () => {
       </>
     );
   };
+
+  const renderFooter = () => {
+    if (loadingMore) {
+      return (
+        <View style={styles.footerLoader}>
+          <Text style={styles.loadingText}>{t('message.loadingMore')}</Text>
+        </View>
+      );
+    }
+    if (noMoreData && listJob.length > 0) {
+      return (
+        <View style={styles.footerLoader}>
+          <Text style={styles.noMoreText}>{t('message.noMoreJob')}</Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#095286', '#f5f5f5']} // Gradient từ xanh -> trắng
+        colors={['#095286', '#f5f5f5']}
         style={[styles.header, { paddingTop: insets.top }]}
       >
         <TouchableOpacity onPress={() => {}} style={styles.search}>
@@ -90,20 +150,27 @@ const HomeScreen: React.FC = () => {
         <TouchableOpacity></TouchableOpacity>
       </View>
       <View style={[styles.body]}>
-        {/* <Card /> */}
         <FlatList
           ref={flatListRef}
           data={listJob}
           ListEmptyComponent={
-            <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
-              No data
-            </Text>
+            !isLoading ? (
+              <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
+                No data
+              </Text>
+            ) : null
           }
           renderItem={renderJob}
-          keyExtractor={item => item.id}
+          keyExtractor={(item, index) =>
+            item.id?.toString() || index.toString()
+          }
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
+          onEndReached={loadMoreData}
+          onEndReachedThreshold={0.1}
+          ListFooterComponent={renderFooter}
+          showsVerticalScrollIndicator={false}
         />
       </View>
     </View>

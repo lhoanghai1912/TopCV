@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import { formatPriceToTy } from '../../../components/formatPrice';
+import { spacing } from '../../../utils/spacing';
 
 type CardProps = {
   job: any;
@@ -44,13 +45,14 @@ const Card: React.FC<CardProps> = ({ job, onReload }) => {
           <View
             style={{
               flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '70%',
+              width: '80%',
             }}
           >
-            <Text style={styles.textInfo}>{`${formatPriceToTy(
-              job.salaryFrom,
-            )} - ${formatPriceToTy(job.salaryTo)}`}</Text>
+            <Text
+              style={[styles.textInfo, { marginRight: spacing.small }]}
+            >{`${formatPriceToTy(job.salaryFrom)} - ${formatPriceToTy(
+              job.salaryTo,
+            )}`}</Text>
             <Text style={styles.textInfo}>{job.location || 'abc'}</Text>
           </View>
           <TouchableOpacity
