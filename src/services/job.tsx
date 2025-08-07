@@ -28,3 +28,13 @@ export const getJobDetails = async (id: string) => {
     throw error;
   }
 };
+
+export const getJobofCompany = async (id: string) => {
+  try {
+    const response = await apiClient.get(`Job/GetByCompany/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};

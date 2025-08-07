@@ -123,7 +123,6 @@ const AppStyles = StyleSheet.create({
 
   linkText: {
     color: colors.primary,
-    textAlign: 'center',
     fontSize: Fonts.normal,
     textDecorationLine: 'underline',
     textDecorationColor: colors.blue,

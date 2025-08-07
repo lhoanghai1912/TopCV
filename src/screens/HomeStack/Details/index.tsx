@@ -8,7 +8,7 @@ import {
   Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { getJobDetails } from '../../../services/job';
+import { getJobDetails, getJobofCompany } from '../../../services/job';
 import NavBar from '../../../components/Navbar';
 import icons from '../../../assets/icons';
 import LinearGradient from 'react-native-linear-gradient';
@@ -18,34 +18,28 @@ import AppStyles from '../../../components/AppStyle';
 import { ms, spacing } from '../../../utils/spacing';
 import { colors } from '../../../utils/color';
 import { formatPriceToTy } from '../../../components/formatPrice';
-import { ScrollView } from 'react-native-gesture-handler';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { Fonts } from '../../../utils/fontSize';
 import moment from 'moment';
+import Card from '../Card';
+import AppButton from '../../../components/AppButton';
+import { useSelector } from 'react-redux';
+import Toast from 'react-native-toast-message';
 interface Props {
   navigation: any;
   route: any;
 }
 
 const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
+  const insets = useSafeAreaInsets();
   console.log('job id: ', route.params.job.id);
+  const { token } = useSelector((state: any) => state.user);
   const [jobDetails, setJobDetails] = useState<any>([]);
+  const [listJobsOfCompany, setListJobsOfCompany] = useState<any>([]);
   const [onSelectedCategory, setOnSelectedCategory] = useState('info');
   const [showFixedHeader, setShowFixedHeader] = useState(false);
+  const [filteredJobs, setFilteredJobs] = useState<any>([]);
 
-  useEffect(() => {
-    fetchJobDetails();
-  }, [route.params.job.id]);
-  const fetchJobDetails = async () => {
-    const data = await getJobDetails(route.params.job.id);
-    setJobDetails(data);
-    console.log('data', data);
-  };
-
-  const handleLinkPress = link => {
-    Linking.openURL(link).catch(err =>
-      console.error('Failed to open URL', err),
-    );
-  };
   const jobOverview = [
     {
       icon: icons.apple,
@@ -70,7 +64,62 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
       value: jobDetails.jobType,
     },
   ];
+  useEffect(() => {
+    fetchJobDetails();
+  }, [route.params.job.id]);
 
+  useEffect(() => {
+    if (jobDetails?.company?.id) {
+      fetchJobOfCompany();
+    }
+  }, [jobDetails]);
+
+  useEffect(() => {
+    // Lọc công việc có id khác với currentJob.id
+    const filtered = listJobsOfCompany?.filter(job => job.id !== jobDetails.id);
+    setFilteredJobs(filtered);
+  }, [listJobsOfCompany, jobDetails]);
+
+  const fetchJobDetails = async () => {
+    const data = await getJobDetails(route.params.job.id);
+    setJobDetails(data);
+    console.log('data', data);
+  };
+
+  const fetchJobOfCompany = async () => {
+    const data = await getJobofCompany(jobDetails?.company?.id);
+    setListJobsOfCompany(data);
+    console.log('job of company', data);
+  };
+
+  const handleLinkPress = link => {
+    Linking.openURL(link).catch(err =>
+      console.error('Failed to open URL', err),
+    );
+  };
+
+  const renderJob = ({ item }: any) => {
+    return (
+      <>
+        <Card
+          job={item}
+          style={{ marginHorizontal: 0, backgroundColor: colors.white }}
+        />
+        <View style={{ marginBottom: spacing.medium }} />
+      </>
+    );
+  };
+
+  const applyNow = () => {
+    if (!token) {
+      Toast.show({
+        type: 'error',
+        text1: 'Thông báo',
+        text2: 'Cần đăng nhập để thực hiện tính năng này',
+        visibilityTime: 1500,
+      });
+    }
+  };
   return (
     <View style={{ flex: 1 }}>
       {showFixedHeader && (
@@ -250,7 +299,9 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                       >
                         Description
                       </Text>
-                      <Text>{jobDetails.description}</Text>
+                      <Text style={AppStyles.text}>
+                        {jobDetails.description}
+                      </Text>
                     </View>
                     <View style={styles.detailItem}>
                       <Text
@@ -261,7 +312,9 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                       >
                         Requirement
                       </Text>
-                      <Text>{jobDetails.requirement}</Text>
+                      <Text style={AppStyles.text}>
+                        {jobDetails.requirement}
+                      </Text>
                     </View>
                     <View style={styles.detailItem}>
                       <Text
@@ -272,7 +325,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                       >
                         Benefit
                       </Text>
-                      <Text>{jobDetails.benefit}</Text>
+                      <Text style={AppStyles.text}>{jobDetails.benefit}</Text>
                     </View>
                     <View style={styles.detailItem}>
                       <Text
@@ -283,7 +336,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                       >
                         Address
                       </Text>
-                      <Text>{jobDetails.address}</Text>
+                      <Text style={AppStyles.text}>{jobDetails.address}</Text>
                     </View>
                     <View
                       style={[
@@ -369,7 +422,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                         />
                         <View style={{ paddingHorizontal: spacing.medium }}>
                           <Text style={AppStyles.label}>Địa chỉ công ty</Text>
-                          <Text style={{ flexWrap: 'wrap' }}>
+                          <Text style={[AppStyles.text, { flexWrap: 'wrap' }]}>
                             {jobDetails.company.address}
                           </Text>
                         </View>
@@ -423,8 +476,45 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
               )}
             </View>
           </View>
+          <View style={styles.otherJob}>
+            {onSelectedCategory === 'info' ? (
+              <></>
+            ) : onSelectedCategory === 'company' ? (
+              <>
+                <View style={styles.jobsOfCompany}>
+                  <Text
+                    style={[AppStyles.title, { marginBottom: spacing.small }]}
+                  >
+                    Jobs from the selected company:
+                  </Text>
+                  <FlatList
+                    scrollEnabled={false}
+                    data={filteredJobs}
+                    renderItem={renderJob}
+                    keyExtractor={item => item.id.toString()}
+                  />
+                </View>
+              </>
+            ) : (
+              <></>
+            )}
+          </View>
         </View>
       </ScrollView>
+      <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
+        <View style={styles.iconWrap}>
+          <Image source={icons.heart} style={AppStyles.icon} />
+        </View>
+        <View
+          style={{
+            // backgroundColor: 'red',
+            marginLeft: spacing.medium,
+            flex: 1,
+          }}
+        >
+          <AppButton title="Apply Now" onPress={() => applyNow()} />
+        </View>
+      </View>
     </View>
   );
 };

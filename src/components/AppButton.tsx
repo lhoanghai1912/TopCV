@@ -19,7 +19,7 @@ interface AppButtonProps {
   // key?: number;
   onPress: () => void; // Hàm khi nhấn nút
   title?: string; // Tiêu đề nút
-  customStyle?: ViewStyle[]; // Custom style cho nút
+  customStyle?: ViewStyle; // Custom style cho nút
   disabled?: boolean;
   leftIcon?: ImageSourcePropType; // icon key trong ICONS
   textStyle?: TextStyle; // 👈 style cho text
@@ -29,7 +29,7 @@ const AppButton: React.FC<AppButtonProps> = ({
   // key,
   onPress,
   title,
-  customStyle = [],
+  customStyle,
   disabled,
   leftIcon,
   textStyle,
@@ -41,7 +41,7 @@ const AppButton: React.FC<AppButtonProps> = ({
       onPress={onPress}
       style={[
         disabled ? styles.buttonDisabled : styles.button,
-        ...customStyle,
+        customStyle,
         { opacity: disabled ? 0.5 : 1 },
       ]}
     >

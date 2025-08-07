@@ -15,4 +15,5 @@ export const colors = {
   red: '#E4080A',
   button: '#095286',
   buttonDisable: '#F0EFF4',
+  default: '#F2F2F2',
 };

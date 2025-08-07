@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { ms, spacing } from '../../../utils/spacing';
 import { colors } from '../../../utils/color';
+import { Fonts } from '../../../utils/fontSize';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -72,8 +73,29 @@ const styles = StyleSheet.create({
     padding: spacing.small,
     borderRadius: 20,
     marginBottom: spacing.small,
+    fontSize: Fonts.normal,
   },
+  otherJob: { backgroundColor: colors.default },
   companyName: {},
-  companyIntroduction: {},
+  companyIntroduction: { marginBottom: spacing.medium },
+  jobsOfCompany: {
+    backgroundColor: colors.default,
+    paddingHorizontal: spacing.medium,
+  },
+  footer: {
+    paddingTop: spacing.medium,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    paddingHorizontal: spacing.medium,
+    justifyContent: 'space-between',
+  },
+  iconWrap: {
+    borderRadius: 10,
+    backgroundColor: 'red',
+    borderWidth: 1,
+    padding: ms(5),
+    borderColor: colors.Gray,
+  },
 });
 export default styles;

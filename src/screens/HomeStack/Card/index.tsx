@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ViewStyle } from 'react-native';
 import AppStyles from '../../../components/AppStyle';
 import styles from './styles';
 import icons from '../../../assets/icons';
@@ -15,9 +15,10 @@ import { spacing } from '../../../utils/spacing';
 type CardProps = {
   job: any;
   onReload?: () => void;
+  style?: ViewStyle;
 };
 
-const Card: React.FC<CardProps> = ({ job, onReload }) => {
+const Card: React.FC<CardProps> = ({ job, onReload, style }) => {
   const { t } = useTranslation();
   const [liked, setLiked] = useState(false);
 
@@ -25,7 +26,7 @@ const Card: React.FC<CardProps> = ({ job, onReload }) => {
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => navigate(Screen_Name.Details_Screen, { job })}
-        style={styles.cardWrapper}
+        style={[styles.cardWrapper, style]}
       >
         <View style={styles.mainContent}>
           <Image
