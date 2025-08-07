@@ -147,7 +147,30 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       </LinearGradient>
       <View style={styles.category}>
-        <TouchableOpacity></TouchableOpacity>
+        <TouchableOpacity style={{ alignItems: 'center' }}>
+          <View style={styles.iconWrap}>
+            <Image
+              source={icons.apple}
+              style={[AppStyles.icon, { resizeMode: 'cover' }]}
+            />
+          </View>
+          <Text style={[AppStyles.text, { marginTop: spacing.small }]}>
+            Việc làm
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ alignItems: 'center', marginLeft: spacing.medium }}
+        >
+          <View style={styles.iconWrap}>
+            <Image
+              source={icons.apple}
+              style={[AppStyles.icon, { resizeMode: 'cover' }]}
+            />
+          </View>
+          <Text style={[AppStyles.text, { marginTop: spacing.small }]}>
+            Công ty
+          </Text>
+        </TouchableOpacity>
       </View>
       <View style={[styles.body]}>
         <FlatList

@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { ms, spacing } from '../../utils/spacing';
 import { Fonts } from '../../utils/fontSize';
+import { colors } from '../../utils/color';
 
 const styles = StyleSheet.create({
   container: {
@@ -26,6 +27,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: spacing.medium,
+    paddingHorizontal: spacing.medium,
   },
   body: {
     paddingBottom: ms(150),
@@ -46,6 +48,13 @@ const styles = StyleSheet.create({
     fontSize: Fonts.normal,
     color: '#999',
     fontStyle: 'italic',
+  },
+  iconWrap: {
+    borderRadius: 50,
+    borderWidth: 1,
+    padding: ms(5),
+    borderColor: colors.Gray,
+    justifyContent: 'center',
   },
 });
 export default styles;
