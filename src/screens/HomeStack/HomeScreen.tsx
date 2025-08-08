@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   RefreshControl,
   FlatList,
+  Animated,
+  ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ms, spacing } from '../../utils/spacing';
@@ -22,6 +24,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
 import CardJob from './Job/Card/CardJob';
+import { setLoading } from '../../store/reducers/loadingSlice';
 
 const HomeScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
@@ -38,6 +41,7 @@ const HomeScreen: React.FC = () => {
   const flatListRef = useRef<FlatList>(null);
   const token = useSelector((state: any) => state.user.token);
   const { t } = useTranslation();
+  const categoryOpacity = useRef(new Animated.Value(1)).current; // Animated value for opacity
 
   const fetchData = async (currentPage: number, isRefresh: boolean = false) => {
     if (loadingMore && !isRefresh) return;
@@ -133,6 +137,51 @@ const HomeScreen: React.FC = () => {
     return null;
   };
 
+  const renderCategory = () => (
+    <Animated.View
+      style={[
+        styles.category,
+        {
+          opacity: categoryOpacity, // Apply animated opacity to category
+        },
+      ]}
+    >
+      <TouchableOpacity style={{ alignItems: 'center' }}>
+        <View style={styles.iconWrap}>
+          <Image
+            source={icons.apple}
+            style={[AppStyles.icon, { resizeMode: 'cover' }]}
+          />
+        </View>
+        <Text style={[AppStyles.text, { marginTop: spacing.small }]}>
+          Việc làm
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{ alignItems: 'center', marginLeft: spacing.medium }}
+        onPress={() => navigate(Screen_Name.Company_Screen)}
+      >
+        <View style={styles.iconWrap}>
+          <Image
+            source={icons.apple}
+            style={[AppStyles.icon, { resizeMode: 'cover' }]}
+          />
+        </View>
+        <Text style={[AppStyles.text, { marginTop: spacing.small }]}>
+          Công ty
+        </Text>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+
+  const onScroll = (event: any) => {
+    const contentOffsetY = event.nativeEvent.contentOffset.y;
+
+    // Điều chỉnh opacity của category dựa trên vị trí cuộn
+    const opacity = Math.max(1 - contentOffsetY / 50, 0); // Đảm bảo opacity không nhỏ hơn 0
+    categoryOpacity.setValue(opacity);
+  };
+
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -147,33 +196,7 @@ const HomeScreen: React.FC = () => {
           <Text style={AppStyles.text}>{t('message.find')}</Text>
         </TouchableOpacity>
       </LinearGradient>
-      <View style={styles.category}>
-        <TouchableOpacity style={{ alignItems: 'center' }}>
-          <View style={styles.iconWrap}>
-            <Image
-              source={icons.apple}
-              style={[AppStyles.icon, { resizeMode: 'cover' }]}
-            />
-          </View>
-          <Text style={[AppStyles.text, { marginTop: spacing.small }]}>
-            Việc làm
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ alignItems: 'center', marginLeft: spacing.medium }}
-          onPress={() => navigate(Screen_Name.Company_Screen)}
-        >
-          <View style={styles.iconWrap}>
-            <Image
-              source={icons.apple}
-              style={[AppStyles.icon, { resizeMode: 'cover' }]}
-            />
-          </View>
-          <Text style={[AppStyles.text, { marginTop: spacing.small }]}>
-            Công ty
-          </Text>
-        </TouchableOpacity>
-      </View>
+
       <View style={[styles.body]}>
         <FlatList
           ref={flatListRef}
@@ -192,12 +215,28 @@ const HomeScreen: React.FC = () => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
+          ListHeaderComponent={renderCategory}
           onEndReached={loadMoreData}
           onEndReachedThreshold={0.1}
+          onScroll={onScroll} // Bắt sự kiện scroll
           ListFooterComponent={renderFooter}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: ms(20) }} // Thêm padding dưới cùng
         />
       </View>
+      {isLoading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10,
+          }}
+        >
+          <ActivityIndicator size="large" color="#E53935" />
+        </View>
+      )}
     </View>
   );
 };

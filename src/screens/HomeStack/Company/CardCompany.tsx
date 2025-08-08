@@ -83,7 +83,7 @@ const CardCompany: React.FC<CardCompanyProps> = ({
                 },
               ]}
             >
-              số lượng việc làm
+              {`${company?.jobs?.length} công việc`}
             </Text>
             <AppButton
               title="Theo dõi"

@@ -30,13 +30,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.medium,
   },
   body: {
-    paddingBottom: ms(150),
+    paddingBottom: ms(125),
+    // flex: 1,
   },
   text: {
     fontSize: Fonts.normal,
   },
   footerLoader: {
-    paddingVertical: spacing.medium,
+    paddingVertical: spacing.small,
     alignItems: 'center',
     justifyContent: 'center',
   },

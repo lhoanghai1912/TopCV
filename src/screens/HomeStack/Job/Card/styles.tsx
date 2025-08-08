@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     padding: spacing.small,
     borderRadius: 20,
     fontSize: Fonts.normal,
+    maxWidth: ms(200),
   },
   iconWrap: {
     borderRadius: 100,

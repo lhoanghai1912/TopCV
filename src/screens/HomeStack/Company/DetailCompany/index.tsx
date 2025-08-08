@@ -137,7 +137,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
               customStyle={{
                 alignItems: 'center',
                 paddingVertical: ms(5),
-                width: '85%',
+                width: '80%',
               }}
             />
 
@@ -146,7 +146,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                 backgroundColor: colors.Gray,
                 padding: ms(4),
                 borderRadius: 10,
-                marginLeft: spacing.small,
+                marginLeft: spacing.medium,
               }}
             >
               <Image
@@ -237,7 +237,13 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
               </View>
             </>
           ) : onCategory === 'job' ? (
-            <></>
+            <>
+              <FlatList
+                scrollEnabled={false}
+                data={companyDetail?.jobs}
+                renderItem={renderJobOfCompany}
+              ></FlatList>
+            </>
           ) : (
             <></>
           )}
