@@ -5,7 +5,9 @@ import BottomTabNavigator from './BottomTabNavigator';
 import LoginScreen from '../screens/AuthStack/Login';
 import RegisterScreen from '../screens/AuthStack/Register';
 import SetPasswordScreen from '../screens/AuthStack/SetPassword';
-import DetailsScreen from '../screens/HomeStack/Details';
+import CompanyScreen from '../screens/HomeStack/Company';
+import DetailsCompanyScreen from '../screens/HomeStack/Company/DetailCompany';
+import DetailJobScreen from '../screens/HomeStack/Job/DetailJob';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,8 +32,16 @@ const HomeNavigator = () => {
         component={SetPasswordScreen}
       />
       <Stack.Screen
-        name={Screen_Name.Details_Screen}
-        component={DetailsScreen}
+        name={Screen_Name.DetailJob_Screen}
+        component={DetailJobScreen}
+      />
+      <Stack.Screen
+        name={Screen_Name.Company_Screen}
+        component={CompanyScreen}
+      />
+      <Stack.Screen
+        name={Screen_Name.DetailCompany_Screen}
+        component={DetailsCompanyScreen}
       />
     </Stack.Navigator>
   );

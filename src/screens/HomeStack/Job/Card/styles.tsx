@@ -1,22 +1,22 @@
 import { StyleSheet } from 'react-native';
-import { colors } from '../../../utils/color';
-import { ms, spacing } from '../../../utils/spacing';
-import { Fonts } from '../../../utils/fontSize';
+import { colors } from '../../../../utils/color';
+import { ms, spacing } from '../../../../utils/spacing';
+import { Fonts } from '../../../../utils/fontSize';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginBottom: spacing.medium,
   },
-  cardWrapper: {
+  cardJobWrapper: {
     marginHorizontal: spacing.medium,
     padding: spacing.medium,
     borderRadius: 15,
     borderWidth: 1,
-    height: ms(180),
     justifyContent: 'center',
-    borderColor: colors.blue,
-    backgroundColor: '#c4d7e6ff',
+    borderColor: colors.Gray,
     flexDirection: 'column', // Ensure column direction for proper stacking
+    backgroundColor: colors.white,
   },
   mainContent: {
     marginBottom: spacing.medium,

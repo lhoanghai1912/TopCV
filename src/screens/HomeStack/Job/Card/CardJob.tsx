@@ -1,36 +1,37 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ViewStyle } from 'react-native';
-import AppStyles from '../../../components/AppStyle';
-import styles from './styles';
-import icons from '../../../assets/icons';
-import images from '../../../assets/images';
-import { colors } from '../../../utils/color';
-import { link } from '../../../utils/constants';
+import AppStyles from '../../../../components/AppStyle';
+import icons from '../../../../assets/icons';
+import images from '../../../../assets/images';
+import { colors } from '../../../../utils/color';
+import { link } from '../../../../utils/constants';
 import { useTranslation } from 'react-i18next';
-import { navigate } from '../../../navigation/RootNavigator';
-import { Screen_Name } from '../../../navigation/ScreenName';
-import { formatPriceToTy } from '../../../components/formatPrice';
-import { spacing } from '../../../utils/spacing';
+import { navigate } from '../../../../navigation/RootNavigator';
+import { Screen_Name } from '../../../../navigation/ScreenName';
+import { formatPriceToTy } from '../../../../components/formatPrice';
+import { spacing } from '../../../../utils/spacing';
+import styles from './styles';
 
-type CardProps = {
+type CardJobProps = {
   job: any;
   onReload?: () => void;
   style?: ViewStyle;
 };
 
-const Card: React.FC<CardProps> = ({ job, onReload, style }) => {
+const CardJob: React.FC<CardJobProps> = ({ job, onReload, style }) => {
   const { t } = useTranslation();
   const [liked, setLiked] = useState(false);
+  console.log('link', `${link.url}${job.companyLogoUrl}`);
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        onPress={() => navigate(Screen_Name.Details_Screen, { job })}
-        style={[styles.cardWrapper, style]}
+        onPress={() => navigate(Screen_Name.DetailJob_Screen, { job })}
+        style={[styles.cardJobWrapper, style]}
       >
         <View style={styles.mainContent}>
           <Image
-            source={{ uri: `${link.url}${job.companyLogoUrl}` }}
+            source={{ uri: `${link.url}${job.companyLogoUrl || job.logoUrl}` }}
             style={styles.companyImage}
           />
           <View style={styles.jobInfo}>
@@ -71,4 +72,4 @@ const Card: React.FC<CardProps> = ({ job, onReload, style }) => {
   );
 };
 
-export default Card;
+export default CardJob;

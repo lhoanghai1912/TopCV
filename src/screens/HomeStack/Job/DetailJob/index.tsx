@@ -8,29 +8,31 @@ import {
   Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { getJobDetails, getJobofCompany } from '../../../services/job';
-import NavBar from '../../../components/Navbar';
-import icons from '../../../assets/icons';
+import { getJobDetails, getJobofCompany } from '../../../../services/job';
+import NavBar from '../../../../components/Navbar';
+import icons from '../../../../assets/icons';
 import LinearGradient from 'react-native-linear-gradient';
 import styles from './styles';
-import { link } from '../../../utils/constants';
-import AppStyles from '../../../components/AppStyle';
-import { ms, spacing } from '../../../utils/spacing';
-import { colors } from '../../../utils/color';
-import { formatPriceToTy } from '../../../components/formatPrice';
+import { link } from '../../../../utils/constants';
+import AppStyles from '../../../../components/AppStyle';
+import { ms, spacing } from '../../../../utils/spacing';
+import { colors } from '../../../../utils/color';
+import { formatPriceToTy } from '../../../../components/formatPrice';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
-import { Fonts } from '../../../utils/fontSize';
+import { Fonts } from '../../../../utils/fontSize';
 import moment from 'moment';
-import Card from '../Card';
-import AppButton from '../../../components/AppButton';
+import AppButton from '../../../../components/AppButton';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import CardJob from '../Card/CardJob';
+import { Screen_Name } from '../../../../navigation/ScreenName';
+import { navigate } from '../../../../navigation/RootNavigator';
 interface Props {
   navigation: any;
   route: any;
 }
 
-const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
+const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   const insets = useSafeAreaInsets();
   console.log('job id: ', route.params.job.id);
   const { token } = useSelector((state: any) => state.user);
@@ -39,19 +41,20 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   const [onSelectedCategory, setOnSelectedCategory] = useState('info');
   const [showFixedHeader, setShowFixedHeader] = useState(false);
   const [filteredJobs, setFilteredJobs] = useState<any>([]);
-
+  const companyId = jobDetails?.company?.id;
+  const jobId = route.params?.job?.id;
   const jobOverview = [
     {
       icon: icons.apple,
       label: 'Hạn ứng tuyển',
       value: moment(jobDetails.applicationDeadline).format('DD/MM/YYYY'),
     },
-    { icon: icons.apple, label: 'Cấp bậc', value: jobDetails.jobLevel },
+    { icon: icons.apple, label: 'Cấp bậc', value: jobDetails.jobLevelName },
 
     {
       icon: icons.apple,
       label: 'Trình độ giáo dục',
-      value: jobDetails.educationLevel,
+      value: jobDetails.educationLevelName,
     },
     {
       icon: icons.apple,
@@ -61,7 +64,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
     {
       icon: icons.apple,
       label: 'Hình thức làm việc',
-      value: jobDetails.jobType,
+      value: jobDetails.jobTypeName,
     },
   ];
   useEffect(() => {
@@ -69,7 +72,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   }, [route.params.job.id]);
 
   useEffect(() => {
-    if (jobDetails?.company?.id) {
+    if (companyId) {
       fetchJobOfCompany();
     }
   }, [jobDetails]);
@@ -81,13 +84,13 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   }, [listJobsOfCompany, jobDetails]);
 
   const fetchJobDetails = async () => {
-    const data = await getJobDetails(route.params.job.id);
+    const data = await getJobDetails(jobId);
     setJobDetails(data);
     console.log('data', data);
   };
 
   const fetchJobOfCompany = async () => {
-    const data = await getJobofCompany(jobDetails?.company?.id);
+    const data = await getJobofCompany(companyId);
     setListJobsOfCompany(data);
     console.log('job of company', data);
   };
@@ -101,7 +104,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   const renderJob = ({ item }: any) => {
     return (
       <>
-        <Card
+        <CardJob
           job={item}
           style={{ marginHorizontal: 0, backgroundColor: colors.white }}
         />
@@ -187,14 +190,21 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
             />
 
             <View style={[styles.overview]}>
-              <Image
-                source={{
-                  uri: jobDetails?.company?.coverUrl
-                    ? `${link.url}${jobDetails.company.coverUrl}`
-                    : 'default_image_url', // Fallback image if URL is missing
-                }}
+              <TouchableOpacity
                 style={styles.companyLogo}
-              />
+                onPress={() =>
+                  navigate(Screen_Name.DetailCompany_Screen, { companyId })
+                }
+              >
+                <Image
+                  source={{
+                    uri: jobDetails?.company?.coverUrl
+                      ? `${link.url}${jobDetails.company.coverUrl}`
+                      : 'default_image_url', // Fallback image if URL is missing
+                  }}
+                  style={{ width: ms(70), height: ms(70), borderRadius: 15 }}
+                />
+              </TouchableOpacity>
               <Text
                 style={[
                   AppStyles.title,
@@ -203,14 +213,20 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
               >
                 {jobDetails.title}
               </Text>
-              <Text
-                style={[
-                  AppStyles.label,
-                  { textAlign: 'center', marginBottom: spacing.small },
-                ]}
+              <TouchableOpacity
+                onPress={() =>
+                  navigate(Screen_Name.DetailCompany_Screen, { companyId })
+                }
               >
-                {jobDetails.company?.name}
-              </Text>
+                <Text
+                  style={[
+                    AppStyles.label,
+                    { textAlign: 'center', marginBottom: spacing.small },
+                  ]}
+                >
+                  {jobDetails.company?.name}
+                </Text>
+              </TouchableOpacity>
               <View style={styles.headerContent}>
                 <View style={[styles.jobOverview]}>
                   <Image source={icons.salary} style={[AppStyles.icon]} />
@@ -355,14 +371,21 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                       <View style={styles.jobOverviewContainer}>
                         {jobOverview.map((item, index) => (
                           <View style={styles.jobOverviewItem} key={index}>
-                            <Image source={item.icon} style={AppStyles.icon} />
+                            <Image
+                              source={item.icon}
+                              style={{ width: 40, height: 40 }}
+                            />
                             <View
                               style={{
                                 alignSelf: 'flex-start',
                                 marginLeft: spacing.small,
                               }}
                             >
-                              <Text style={[AppStyles.text]}>{item.label}</Text>
+                              <Text
+                                style={[AppStyles.text, { fontWeight: 'bold' }]}
+                              >
+                                {item.label}
+                              </Text>
                               <Text style={[AppStyles.text]}>{item.value}</Text>
                             </View>
                           </View>
@@ -401,14 +424,22 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                   <View style={{ paddingHorizontal: spacing.medium }}>
                     {/* Company Name */}
                     <View style={styles.companyName}>
-                      <Text
-                        style={[
-                          AppStyles.title,
-                          { marginBottom: spacing.small },
-                        ]}
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigate(Screen_Name.DetailCompany_Screen, {
+                            companyId,
+                          })
+                        }
                       >
-                        {jobDetails?.company?.name}
-                      </Text>
+                        <Text
+                          style={[
+                            AppStyles.title,
+                            { marginBottom: spacing.small },
+                          ]}
+                        >
+                          {jobDetails?.company?.name}
+                        </Text>
+                      </TouchableOpacity>
                       <View
                         style={{
                           flexDirection: 'row',
@@ -423,7 +454,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                         <View style={{ paddingHorizontal: spacing.medium }}>
                           <Text style={AppStyles.label}>Địa chỉ công ty</Text>
                           <Text style={[AppStyles.text, { flexWrap: 'wrap' }]}>
-                            {jobDetails.company.address}
+                            {jobDetails?.company?.address}
                           </Text>
                         </View>
                       </View>
@@ -489,7 +520,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                   </Text>
                   <FlatList
                     scrollEnabled={false}
-                    data={filteredJobs}
+                    data={filteredJobs.slice(0, 10)}
                     renderItem={renderJob}
                     keyExtractor={item => item.id.toString()}
                   />
@@ -502,12 +533,11 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
         </View>
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-        <View style={styles.iconWrap}>
+        <TouchableOpacity style={styles.iconWrap}>
           <Image source={icons.heart} style={AppStyles.icon} />
-        </View>
+        </TouchableOpacity>
         <View
           style={{
-            // backgroundColor: 'red',
             marginLeft: spacing.medium,
             flex: 1,
           }}
@@ -519,4 +549,4 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   );
 };
 
-export default DetailsScreen;
+export default DetailJobScreen;

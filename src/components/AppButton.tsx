@@ -10,6 +10,7 @@ import {
   Image,
   View,
   ImageSourcePropType,
+  ImageStyle,
 } from 'react-native';
 import { colors } from '../utils/color';
 import { spacing } from '../utils/spacing';
@@ -23,6 +24,7 @@ interface AppButtonProps {
   disabled?: boolean;
   leftIcon?: ImageSourcePropType; // icon key trong ICONS
   textStyle?: TextStyle; // 👈 style cho text
+  iconStyle?: ImageStyle;
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
@@ -33,6 +35,7 @@ const AppButton: React.FC<AppButtonProps> = ({
   disabled,
   leftIcon,
   textStyle,
+  iconStyle,
 }) => {
   return (
     <TouchableOpacity
@@ -47,7 +50,11 @@ const AppButton: React.FC<AppButtonProps> = ({
     >
       <View style={leftIcon ? styles.contentWrapper : ''}>
         {leftIcon && (
-          <Image source={leftIcon} style={styles.icon} resizeMode="contain" />
+          <Image
+            source={leftIcon}
+            style={[styles.icon, iconStyle]}
+            resizeMode="contain"
+          />
         )}
 
         <Text
@@ -55,7 +62,9 @@ const AppButton: React.FC<AppButtonProps> = ({
             styles.buttonText,
             textStyle,
 
-            { color: disabled ? colors.black : colors.white },
+            {
+              color: disabled ? colors.black : textStyle?.color || colors.white,
+            },
           ]}
         >
           {title}

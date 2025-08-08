@@ -1,31 +1,25 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  RefreshControl,
-  FlatList,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ms, spacing } from '../../utils/spacing';
-import LinearGradient from 'react-native-linear-gradient';
-import icons from '../../assets/icons';
-import AppStyles from '../../components/AppStyle';
-import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { View, Text, StyleSheet, RefreshControl, FlatList } from 'react-native';
 import styles from './styles';
-import { getJob } from '../../services/job';
-import { jobList, JobSearchParams } from '../../type/type';
+import NavBar from '../../../components/Navbar';
+import icons from '../../../assets/icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { JobSearchParams } from '../../../type/type';
+import { getCompany } from '../../../services/company';
 import { useFocusEffect } from '@react-navigation/native';
-import { navigate } from '../../navigation/RootNavigator';
-import { Screen_Name } from '../../navigation/ScreenName';
-import CardJob from './Job/Card/CardJob';
+import CardCompany from './CardCompany';
+import { spacing } from '../../../utils/spacing';
+import AppStyles from '../../../components/AppStyle';
 
-const HomeScreen: React.FC = () => {
+interface Props {
+  navigation: any;
+}
+
+const CompanyScreen: React.FC<Props> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
-  const [listJob, setListJob] = useState<jobList[]>([]);
+  const [listCompany, setListCompany] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [oderBy, setOderBy] = useState<string | undefined>();
@@ -39,14 +33,12 @@ const HomeScreen: React.FC = () => {
   const token = useSelector((state: any) => state.user.token);
   const { t } = useTranslation();
 
+  // Fetch data function
   const fetchData = async (currentPage: number, isRefresh: boolean = false) => {
-    if (loadingMore && !isRefresh) return;
+    if (loadingMore && !isRefresh) return; // Avoid multiple fetch calls
 
-    if (isRefresh) {
-      setIsLoading(true);
-    } else {
-      setLoadingMore(true);
-    }
+    setIsLoading(!isRefresh);
+    setLoadingMore(!isRefresh);
 
     try {
       const params: JobSearchParams = {
@@ -57,30 +49,33 @@ const HomeScreen: React.FC = () => {
         Search: search,
       };
 
-      const data = await getJob(params);
+      const data = await getCompany();
+      console.log('data', data);
+
       console.log('Fetched data:', data);
 
-      if (data.result && Array.isArray(data.result)) {
-        if (data.result.length < pageSize) {
+      if (data.data && Array.isArray(data.data)) {
+        if (data.data.length < pageSize) {
           setNoMoreData(true);
         }
 
-        setListJob(prevState => {
+        setListCompany(prevState => {
           if (isRefresh || currentPage === 1) {
-            return data.result;
+            return data.data;
           } else {
-            return [...prevState, ...data.result];
+            return [...prevState, ...data.data];
           }
         });
       }
     } catch (error) {
-      console.error('Error fetching jobs:', error);
+      console.error('Error fetching companies:', error);
     } finally {
       setIsLoading(false);
       setLoadingMore(false);
     }
   };
 
+  // Initial fetch and refetch when screen is focused
   useEffect(() => {
     fetchData(1, true);
   }, []);
@@ -98,6 +93,7 @@ const HomeScreen: React.FC = () => {
     fetchData(1, true).finally(() => setRefreshing(false));
   };
 
+  // Load more data
   const loadMoreData = () => {
     if (!loadingMore && !noMoreData && !isLoading) {
       const nextPage = page + 1;
@@ -106,15 +102,19 @@ const HomeScreen: React.FC = () => {
     }
   };
 
-  const renderJob = ({ item }: { item: jobList }) => {
-    const key = item.id ? item.id.toString() : `${Math.random()}`;
+  // Render each company
+  // Đảm bảo rằng bạn sử dụng đúng tham số trong renderItem
+  const renderCompany = ({ item }: { item: any }) => {
     return (
       <>
-        <CardJob job={item} key={key} />
+        <View>
+          <CardCompany company={item} key={item.id} />
+        </View>
       </>
     );
   };
 
+  // Footer component
   const renderFooter = () => {
     if (loadingMore) {
       return (
@@ -123,7 +123,7 @@ const HomeScreen: React.FC = () => {
         </View>
       );
     }
-    if (noMoreData && listJob.length > 0) {
+    if (noMoreData && listCompany.length > 0) {
       return (
         <View style={styles.footerLoader}>
           <Text style={styles.noMoreText}>{t('message.noMoreJob')}</Text>
@@ -135,64 +135,30 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={['#095286', '#f5f5f5']}
-        style={[styles.header, { paddingTop: insets.top }]}
-      >
-        <TouchableOpacity onPress={() => {}} style={styles.search}>
-          <Image
-            source={icons.search}
-            style={[AppStyles.icon, { marginRight: spacing.small }]}
-          />
-          <Text style={AppStyles.text}>{t('message.find')}</Text>
-        </TouchableOpacity>
-      </LinearGradient>
-      <View style={styles.category}>
-        <TouchableOpacity style={{ alignItems: 'center' }}>
-          <View style={styles.iconWrap}>
-            <Image
-              source={icons.apple}
-              style={[AppStyles.icon, { resizeMode: 'cover' }]}
-            />
-          </View>
-          <Text style={[AppStyles.text, { marginTop: spacing.small }]}>
-            Việc làm
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ alignItems: 'center', marginLeft: spacing.medium }}
-          onPress={() => navigate(Screen_Name.Company_Screen)}
-        >
-          <View style={styles.iconWrap}>
-            <Image
-              source={icons.apple}
-              style={[AppStyles.icon, { resizeMode: 'cover' }]}
-            />
-          </View>
-          <Text style={[AppStyles.text, { marginTop: spacing.small }]}>
-            Công ty
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <NavBar
+        title={`Thương hiệu lớn tiêu biểu`}
+        onPress={() => navigation.goBack()}
+        icon1={icons.search}
+      />
       <View style={[styles.body]}>
         <FlatList
           ref={flatListRef}
-          data={listJob}
+          data={listCompany}
           ListEmptyComponent={
             !isLoading ? (
               <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
-                No data
+                {t('message.noData')}
               </Text>
             ) : null
           }
-          renderItem={renderJob}
+          renderItem={renderCompany}
           keyExtractor={(item, index) =>
             item.id?.toString() || index.toString()
           }
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          onEndReached={loadMoreData}
+          //   onEndReached={loadMoreData}
           onEndReachedThreshold={0.1}
           ListFooterComponent={renderFooter}
           showsVerticalScrollIndicator={false}
@@ -202,4 +168,4 @@ const HomeScreen: React.FC = () => {
   );
 };
 
-export default HomeScreen;
+export default CompanyScreen;

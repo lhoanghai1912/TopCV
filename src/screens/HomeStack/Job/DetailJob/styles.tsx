@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { ms, spacing } from '../../../utils/spacing';
-import { colors } from '../../../utils/color';
-import { Fonts } from '../../../utils/fontSize';
+import { ms, spacing } from '../../../../utils/spacing';
+import { colors } from '../../../../utils/color';
+import { Fonts } from '../../../../utils/fontSize';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -19,12 +19,10 @@ const styles = StyleSheet.create({
   },
   companyLogo: {
     resizeMode: 'cover',
-    width: ms(70),
-    height: ms(70),
+
     position: 'absolute',
     top: ms(-35),
     alignSelf: 'center',
-    borderRadius: 15,
   },
   headerContent: {
     flexDirection: 'row',
@@ -92,7 +90,6 @@ const styles = StyleSheet.create({
   },
   iconWrap: {
     borderRadius: 10,
-    backgroundColor: 'red',
     borderWidth: 1,
     padding: ms(5),
     borderColor: colors.Gray,

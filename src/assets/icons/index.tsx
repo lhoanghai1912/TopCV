@@ -38,7 +38,11 @@ import salary from './salary.png';
 import exep from './exep.png';
 import location from './location.png';
 import internet from './internet.png';
+import share from './share.png';
+
 export default {
+  share,
+  add,
   internet,
   exep,
   location,

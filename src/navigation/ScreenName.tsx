@@ -9,7 +9,9 @@ export const Screen_Name = {
   Comment_Screen: 'Comment_Screen',
   Noti_Screen: 'Noti_Screen',
   User_Screen: 'User_Screen',
-  Details_Screen: 'Details_Screen',
+  DetailJob_Screen: 'DetailJob_Screen',
+  DetailCompany_Screen: 'DetailCompany_Screen',
+  Company_Screen: 'Company_Screen',
 
   //Other
   Splash_Screen: 'Splash_Screen',
