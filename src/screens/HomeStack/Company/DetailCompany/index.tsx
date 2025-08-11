@@ -52,6 +52,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
     setCompanyDetail(data.data);
     setLoading(false);
   };
+  console.log('fixedheader', fixedHeaderH, 'maintop', mainTop);
 
   const scrollToMain = () => {
     const y = Math.max(mainTop - fixedHeaderH, 0);

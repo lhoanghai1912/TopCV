@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Linking,
+  ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getJobDetails, getJobofCompany } from '../../../../services/job';
@@ -41,8 +42,15 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   const [onSelectedCategory, setOnSelectedCategory] = useState('info');
   const [showFixedHeader, setShowFixedHeader] = useState(false);
   const [filteredJobs, setFilteredJobs] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
   const companyId = jobDetails?.company?.id;
   const jobId = route.params?.job?.id;
+
+  const scrollRef = React.useRef<ScrollView>(null);
+  const [mainTop, setMainTop] = useState(0);
+  const [fixedHeaderH, setFixedHeaderH] = useState(0);
+  const [mainContent, setMainContent] = useState(0);
+
   const jobOverview = [
     {
       icon: icons.apple,
@@ -84,9 +92,11 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   }, [listJobsOfCompany, jobDetails]);
 
   const fetchJobDetails = async () => {
+    setLoading(true);
     const data = await getJobDetails(jobId);
     setJobDetails(data);
     console.log('data', data);
+    setLoading(false);
   };
 
   const fetchJobOfCompany = async () => {
@@ -101,6 +111,24 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
     );
   };
 
+  const scrollToMain = () => {
+    // Scroll đến vị trí fixedHeaderH (đầu header mới)
+    showFixedHeader;
+    scrollRef.current?.scrollTo({ y: fixedHeaderH, animated: true });
+  };
+  console.log(
+    'fixedHeaderH',
+    fixedHeaderH,
+    'MainTop',
+    mainTop,
+    'mainContent',
+    mainContent,
+  );
+
+  const setTab = (key: 'info' | 'company') => {
+    setOnSelectedCategory(key);
+    requestAnimationFrame(scrollToMain); // Prevent jitter when scrolling
+  };
   const renderJob = ({ item }: any) => {
     return (
       <>
@@ -126,7 +154,10 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   return (
     <View style={{ flex: 1 }}>
       {showFixedHeader && (
-        <View style={styles.fixedHeader}>
+        <View
+          style={styles.fixedHeader}
+          onLayout={e => setFixedHeaderH(e.nativeEvent.layout.height)}
+        >
           <NavBar
             title={jobDetails?.title || ''}
             onPress={() => navigation.goBack()}
@@ -141,7 +172,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
           />
           <View style={styles.category}>
             <TouchableOpacity
-              onPress={() => setOnSelectedCategory('info')}
+              onPress={() => setTab('info')}
               style={{
                 flex: 1,
                 borderColor:
@@ -154,7 +185,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => setOnSelectedCategory('company')}
+              onPress={() => setTab('company')}
               style={{
                 flex: 1,
                 borderColor:
@@ -172,15 +203,16 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
       )}
 
       <ScrollView
-        style={[styles.container]}
+        ref={scrollRef}
         scrollEventThrottle={16}
         onScroll={event => {
           const scrollY = event.nativeEvent.contentOffset.y;
-          setShowFixedHeader(scrollY > ms(260));
+          setShowFixedHeader(scrollY > ms(mainContent - fixedHeaderH + 20));
         }}
       >
         <View style={{ flex: 1 }}>
           <LinearGradient
+            onLayout={e => setMainContent(e.nativeEvent.layout.height)}
             colors={['#095286', '#f5f5f5']} // Gradient từ xanh -> trắng
           >
             <NavBar
@@ -261,7 +293,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
           <View style={styles.body}>
             <View style={styles.category}>
               <TouchableOpacity
-                onPress={() => setOnSelectedCategory('info')}
+                onPress={() => setTab('info')}
                 style={{
                   flex: 1,
                   borderColor:
@@ -274,7 +306,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setOnSelectedCategory('company')}
+                onPress={() => setTab('company')}
                 style={{
                   flex: 1,
                   borderColor:
@@ -545,8 +577,22 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
           <AppButton title="Apply Now" onPress={() => applyNow()} />
         </View>
       </View>
+      {loading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10,
+          }}
+        >
+          <ActivityIndicator size="large" color="#E53935" />
+        </View>
+      )}
     </View>
   );
 };
 
 export default DetailJobScreen;
+// ch
