@@ -54,12 +54,12 @@ const styles = StyleSheet.create({
   },
   fixedHeader: {
     position: 'absolute',
-    top: ms(20),
+    top: 0,
     left: 0,
     right: 0,
-    zIndex: 1,
-    padding: ms(10),
-    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Transparent background for fixed header
+    zIndex: 10,
+    elevation: 10,
+    backgroundColor: colors.white,
   },
   fixedHeaderText: {
     fontSize: 18,
@@ -85,6 +85,17 @@ const styles = StyleSheet.create({
   other: {
     backgroundColor: colors.background,
     paddingTop: spacing.medium,
+  },
+  categoryFixed: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+  },
+  tabItem: {
+    flex: 1,
+    paddingHorizontal: spacing.medium,
+    paddingVertical: ms(8),
+    borderBottomWidth: 2,
   },
 });
 

@@ -115,7 +115,7 @@ const LoginScreen = () => {
           title={t('title.login')}
           onPress={() => handleLogin()}
           textStyle={{ fontSize: Fonts.large }}
-          customStyle={[{ marginBottom: spacing.medium }]}
+          customStyle={{ marginBottom: spacing.medium }}
         />
         <View
           style={{

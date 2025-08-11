@@ -73,18 +73,24 @@ const CardCompany: React.FC<CardCompanyProps> = ({
             >
               Category
             </Text>
-            <Text
-              style={[
-                AppStyles.text,
-                {
-                  backgroundColor: colors.Gray,
-                  paddingHorizontal: spacing.small,
-                  marginBottom: spacing.small,
-                },
-              ]}
-            >
-              số lượng việc làm
-            </Text>
+            <View style={{ width: 'auto', alignSelf: 'flex-start' }}>
+              <Text
+                style={[
+                  AppStyles.text,
+                  {
+                    backgroundColor: colors.lightGray,
+                    paddingHorizontal: spacing.small,
+                    paddingVertical: ms(2),
+                    marginBottom: spacing.small,
+                    justifyContent: 'center',
+                    borderRadius: 5,
+                  },
+                ]}
+              >
+                {`${company.jobs?.length} việc làm`}
+              </Text>
+            </View>
+
             <AppButton
               title="Theo dõi"
               leftIcon={icons.add}
@@ -99,7 +105,7 @@ const CardCompany: React.FC<CardCompanyProps> = ({
               }}
               iconStyle={{
                 backgroundColor: colors.background,
-                tintColor: undefined,
+                tintColor: colors.primary,
               }}
               textStyle={{ color: colors.primary }}
             />

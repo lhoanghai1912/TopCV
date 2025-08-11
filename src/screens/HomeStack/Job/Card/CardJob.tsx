@@ -21,7 +21,7 @@ type CardJobProps = {
 const CardJob: React.FC<CardJobProps> = ({ job, onReload, style }) => {
   const { t } = useTranslation();
   const [liked, setLiked] = useState(false);
-  console.log('link', `${link.url}${job.companyLogoUrl}`);
+  // console.log('link', `${link.url}${job.companyLogoUrl}`);
 
   return (
     <View style={styles.container}>
@@ -55,7 +55,13 @@ const CardJob: React.FC<CardJobProps> = ({ job, onReload, style }) => {
             >{`${formatPriceToTy(job.salaryFrom)} - ${formatPriceToTy(
               job.salaryTo,
             )}`}</Text>
-            <Text style={styles.textInfo}>{job.location || 'abc'}</Text>
+            <Text
+              numberOfLines={1}
+              // ellipsizeMode="tail"
+              style={[styles.textInfo, { flexShrink: 1, minWidth: 0 }]}
+            >
+              {job.location || 'abc'}{' '}
+            </Text>
           </View>
           <TouchableOpacity
             style={[styles.iconWrap]}
