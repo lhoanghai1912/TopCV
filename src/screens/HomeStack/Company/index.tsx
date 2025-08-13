@@ -54,16 +54,16 @@ const CompanyScreen: React.FC<Props> = ({ navigation }) => {
 
       console.log('Fetched data:', data);
 
-      if (data.data && Array.isArray(data.data)) {
-        if (data.data.length < pageSize) {
+      if (data.result && Array.isArray(data.result)) {
+        if (data.result.length < pageSize) {
           setNoMoreData(true);
         }
 
         setListCompany(prevState => {
           if (isRefresh || currentPage === 1) {
-            return data.data;
+            return data.result;
           } else {
-            return [...prevState, ...data.data];
+            return [...prevState, ...data.result];
           }
         });
       }
@@ -76,9 +76,6 @@ const CompanyScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   // Initial fetch and refetch when screen is focused
-  useEffect(() => {
-    fetchData(1, true);
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -105,6 +102,8 @@ const CompanyScreen: React.FC<Props> = ({ navigation }) => {
   // Render each company
   // Đảm bảo rằng bạn sử dụng đúng tham số trong renderItem
   const renderCompany = ({ item }: { item: any }) => {
+    console.log('eitjoawra', item);
+
     return (
       <>
         <View>
