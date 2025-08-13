@@ -12,7 +12,7 @@ export const Screen_Name = {
   DetailJob_Screen: 'DetailJob_Screen',
   DetailCompany_Screen: 'DetailCompany_Screen',
   Company_Screen: 'Company_Screen',
-
+  SavedJob_Screen: 'SavedJob_Screen',
   //Other
   Splash_Screen: 'Splash_Screen',
   Loading_Screen: 'Splash_Screen',

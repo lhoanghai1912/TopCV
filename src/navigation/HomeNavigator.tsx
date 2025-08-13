@@ -7,7 +7,8 @@ import RegisterScreen from '../screens/AuthStack/Register';
 import SetPasswordScreen from '../screens/AuthStack/SetPassword';
 import CompanyScreen from '../screens/HomeStack/Company';
 import DetailsCompanyScreen from '../screens/HomeStack/Company/DetailCompany';
-import DetailJobScreen from '../screens/HomeStack/Job/DetailJob';
+import DetailJobScreen from '../screens/HomeStack/Job/Detail_Job';
+import SavedJobScreen from '../screens/HomeStack/Job/Saved_Job';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +43,10 @@ const HomeNavigator = () => {
       <Stack.Screen
         name={Screen_Name.DetailCompany_Screen}
         component={DetailsCompanyScreen}
+      />
+      <Stack.Screen
+        name={Screen_Name.SavedJob_Screen}
+        component={SavedJobScreen}
       />
     </Stack.Navigator>
   );

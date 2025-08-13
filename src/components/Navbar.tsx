@@ -42,15 +42,19 @@ const NavBar = ({
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.navBar, ...customStyle, { paddingTop: insets.top }]}>
-      {/* Back button */}
-      <TouchableOpacity onPress={onPress} style={styles.iconButton}>
-        <Image source={icons.back} style={[AppStyles.icon, iconStyle]} />
-      </TouchableOpacity>
+      {/* Left icon */}
+      <View style={styles.leftIconWrap}>
+        <TouchableOpacity onPress={onPress} style={styles.iconButton}>
+          <Image source={icons.back} style={[AppStyles.icon, iconStyle]} />
+        </TouchableOpacity>
+      </View>
 
       {/* Title */}
-      <Text style={[styles.navTitle, textStyle]} numberOfLines={2}>
-        {title}
-      </Text>
+      <View style={styles.titleWrap}>
+        <Text style={[styles.navTitle, textStyle]} numberOfLines={2}>
+          {title}
+        </Text>
+      </View>
 
       {/* Right icons */}
       <View style={styles.rightIcons}>
@@ -73,11 +77,20 @@ const styles = StyleSheet.create({
   navBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingBottom: spacing.small,
+    position: 'relative',
+  },
+  leftIconWrap: {
+    width: 40,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  titleWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   navTitle: {
-    flex: 1,
     fontSize: Fonts.xxlarge,
     color: colors.black,
     fontWeight: '500',
@@ -85,6 +98,9 @@ const styles = StyleSheet.create({
   },
   rightIcons: {
     flexDirection: 'row',
+    minWidth: 40,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   iconButton: {
     paddingHorizontal: 4,

@@ -64,3 +64,8 @@ export const create_password = async (
   });
   return res.data;
 };
+
+export const getUserProfile = async () => {
+  const res = await apiClient.get('/UserProfile/profile', {});
+  return res.data;
+};

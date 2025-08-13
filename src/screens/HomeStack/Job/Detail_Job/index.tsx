@@ -132,10 +132,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   const renderJob = ({ item }: any) => {
     return (
       <>
-        <CardJob
-          job={item}
-          style={{ marginHorizontal: 0, backgroundColor: colors.white }}
-        />
+        <CardJob job={item} />
         <View style={{ marginBottom: spacing.medium }} />
       </>
     );

@@ -81,10 +81,6 @@ const HomeScreen: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchData(1, true);
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
       fetchData(1, true);
@@ -105,14 +101,15 @@ const HomeScreen: React.FC = () => {
       fetchData(nextPage, false);
     }
   };
+  const updateJobSaved = (jobId: string, isSaved: boolean) => {
+    setListJob(prev =>
+      prev.map(job => (job.id === jobId ? { ...job, isSaved } : job)),
+    );
+  };
 
   const renderJob = ({ item }: { item: jobList }) => {
     const key = item.id ? item.id.toString() : `${Math.random()}`;
-    return (
-      <>
-        <CardJob job={item} key={key} />
-      </>
-    );
+    return <CardJob job={item} updateJobSaved={updateJobSaved} />;
   };
 
   const renderFooter = () => {

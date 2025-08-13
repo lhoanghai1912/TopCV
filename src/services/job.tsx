@@ -38,3 +38,20 @@ export const getJobofCompany = async (id: string) => {
     throw error;
   }
 };
+
+export const patchSavedJob = async (jobId: string) => {
+  try {
+    const response = await apiClient.patch(`Job/${jobId}/toggle-save`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getSavedJobs = async () => {
+  try {
+    const response = await apiClient.get(`Job/saved`);
+    return response.data;
+  } catch (error) {}
+};
