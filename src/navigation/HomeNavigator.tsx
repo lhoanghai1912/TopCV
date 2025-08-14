@@ -9,6 +9,7 @@ import CompanyScreen from '../screens/HomeStack/Company';
 import DetailsCompanyScreen from '../screens/HomeStack/Company/DetailCompany';
 import DetailJobScreen from '../screens/HomeStack/Job/Detail_Job';
 import SavedJobScreen from '../screens/HomeStack/Job/Saved_Job';
+import EditCVScreen from '../screens/HomeStack/CreateCV/editCV';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +49,7 @@ const HomeNavigator = () => {
         name={Screen_Name.SavedJob_Screen}
         component={SavedJobScreen}
       />
+      <Stack.Screen name={Screen_Name.EditCV_Screen} component={EditCVScreen} />
     </Stack.Navigator>
   );
 };

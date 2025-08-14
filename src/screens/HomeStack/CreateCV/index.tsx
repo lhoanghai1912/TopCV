@@ -1,4 +1,5 @@
-import React, { use } from 'react';
+import React, { use, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -6,18 +7,38 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  Modal,
+  Button,
+  TextInput,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppStyles from '../../../components/AppStyle';
 import icons from '../../../assets/icons';
 import { ms, spacing } from '../../../utils/spacing';
-import { TextInput } from 'react-native-gesture-handler';
 import { colors } from '../../../utils/color';
 import images from '../../../assets/images';
 import { Fonts } from '../../../utils/fontSize';
+import AppButton from '../../../components/AppButton';
+import { navigate } from '../../../navigation/RootNavigator';
+import { Screen_Name } from '../../../navigation/ScreenName';
 const CreateCVScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [activityName, setActivityName] = useState('');
+  const [activityDesc, setActivityDesc] = useState('');
   const [title, setTitle] = React.useState('');
+
+  // Hàm điều hướng đến EditCVScreen
+  const goToEditCV = (sectionKey, sectionTitle, fields) => {
+    navigate(Screen_Name.EditCV_Screen, {
+      title: sectionTitle,
+      fields,
+      onSave: data => {
+        // TODO: xử lý lưu dữ liệu cho từng section
+      },
+    });
+  };
   return (
     <View style={[styles.container]}>
       {/* Header */}
@@ -60,59 +81,293 @@ const CreateCVScreen: React.FC = () => {
             </View>
           </View>
           <View style={styles.bodyContent}>
-            <TouchableOpacity style={styles.bodyContentItem}>
+            <TouchableOpacity
+              style={styles.bodyContentItem}
+              onPress={() =>
+                goToEditCV('careerGoal', 'Mục tiêu nghề nghiệp', [
+                  {
+                    key: 'careerGoal',
+                    label: 'Mục tiêu nghề nghiệp',
+                    placeholder: 'Nhập mục tiêu nghề nghiệp',
+                  },
+                ])
+              }
+            >
               <View style={styles.title_underLine}>
                 <Text style={styles.title}>MỤC TIÊU NGHỀ NGHIỆP</Text>
               </View>
               <Text>Nhập mục tiêu nghề nghiệp</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.bodyContentItem}>
+            <TouchableOpacity
+              style={styles.bodyContentItem}
+              onPress={() =>
+                goToEditCV('education', 'Học vấn', [
+                  {
+                    key: 'startDate',
+                    label: 'Bắt đầu',
+                    placeholder: 'Chọn ngày bắt đầu',
+                  },
+                  {
+                    key: 'endDate',
+                    label: 'Kết thúc',
+                    placeholder: 'Chọn ngày kết thúc',
+                  },
+                  {
+                    key: 'school',
+                    label: 'Tên trường',
+                    placeholder: 'Nhập tên trường',
+                  },
+                  {
+                    key: 'major',
+                    label: 'Ngành học/môn học',
+                    placeholder: 'Nhập ngành/môn học',
+                  },
+                  {
+                    key: 'desc',
+                    label: 'Mô tả',
+                    placeholder:
+                      'Mô tả quá trình học tập hoặc thành tích của bạn',
+                  },
+                ])
+              }
+            >
               <View style={styles.title_underLine}>
                 <Text style={styles.title}>HỌC VẤN</Text>
               </View>
-              <Text>Nhập thông tin học vấn</Text>
+              <View style={{ flex: 1, flexDirection: 'row' }}>
+                <View style={{ width: '35%' }}>
+                  <Text style={{ flex: 1 }}>Bắt đầu - Kết thúc</Text>
+                </View>
+                <View style={{ flexShrink: 1, width: '70%' }}>
+                  <Text>Tên trường:</Text>
+                  <Text>Ngành học/ môn học</Text>
+                  <Text>Mô tả quá trình học tập hoặc thành tích của bạn</Text>
+                </View>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.bodyContentItem}>
+            <TouchableOpacity
+              style={styles.bodyContentItem}
+              onPress={() =>
+                goToEditCV('experience', 'Kinh nghiệm làm việc', [
+                  {
+                    key: 'startDate',
+                    label: 'Bắt đầu',
+                    placeholder: 'Chọn ngày bắt đầu',
+                  },
+                  {
+                    key: 'endDate',
+                    label: 'Kết thúc',
+                    placeholder: 'Chọn ngày kết thúc',
+                  },
+                  {
+                    key: 'company',
+                    label: 'Tên công ty',
+                    placeholder: 'Nhập tên công ty',
+                  },
+                  {
+                    key: 'position',
+                    label: 'Vị trí công việc',
+                    placeholder: 'Nhập vị trí công việc',
+                  },
+                  {
+                    key: 'desc',
+                    label: 'Mô tả',
+                    placeholder:
+                      'Mô tả kinh nghiệm làm việc hoặc thành tích của bạn',
+                  },
+                ])
+              }
+            >
               <View style={styles.title_underLine}>
                 <Text style={styles.title}>KINH NGHIỆM LÀM VIỆC</Text>
               </View>
-              <Text>Nhập thông tin kinh nghiệm làm việc</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ width: '35%' }}>
+                  <Text style={{ flex: 1 }}>Bắt đầu - Kết thúc</Text>
+                </View>
+                <View style={{ flexShrink: 1, width: '70%' }}>
+                  <Text>Tên công ty:</Text>
+                  <Text>Vị trí công việc</Text>
+                  <Text>
+                    Mô tả kinh nghiệm làm việc hoặc thành tích của bạn
+                  </Text>
+                </View>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.bodyContentItem}>
+            <TouchableOpacity
+              style={styles.bodyContentItem}
+              onPress={() =>
+                goToEditCV('activity', 'Hoạt động', [
+                  {
+                    key: 'startDate',
+                    label: 'Bắt đầu',
+                    placeholder: 'Chọn ngày bắt đầu',
+                  },
+                  {
+                    key: 'endDate',
+                    label: 'Kết thúc',
+                    placeholder: 'Chọn ngày kết thúc',
+                  },
+                  {
+                    key: 'organization',
+                    label: 'Tên tổ chức',
+                    placeholder: 'Nhập tên tổ chức',
+                  },
+                  {
+                    key: 'position',
+                    label: 'Vị trí',
+                    placeholder: 'Nhập vị trí',
+                  },
+                  {
+                    key: 'desc',
+                    label: 'Mô tả',
+                    placeholder: 'Mô tả hoạt động',
+                  },
+                ])
+              }
+            >
               <View style={styles.title_underLine}>
                 <Text style={styles.title}>HOẠT ĐỘNG</Text>
               </View>
-              <Text>Nhập thông tin hoạt động</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ width: '35%' }}>
+                  <Text style={{ flex: 1 }}>Bắt đầu - Kết thúc</Text>
+                </View>
+                <View style={{ flexShrink: 1, width: '70%' }}>
+                  <Text>Tên tổ chức:</Text>
+                  <Text>Vị trí</Text>
+                  <Text>Mô tả hoạt động</Text>
+                </View>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.bodyContentItem}>
+            <TouchableOpacity
+              style={styles.bodyContentItem}
+              onPress={() =>
+                goToEditCV('certificate', 'Chứng chỉ', [
+                  {
+                    key: 'time',
+                    label: 'Thời gian',
+                    placeholder: 'Chọn thời gian',
+                  },
+                  {
+                    key: 'name',
+                    label: 'Tên chứng chỉ',
+                    placeholder: 'Nhập tên chứng chỉ',
+                  },
+                ])
+              }
+            >
               <View style={styles.title_underLine}>
                 <Text style={styles.title}>CHỨNG CHỈ</Text>
               </View>
-              <Text>Nhập thông tin chứng chỉ</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ width: '35%' }}>
+                  <Text style={{ flex: 1 }}>Thời gian</Text>
+                </View>
+                <View style={{ flexShrink: 1, width: '70%' }}>
+                  <Text>Tên chứng chỉ</Text>
+                </View>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.bodyContentItem}>
+            <TouchableOpacity
+              style={styles.bodyContentItem}
+              onPress={() =>
+                goToEditCV('award', 'Danh hiệu & Giải thưởng', [
+                  {
+                    key: 'time',
+                    label: 'Thời gian',
+                    placeholder: 'Chọn thời gian',
+                  },
+                  {
+                    key: 'name',
+                    label: 'Tên giải thưởng',
+                    placeholder: 'Nhập tên giải thưởng',
+                  },
+                ])
+              }
+            >
               <View style={styles.title_underLine}>
                 <Text style={styles.title}>DANH HIỆU VÀ GIẢI THƯỞNG</Text>
               </View>
-              <Text>Nhập thông tin danh hiệu và giải thưởng</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ width: '35%' }}>
+                  <Text style={{ flex: 1 }}>Thời gian</Text>
+                </View>
+                <View style={{ flexShrink: 1, width: '70%' }}>
+                  <Text>Tên giải thưởng</Text>
+                </View>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.bodyContentItem}>
+            <TouchableOpacity
+              style={styles.bodyContentItem}
+              onPress={() =>
+                goToEditCV('skill', 'Kỹ năng', [
+                  {
+                    key: 'name',
+                    label: 'Tên kỹ năng',
+                    placeholder: 'Nhập tên kỹ năng',
+                  },
+                  {
+                    key: 'desc',
+                    label: 'Mô tả kỹ năng',
+                    placeholder: 'Mô tả kỹ năng',
+                  },
+                ])
+              }
+            >
               <View style={styles.title_underLine}>
                 <Text style={styles.title}>KỸ NĂNG</Text>
               </View>
-              <Text>Nhập thông tin kỹ năng</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ width: '35%' }}>
+                  <Text style={{ flex: 1 }}>Kỹ năng</Text>
+                </View>
+                <View style={{ flexShrink: 1, width: '70%' }}>
+                  <Text>Mô tả kỹ năng</Text>
+                </View>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.bodyContentItem}>
+            <TouchableOpacity
+              style={styles.bodyContentItem}
+              onPress={() =>
+                goToEditCV('reference', 'Người giới thiệu', [
+                  {
+                    key: 'info',
+                    label: 'Thông tin người giới thiệu',
+                    placeholder: 'Nhập thông tin người giới thiệu',
+                  },
+                ])
+              }
+            >
               <View style={styles.title_underLine}>
                 <Text style={styles.title}>NGƯỜI GIỚI THIỆU</Text>
               </View>
-              <Text>Nhập thông tin người giới thiệu</Text>
+              <View style={{}}>
+                <View style={{ flexShrink: 1 }}>
+                  <Text>Thông tin người giới thiệu</Text>
+                </View>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.bodyContentItem}>
+            <TouchableOpacity
+              style={styles.bodyContentItem}
+              onPress={() =>
+                goToEditCV('hobby', 'Sở thích', [
+                  {
+                    key: 'hobby',
+                    label: 'Sở thích',
+                    placeholder: 'Điền các sở thích của bạn',
+                  },
+                ])
+              }
+            >
               <View style={styles.title_underLine}>
                 <Text style={styles.title}>SỞ THÍCH</Text>
               </View>
-              <Text>Nhập thông tin sở thích</Text>
+              <View style={{}}>
+                <View style={{ flexShrink: 1 }}>
+                  <Text>Điền các sở thích của bạn</Text>
+                </View>
+              </View>
             </TouchableOpacity>
           </View>
         </View>

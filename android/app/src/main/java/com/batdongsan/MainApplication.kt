@@ -1,4 +1,4 @@
-package com.batdongsan
+package com.TopCV
 
 import android.app.Application
 import com.facebook.react.PackageList
