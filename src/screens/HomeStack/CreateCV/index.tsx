@@ -1,5 +1,5 @@
-import React, { use, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { use, useCallback, useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -21,40 +21,51 @@ import { Fonts } from '../../../utils/fontSize';
 import AppButton from '../../../components/AppButton';
 import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
-import {
-  CareerGoal,
-  Education,
-  Experience,
-  Activity,
-  Certificate,
-  Award,
-  Skill,
-  Reference,
-  Hobby,
-} from './typeCV';
-const CreateCVScreen: React.FC = () => {
+import { useCVData } from './useCVData';
+const CreateCVScreen: React.FC = navigation => {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [activityName, setActivityName] = useState('');
-  const [activityDesc, setActivityDesc] = useState('');
+
   const [title, setTitle] = React.useState('');
 
-  // State cho từng section
-  const [careerGoal, setCareerGoal] = useState<CareerGoal>('');
-  const [education, setEducation] = useState<Education>({});
-  const [experience, setExperience] = useState<Experience>({});
-  const [activity, setActivity] = useState<Activity>({});
-  const [certificate, setCertificate] = useState<Certificate>({});
-  const [award, setAward] = useState<Award>({});
-  const [skill, setSkill] = useState<Skill>({});
-  const [reference, setReference] = useState<Reference>({});
-  const [hobby, setHobby] = useState<Hobby>('');
+  // Sử dụng hook quản lý data CV
+  const {
+    userProfile,
+    careerGoal,
+    education,
+    experience,
+    activity,
+    certificate,
+    award,
+    skill,
+    reference,
+    hobby,
+    updateSection,
+    getCVData,
+  } = useCVData();
+
+  // Log ra CV DATA mới nhất mỗi khi state thay đổi
+  useEffect(() => {
+    console.log('CV DATA mới nhất:', getCVData());
+  }, [
+    userProfile,
+    careerGoal,
+    education,
+    experience,
+    activity,
+    certificate,
+    award,
+    skill,
+    reference,
+    hobby,
+  ]);
 
   // Hàm điều hướng đến EditCVScreen
   const goToEditCV = (sectionKey, sectionTitle, fields) => {
-  let currentData: any = null;
+    let currentData: any = null;
     switch (sectionKey) {
+      case 'userProfile':
+        currentData = userProfile;
+        break;
       case 'careerGoal':
         currentData = careerGoal;
         break;
@@ -82,6 +93,12 @@ const CreateCVScreen: React.FC = () => {
       case 'hobby':
         currentData = hobby;
         break;
+      case 'card':
+        currentData = {
+          name: userProfile.name,
+          position: userProfile.position,
+        };
+        break;
       default:
         break;
     }
@@ -90,59 +107,27 @@ const CreateCVScreen: React.FC = () => {
       fields,
       initialData: currentData,
       onSave: data => {
-        console.log(data);
-        switch (sectionKey) {
-          case 'careerGoal':
-            setCareerGoal(data.careerGoal || '');
-            break;
-          case 'education':
-            setEducation(data);
-            break;
-          case 'experience':
-            setExperience(data);
-            break;
-          case 'activity':
-            setActivity(data);
-            break;
-          case 'certificate':
-            setCertificate(data);
-            break;
-          case 'award':
-            setAward(data);
-            break;
-          case 'skill':
-            setSkill(data);
-            break;
-          case 'reference':
-            setReference(data);
-            break;
-          case 'hobby':
-            setHobby(data.hobby || '');
-            break;
-          default:
-            break;
-        }
+        updateSection(sectionKey, data);
       },
     });
   };
+  console.log('user', userProfile);
+
   return (
     <View style={[styles.container]}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top }]}>
-        <TouchableOpacity>
-          <Image source={icons.back} style={AppStyles.icon} />
-        </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
           <TextInput
-            style={[AppStyles.title, { marginRight: spacing.small }]}
+            style={[AppStyles.title, { paddingLeft: ms(40) }]}
             placeholder="Enter CV Title"
             onChangeText={text => setTitle(text)}
             value={title}
           />
-          <TouchableOpacity>
-            <Image source={icons.edit} style={AppStyles.icon} />
-          </TouchableOpacity>
         </View>
+        <TouchableOpacity>
+          <Image source={icons.edit} style={AppStyles.icon} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content}>
@@ -152,17 +137,65 @@ const CreateCVScreen: React.FC = () => {
               <Image source={images.avt} style={styles.avtImage} />
             </TouchableOpacity>
             <View style={styles.info}>
-              <TouchableOpacity style={styles.card}>
-                <Text style={AppStyles.title}>John Doe</Text>
-                <Text style={AppStyles.text}>Vị trí ứng tuyển</Text>
+              <TouchableOpacity
+                style={styles.card}
+                onPress={() =>
+                  goToEditCV('card', 'Card', [
+                    { key: 'name', label: 'Tên', placeholder: 'Nhập tên' },
+                    {
+                      key: 'position',
+                      label: 'Vị trí ứng tuyển',
+                      placeholder: 'Nhập vị trí ứng tuyển',
+                    },
+                  ])
+                }
+              >
+                <Text style={AppStyles.title}>
+                  {userProfile.name || 'John Doe'}
+                </Text>
+                <Text style={AppStyles.text}>
+                  {userProfile.position || 'Vị trí ứng tuyển'}
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.userInfo} onPress={() => {}}>
-                <Text>Ngày sinh: </Text>
-                <Text>Giới tính: </Text>
-                <Text>Số điện thoại: </Text>
-                <Text>Email: </Text>
-                <Text>Website: </Text>
-                <Text>Địa chỉ: </Text>
+              <TouchableOpacity
+                style={styles.userInfo}
+                onPress={() =>
+                  goToEditCV('userProfile', 'Thông tin cá nhân', [
+                    {
+                      key: 'birthday',
+                      label: 'Ngày sinh',
+                      placeholder: 'Nhập ngày sinh',
+                    },
+                    {
+                      key: 'gender',
+                      label: 'Giới tính',
+                      placeholder: 'Nhập giới tính',
+                    },
+                    {
+                      key: 'phone',
+                      label: 'Số điện thoại',
+                      placeholder: 'Nhập số điện thoại',
+                    },
+                    { key: 'email', label: 'Email', placeholder: 'Nhập email' },
+                    {
+                      key: 'website',
+                      label: 'Website',
+                      placeholder: 'Nhập website',
+                    },
+                    {
+                      key: 'address',
+                      label: 'Địa chỉ',
+                      placeholder: 'Nhập địa chỉ',
+                    },
+                  ])
+                }
+              >
+                <Text>Ngày sinh: {userProfile.birthday || ''}</Text>
+                <Text>Giới tính: {userProfile.gender || ''}</Text>
+                <Text>Số điện thoại: {userProfile.phone || ''}</Text>
+                <Text>Email: {userProfile.email || ''}</Text>
+                <Text>Website: {userProfile.website || ''}</Text>
+                <Text>Địa chỉ: {userProfile.address || ''}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -182,7 +215,9 @@ const CreateCVScreen: React.FC = () => {
               <View style={styles.title_underLine}>
                 <Text style={styles.title}>MỤC TIÊU NGHỀ NGHIỆP</Text>
               </View>
-              <Text>{careerGoal || 'Nhập mục tiêu nghề nghiệp'}</Text>
+              <Text key="careerGoal">
+                {careerGoal || 'Nhập mục tiêu nghề nghiệp'}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.bodyContentItem}
@@ -629,12 +664,13 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+
     paddingHorizontal: spacing.medium,
     paddingVertical: spacing.small,
     backgroundColor: colors.white,
   },
   headerTitleContainer: {
-    flex: 1,
     flexDirection: 'row',
     alignSelf: 'center',
     alignItems: 'center',

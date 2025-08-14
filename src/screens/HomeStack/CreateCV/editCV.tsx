@@ -10,6 +10,8 @@ import {
   SafeAreaView,
 } from 'react-native';
 import MonthPicker from 'react-native-month-year-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
 
 import { spacing } from '../../../utils/spacing';
 import { colors } from '../../../utils/color';
@@ -33,9 +35,9 @@ const EditCVScreen = ({ route, navigation }) => {
     if (Array.isArray(initialData)) {
       initialForms = initialData.map(item => ({ ...item }));
     } else if (typeof initialData === 'object') {
-      initialForms = [ { ...initialData } ];
+      initialForms = [{ ...initialData }];
     } else if (typeof initialData === 'string') {
-      initialForms = [ { [fields[0]?.key || 'value']: initialData } ];
+      initialForms = [{ [fields[0]?.key || 'value']: initialData }];
     }
   }
   const [forms, setForms] = useState<Record<string, string>[]>(initialForms);
@@ -53,8 +55,13 @@ const EditCVScreen = ({ route, navigation }) => {
     });
   };
 
+  // Chỉ cho phép thêm bản ghi mới nếu không phải card hoặc userProfile
+  const isSingleRecordSection =
+    title === 'Card' || title === 'Thông tin cá nhân';
   const handleAdd = () => {
-    setForms(prev => [...prev, {}]);
+    if (!isSingleRecordSection) {
+      setForms(prev => [...prev, {}]);
+    }
   };
 
   const handleRemove = idx => {
@@ -85,8 +92,13 @@ const EditCVScreen = ({ route, navigation }) => {
       });
       return;
     }
-    // Lưu toàn bộ forms
-    onSave(forms);
+    // Nếu là mục tiêu nghề nghiệp thì chỉ lưu object đầu tiên
+    if (title === 'Mục tiêu nghề nghiệp') {
+      onSave(forms[0]);
+    } else {
+      onSave(forms);
+    }
+
     navigation.goBack();
   };
 
@@ -94,7 +106,8 @@ const EditCVScreen = ({ route, navigation }) => {
     return (
       key.toLowerCase().includes('start') ||
       key.toLowerCase().includes('end') ||
-      key.toLowerCase() === 'time'
+      key.toLowerCase() === 'time' ||
+      key.toLowerCase() === 'birthday'
     );
   };
 
@@ -116,6 +129,85 @@ const EditCVScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               {fields.map((field, fidx) => {
                 const isDate = isDateField(field.key);
+                // Custom input cho birthday và gender
+                if (field.key === 'birthday') {
+                  return (
+                    <View key={fidx} style={styles.inputWrap}>
+                      <Text style={styles.inputLabel}>{field.label}</Text>
+                      <TouchableOpacity
+                        onPress={() =>
+                          setDatePickerFor({ idx, key: field.key })
+                        }
+                      >
+                        <TextInput
+                          style={styles.input}
+                          value={form[field.key] || ''}
+                          editable={false}
+                          placeholder="Chọn ngày sinh"
+                        />
+                      </TouchableOpacity>
+                      {datePickerFor &&
+                        datePickerFor.idx === idx &&
+                        datePickerFor.key === field.key && (
+                          <View
+                            style={{ backgroundColor: '#fff', borderRadius: 8 }}
+                          >
+                            <DateTimePicker
+                              value={
+                                form[field.key]
+                                  ? new Date(form[field.key])
+                                  : new Date()
+                              }
+                              mode="date"
+                              display="default"
+                              onChange={(event, selectedDate) => {
+                                setDatePickerFor(null);
+                                if (selectedDate) {
+                                  const d = new Date(selectedDate);
+                                  const dateStr = `${d
+                                    .getDate()
+                                    .toString()
+                                    .padStart(2, '0')}/${(d.getMonth() + 1)
+                                    .toString()
+                                    .padStart(2, '0')}/${d.getFullYear()}`;
+                                  setValue(idx, field.key, dateStr);
+                                }
+                              }}
+                              maximumDate={new Date()}
+                              minimumDate={new Date(1950, 0, 1)}
+                            />
+                          </View>
+                        )}
+                    </View>
+                  );
+                }
+                if (field.key === 'gender') {
+                  return (
+                    <View key={fidx} style={styles.inputWrap}>
+                      <Text style={styles.inputLabel}>{field.label}</Text>
+                      <View
+                        style={{
+                          borderWidth: 1,
+                          borderColor: '#ccc',
+                          borderRadius: 6,
+                        }}
+                      >
+                        <Picker
+                          selectedValue={form[field.key] || ''}
+                          onValueChange={value =>
+                            setValue(idx, field.key, value)
+                          }
+                        >
+                          <Picker.Item label="Chọn giới tính" value="" />
+                          <Picker.Item label="Nam" value="Nam" />
+                          <Picker.Item label="Nữ" value="Nữ" />
+                          <Picker.Item label="Khác" value="Khác" />
+                        </Picker>
+                      </View>
+                    </View>
+                  );
+                }
+                // ...các input khác giữ nguyên...
                 return (
                   <View key={fidx} style={styles.inputWrap}>
                     <Text style={styles.inputLabel}>{field.label}</Text>
@@ -171,13 +263,20 @@ const EditCVScreen = ({ route, navigation }) => {
           ))}
         </View>
         <View style={styles.footer}>
+          {title !== 'Mục tiêu nghề nghiệp' && !isSingleRecordSection && (
+            <AppButton
+              customStyle={{ width: '48%' }}
+              title={`Thêm ${title.toLowerCase()}`}
+              onPress={handleAdd}
+            />
+          )}
           <AppButton
-            customStyle={{ width: '48%' }}
-            title={`Thêm ${title.toLowerCase()}`}
-            onPress={handleAdd}
-          />
-          <AppButton
-            customStyle={{ width: '48%' }}
+            customStyle={{
+              width:
+                title !== 'Mục tiêu nghề nghiệp' && !isSingleRecordSection
+                  ? '48%'
+                  : '100%',
+            }}
             title="Lưu"
             onPress={handleSave}
           />

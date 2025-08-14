@@ -1,3 +1,14 @@
+export type UserProfile = {
+  name?: string;
+  position?: string;
+  birthday?: string;
+  gender?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  address?: string;
+};
+
 export type CareerGoal = string;
 
 export type Education = {
