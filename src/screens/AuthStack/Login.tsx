@@ -3,9 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  ImageBackground,
   Image,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
@@ -22,7 +20,6 @@ import AppButton from '../../components/AppButton';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { login } from '../../services/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import { setToken } from '../../store/reducers/userSlice';

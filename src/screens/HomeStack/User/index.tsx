@@ -6,11 +6,14 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Linking,
 } from 'react-native';
 import styles from './styles';
 import AppButton from '../../../components/AppButton';
 import { navigate } from '../../../navigation/RootNavigator';
 import { useDispatch, useSelector } from 'react-redux';
+import { setLoading } from '../../../store/reducers/loadingSlice';
+import LoadingScreen from '../../../components/Loading';
 import { logout } from '../../../store/reducers/userSlice';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +28,7 @@ import App from '../../../App';
 import { link } from '../../../utils/constants';
 import { getSavedJobs } from '../../../services/job';
 import Toast from 'react-native-toast-message';
+import { colors } from '../../../utils/color';
 
 const UserScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -59,11 +63,14 @@ const UserScreen: React.FC = () => {
     } catch (error) {}
   };
   const handleLogout = () => {
+    dispatch(setLoading(true));
     dispatch(logout());
+    dispatch(setLoading(false));
     setListSavedJobs([]);
   };
   return (
     <View style={styles.container}>
+      <LoadingScreen />
       {showFixedHeader && (
         <View
           style={[
@@ -485,108 +492,116 @@ const UserScreen: React.FC = () => {
                 </Text>
               </View>
             </View>
-
-            {/* Quản lý tìm việc */}
-            <View style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}>
+            {token && (
+              <View
+                style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}
+              >
+                <Text
+                  style={[
+                    AppStyles.label,
+                    { fontWeight: '500', marginBottom: 8 },
+                  ]}
+                >
+                  Cài đặt tài khoản
+                </Text>
+                <View>
+                  <TouchableOpacity style={styles.link} onPress={() => {}}>
+                    <View>
+                      <Text style={AppStyles.text}>Cập nhật thông tin</Text>
+                    </View>
+                    <View>
+                      <Image source={icons.arrow} style={AppStyles.icon} />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <TouchableOpacity style={styles.link} onPress={() => {}}>
+                    <View>
+                      <Text style={AppStyles.text}>Đổi mật khẩu</Text>
+                    </View>
+                    <View>
+                      <Image source={icons.arrow} style={AppStyles.icon} />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <TouchableOpacity style={styles.link} onPress={() => {}}>
+                    <View>
+                      <Text style={AppStyles.text}>Xóa tài khoản</Text>
+                    </View>
+                    <View>
+                      <Image source={icons.arrow} style={AppStyles.icon} />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+            {/*  Cài đặt tài khoản */}
+            <View
+              style={{
+                marginTop: spacing.medium,
+                paddingHorizontal: 20,
+                marginBottom: spacing.medium,
+              }}
+            >
               <Text
                 style={[
                   AppStyles.label,
-                  { fontWeight: '500', marginBottom: 8 },
+                  { fontWeight: '500', marginBottom: spacing.small },
                 ]}
               >
-                Quản lý tìm việc
+                Chính sách và hỗ trợ
               </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <View
-                  style={{
-                    width: '48%',
-                    backgroundColor: '#F5F5F5',
-                    borderRadius: 8,
-                    padding: 12,
-                    marginBottom: spacing.small,
-                  }}
+              <View>
+                <TouchableOpacity
+                  style={styles.link}
+                  onPress={() => Linking.openURL(link.company)}
                 >
-                  <Text style={{ color: '#1A7FEE' }}>
-                    Việc làm đã ứng tuyển
-                  </Text>
-                  <Text style={{ fontWeight: 'bold', fontSize: Fonts.normal }}>
-                    2
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    width: '48%',
-                    backgroundColor: '#F5F5F5',
-                    borderRadius: 8,
-                    padding: 12,
-                    marginBottom: spacing.small,
-                  }}
+                  <View>
+                    <Text style={AppStyles.text}>Về chúng tôi</Text>
+                  </View>
+                  <View>
+                    <Image source={icons.arrow} style={AppStyles.icon} />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={styles.link}
+                  onPress={() => Linking.openURL(link.terms)}
                 >
-                  <TouchableOpacity
-                    onPress={() => {
-                      token
-                        ? navigate(Screen_Name.SavedJob_Screen)
-                        : Toast.show({
-                            type: 'error',
-                            text1: 'Please login to view saved jobs',
-                          });
-                    }}
-                  >
-                    <Text style={{ color: '#1A7FEE' }}>Việc làm đã lưu</Text>
-                    <Text
-                      style={{ fontWeight: 'bold', fontSize: Fonts.normal }}
-                    >
-                      {listSavedJobs?.data?.length || 0}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-                <View
-                  style={{
-                    width: '48%',
-                    backgroundColor: '#F5F5F5',
-                    borderRadius: 8,
-                    padding: 12,
-                    marginBottom: spacing.small,
-                  }}
+                  <View>
+                    <Text style={AppStyles.text}>Điều khoản sử dụng</Text>
+                  </View>
+                  <View>
+                    <Image source={icons.arrow} style={AppStyles.icon} />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={styles.link}
+                  onPress={() => Linking.openURL(link.privacy)}
                 >
-                  <Text style={{ color: '#1A7FEE' }}>Việc làm phù hợp</Text>
-                  <Text style={{ fontWeight: 'bold', fontSize: Fonts.normal }}>
-                    120
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    width: '48%',
-                    backgroundColor: '#F5F5F5',
-                    borderRadius: 8,
-                    padding: 12,
-                    marginBottom: spacing.small,
-                  }}
-                >
-                  <Text style={{ color: '#1A7FEE' }}>
-                    Công ty đang theo dõi
-                  </Text>
-                  <Text style={{ fontWeight: 'bold', fontSize: Fonts.normal }}>
-                    0
-                  </Text>
-                </View>
+                  <View>
+                    <Text style={AppStyles.text}>Chính sách bảo mật</Text>
+                  </View>
+                  <View>
+                    <Image source={icons.arrow} style={AppStyles.icon} />
+                  </View>
+                </TouchableOpacity>
               </View>
             </View>
-            {token && (
-              <View>
-                <Text style={{ color: '#888', fontSize: Fonts.normal }}>
-                  Thông tin bổ sung
-                </Text>
-                <AppButton title="LOGOUT " onPress={() => handleLogout()} />
-              </View>
-            )}
           </View>
+          {token && (
+            <View>
+              <AppButton
+                title="Đăng xuất"
+                onPress={() => dispatch(logout())}
+                customStyle={{ marginBottom: spacing.medium }}
+              />
+            </View>
+          )}
         </View>
       </ScrollView>
     </View>

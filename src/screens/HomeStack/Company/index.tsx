@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, RefreshControl, FlatList } from 'react-native';
+import { View, Text, RefreshControl, FlatList } from 'react-native';
 import styles from './styles';
 import NavBar from '../../../components/Navbar';
 import icons from '../../../assets/icons';
@@ -10,110 +10,76 @@ import { JobSearchParams } from '../../../type/type';
 import { getCompany } from '../../../services/company';
 import { useFocusEffect } from '@react-navigation/native';
 import CardCompany from './CardCompany';
-import { spacing } from '../../../utils/spacing';
 import AppStyles from '../../../components/AppStyle';
+import LoadingScreen from '../../../components/Loading';
 
-interface Props {
-  navigation: any;
-}
+const PAGE_SIZE = 10;
 
-const CompanyScreen: React.FC<Props> = ({ navigation }) => {
-  const insets = useSafeAreaInsets();
-  const [listCompany, setListCompany] = useState<any[]>([]);
+const CompanyScreen = ({ navigation }: { navigation: any }) => {
+  const [companies, setCompanies] = useState<any[]>([]);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [oderBy, setOderBy] = useState<string | undefined>();
-  const [filter, setFilter] = useState<string | undefined>();
-  const [search, setSearch] = useState<string | undefined>();
-  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [noMoreData, setNoMoreData] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const flatListRef = useRef<FlatList>(null);
-  const token = useSelector((state: any) => state.user.token);
   const { t } = useTranslation();
 
-  // Fetch data function
-  const fetchData = async (currentPage: number, isRefresh: boolean = false) => {
-    if (loadingMore && !isRefresh) return; // Avoid multiple fetch calls
-
-    setIsLoading(!isRefresh);
-    setLoadingMore(!isRefresh);
-
+  const fetchCompanies = async (pageNum = 1, isRefresh = false) => {
+    if (loading || loadingMore) return;
+    if (isRefresh) {
+      setRefreshing(true);
+      setNoMoreData(false);
+    } else if (pageNum === 1) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
     try {
       const params: JobSearchParams = {
-        Page: currentPage.toString(),
-        PageSize: pageSize.toString(),
-        OderBy: oderBy,
-        Filter: filter,
-        Search: search,
+        Page: pageNum.toString(),
+        PageSize: PAGE_SIZE.toString(),
       };
-
-      const data = await getCompany();
-      console.log('data', data);
-
-      console.log('Fetched data:', data);
-
-      if (data.result && Array.isArray(data.result)) {
-        if (data.result.length < pageSize) {
-          setNoMoreData(true);
-        }
-
-        setListCompany(prevState => {
-          if (isRefresh || currentPage === 1) {
-            return data.result;
-          } else {
-            return [...prevState, ...data.result];
-          }
-        });
+      const data = await getCompany(params);
+      const result = data?.result || [];
+      if (isRefresh || pageNum === 1) {
+        setCompanies(result);
+      } else {
+        setCompanies(prev => [...prev, ...result]);
       }
-    } catch (error) {
-      console.error('Error fetching companies:', error);
+      if (result.length < PAGE_SIZE) {
+        setNoMoreData(true);
+      }
+      setPage(pageNum);
+    } catch (err) {
+      // handle error
     } finally {
-      setIsLoading(false);
+      setLoading(false);
       setLoadingMore(false);
+      setRefreshing(false);
     }
   };
-
-  // Initial fetch and refetch when screen is focused
 
   useFocusEffect(
     useCallback(() => {
-      fetchData(1, true);
+      fetchCompanies(1, true);
     }, []),
   );
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    setPage(1);
-    setNoMoreData(false);
-    fetchData(1, true).finally(() => setRefreshing(false));
+  const handleRefresh = () => {
+    fetchCompanies(1, true);
   };
 
-  // Load more data
-  const loadMoreData = () => {
-    if (!loadingMore && !noMoreData && !isLoading) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchData(nextPage, false);
+  const handleLoadMore = () => {
+    if (loading || loadingMore || refreshing || noMoreData) return;
+    if (companies.length >= PAGE_SIZE) {
+      fetchCompanies(page + 1, false);
     }
   };
 
-  // Render each company
-  // Đảm bảo rằng bạn sử dụng đúng tham số trong renderItem
-  const renderCompany = ({ item }: { item: any }) => {
-    console.log('eitjoawra', item);
+  const renderCompany = ({ item }: { item: any }) => (
+    <CardCompany company={item} key={item.id || item._id || Math.random()} />
+  );
 
-    return (
-      <>
-        <View>
-          <CardCompany company={item} key={item.id} />
-        </View>
-      </>
-    );
-  };
-
-  // Footer component
   const renderFooter = () => {
     if (loadingMore) {
       return (
@@ -122,7 +88,7 @@ const CompanyScreen: React.FC<Props> = ({ navigation }) => {
         </View>
       );
     }
-    if (noMoreData && listCompany.length > 0) {
+    if (noMoreData && companies.length > 0) {
       return (
         <View style={styles.footerLoader}>
           <Text style={styles.noMoreText}>{t('message.noMoreJob')}</Text>
@@ -135,29 +101,34 @@ const CompanyScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <NavBar
-        title={`Thương hiệu lớn tiêu biểu`}
+        title={'Thương hiệu lớn tiêu biểu'}
         onPress={() => navigation.goBack()}
         icon1={icons.search}
       />
       <View style={[styles.body]}>
         <FlatList
-          ref={flatListRef}
-          data={listCompany}
+          data={companies}
+          renderItem={renderCompany}
+          keyExtractor={(item, index) =>
+            item.id
+              ? item.id.toString()
+              : item._id
+              ? item._id.toString()
+              : `company_${index}`
+          }
           ListEmptyComponent={
-            !isLoading ? (
+            loading ? (
+              <LoadingScreen />
+            ) : (
               <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
                 {t('message.noData')}
               </Text>
-            ) : null
-          }
-          renderItem={renderCompany}
-          keyExtractor={(item, index) =>
-            item.id?.toString() || index.toString()
+            )
           }
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
-          //   onEndReached={loadMoreData}
+          onEndReached={handleLoadMore}
           onEndReachedThreshold={0.1}
           ListFooterComponent={renderFooter}
           showsVerticalScrollIndicator={false}

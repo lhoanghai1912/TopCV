@@ -45,12 +45,16 @@ const CardCompany: React.FC<CardCompanyProps> = ({
       >
         <View style={{ flexDirection: 'row' }}>
           <Image
-            source={{ uri: `${link.url}${company.logoUrl}` }}
+            source={{
+              uri:
+                company.logoUrl && /^https?:\/\//.test(company.logoUrl)
+                  ? company.logoUrl
+                  : `${link.url}${company.logoUrl}`,
+            }}
             style={{
               width: 80,
               height: 80,
               borderRadius: 15,
-              backgroundColor: colors.red,
             }}
           />
           <View style={styles.rightContent}>

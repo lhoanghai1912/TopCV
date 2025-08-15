@@ -1,8 +1,8 @@
 import apiClient from './apiClient';
 
-export const getCompany = async () => {
+export const getCompany = async (params?: any) => {
   try {
-    const response = await apiClient.get(`/Company/GetAll`);
+    const response = await apiClient.get(`/Company/GetAll`, { params });
     return response.data;
   } catch (error) {
     console.log(error);

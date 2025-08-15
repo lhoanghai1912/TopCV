@@ -146,7 +146,13 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
               height: ms(150),
             }}
             resizeMode="cover"
-            source={{ uri: `${link.url}${companyDetail.coverUrl}` }}
+            source={{
+              uri:
+                companyDetail.coverUrl &&
+                /^https?:\/\//.test(companyDetail.coverUrl)
+                  ? companyDetail.coverUrl
+                  : `${link.url}${companyDetail.coverUrl}`,
+            }}
           >
             <NavBar
               onPress={() => navigation.goBack()}
@@ -163,7 +169,13 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
             }}
           >
             <Image
-              source={{ uri: `${link.url}${companyDetail.logoUrl}` }}
+              source={{
+                uri:
+                  companyDetail.logoUrl &&
+                  /^https?:\/\//.test(companyDetail.logoUrl)
+                    ? companyDetail.logoUrl
+                    : `${link.url}${companyDetail.logoUrl}`,
+              }}
               style={styles.companyLogo}
             />
             <Text style={[AppStyles.title, { textAlign: 'center' }]}>

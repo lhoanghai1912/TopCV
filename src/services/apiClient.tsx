@@ -31,7 +31,7 @@ apiClient.interceptors.response.use(
       Toast.show({
         type: 'error',
         text1: `Lỗi ${error.response.status}`,
-        text2: `${error.response.data}`,
+        text2: `${error.response.data.value}`,
       });
     } else if (error.request) {
       console.log('📡 No response received:', error.request);

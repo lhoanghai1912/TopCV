@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { colors } from '../../../utils/color';
+import { spacing } from '../../../utils/spacing';
 
 const styles = StyleSheet.create({
   container: {
@@ -14,6 +15,15 @@ const styles = StyleSheet.create({
     zIndex: 10,
     elevation: 10,
     backgroundColor: colors.white,
+  },
+  link: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.small,
+    paddingBottom: spacing.small,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.Gray,
+    justifyContent: 'space-between',
   },
 });
 

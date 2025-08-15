@@ -50,7 +50,11 @@ const CardJob: React.FC<CardJobProps> = ({ job, updateJobSaved }) => {
       >
         <View style={styles.mainContent}>
           <Image
-            source={{ uri: `${link.url}${job.companyLogoUrl || job.logoUrl}` }}
+            source={{
+              uri: /^https?:\/\//.test(job.companyLogoUrl || job.logoUrl)
+                ? job.companyLogoUrl || job.logoUrl
+                : `${link.url}${job.companyLogoUrl || job.logoUrl}`,
+            }}
             style={styles.companyImage}
           />
           <View style={styles.jobInfo}>

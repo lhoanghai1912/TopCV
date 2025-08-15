@@ -23,4 +23,6 @@ export const TITLES = {
 export const link = {
   url: 'https://bds.foxai.com.vn:3456',
   company: 'https://fox.ai.vn/',
+  privacy: 'https://fox.ai.vn/chinh-sach-bao-mat/',
+  terms: 'https://fox.ai.vn/dieu-khoan-thoa-thuan/',
 };

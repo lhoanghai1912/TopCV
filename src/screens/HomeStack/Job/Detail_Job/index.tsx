@@ -227,9 +227,13 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
               >
                 <Image
                   source={{
-                    uri: jobDetails?.company?.coverUrl
-                      ? `${link.url}${jobDetails.company.coverUrl}`
-                      : 'default_image_url', // Fallback image if URL is missing
+                    uri:
+                      jobDetails?.company?.logoUrl &&
+                      /^https?:\/\//.test(jobDetails.company.logoUrl)
+                        ? jobDetails.company.logoUrl
+                        : jobDetails?.company?.logoUrl
+                        ? `${link.url}${jobDetails.company.logoUrl}`
+                        : 'default_image_url',
                   }}
                   style={{ width: ms(70), height: ms(70), borderRadius: 15 }}
                 />

@@ -1,6 +1,6 @@
 import add from './add.png';
+import arrow from './arrow.png';
 import back from './back.png';
-
 import clear from './clear.png';
 import edit from './edit.png';
 import document from './document.png';
@@ -41,6 +41,7 @@ import internet from './internet.png';
 import share from './share.png';
 
 export default {
+  arrow,
   share,
   add,
   internet,
