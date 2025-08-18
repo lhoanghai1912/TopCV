@@ -47,3 +47,13 @@ export const uploadUserAvatar = async (fileUri: string): Promise<any> => {
     throw error;
   }
 };
+
+export const deleteUserAccount = async () => {
+  try {
+    const response = await apiClient.delete(`/UserProfile/profile`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};

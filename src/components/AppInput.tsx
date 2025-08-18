@@ -84,7 +84,7 @@ const AppInput: React.FC<AppInputProps> = ({
                       AppStyles.icon,
                       { display: value ? 'flex' : 'none' },
                     ]}
-                  ></Image>
+                  />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleClear}>
                   <Image
@@ -105,7 +105,7 @@ const AppInput: React.FC<AppInputProps> = ({
                       AppStyles.icon,
                       { display: value ? 'flex' : 'none' },
                     ]}
-                  ></Image>
+                  />
                 </TouchableOpacity>
               </View>
             )}

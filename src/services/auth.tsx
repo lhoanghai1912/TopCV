@@ -1,5 +1,6 @@
 // src/services/auth.service.ts
 
+import Toast from 'react-native-toast-message';
 import apiClient from './apiClient';
 
 export const login = async (contact: string, password: string) => {
@@ -70,12 +71,18 @@ export const updatePassword = async (
   newPassword: string,
 ) => {
   try {
-    const response = await apiClient.put(`/Account/change-password`, {
+    const response = await apiClient.post(`/Account/change-password`, {
       currentPassword,
       newPassword,
     });
+    Toast.show({
+      type: 'success',
+      text1: response.data.message.value,
+    });
     return response.data;
   } catch (error) {
+    console.log();
+
     console.log(error);
     throw error;
   }

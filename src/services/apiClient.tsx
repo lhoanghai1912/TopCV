@@ -21,17 +21,23 @@ apiClient.interceptors.request.use(config => {
 });
 
 apiClient.interceptors.response.use(
-  response => response,
+  response => {
+    return response;
+  },
   error => {
-    // console.error('API Error:', error);
-    console.log(error.message);
+    console.log('API Error:', error.message);
     if (error.response) {
-      console.log('📥 Response status:', error.response.status);
-      console.log('📦 Response data:', error.response.data); // 🟢 Đây là chỗ chứa lỗi như "Sai mật khẩu"
+      const status = error.response.status;
+      const data = error.response.data;
+      const value = data?.value;
+      const message =
+        value || data?.message || data?.error || JSON.stringify(data);
+      console.log('📥 Response status:', status);
+      console.log('📦 Response data:', data);
       Toast.show({
         type: 'error',
-        text1: `Lỗi ${error.response.status}`,
-        text2: `${error.response.data.value}`,
+        text1: `Lỗi ${status}`,
+        text2: message,
       });
     } else if (error.request) {
       console.log('📡 No response received:', error.request);

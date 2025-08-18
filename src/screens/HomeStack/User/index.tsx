@@ -9,6 +9,7 @@ import {
   Linking,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import styles from './styles';
 import AppButton from '../../../components/AppButton';
@@ -31,6 +32,8 @@ import { getSavedJobs } from '../../../services/job';
 import Toast from 'react-native-toast-message';
 import { colors } from '../../../utils/color';
 import images from '../../../assets/images';
+import apiClient from '../../../services/apiClient';
+import { deleteUserAccount } from '../../../services/user';
 
 const UserScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -450,7 +453,37 @@ const UserScreen: React.FC = () => {
                     </View>
                   </TouchableOpacity>
                   <View>
-                    <TouchableOpacity style={styles.link} onPress={() => {}}>
+                    <TouchableOpacity
+                      style={styles.link}
+                      onPress={() => {
+                        Alert.alert(
+                          'Xác nhận',
+                          'Bạn có muốn xóa tài khoản không?',
+                          [
+                            {
+                              text: 'Không',
+                              style: 'cancel',
+                            },
+                            {
+                              text: 'Có',
+                              onPress: async () => {
+                                setLoading(true);
+                                try {
+                                  const res = await deleteUserAccount();
+                                  Toast.show({
+                                    type: 'success',
+                                    text1: res.message,
+                                  });
+                                } finally {
+                                  setLoading(false);
+                                }
+                              },
+                            },
+                          ],
+                          { cancelable: true },
+                        );
+                      }}
+                    >
                       <View>
                         <Text style={AppStyles.text}>Xóa tài khoản</Text>
                       </View>

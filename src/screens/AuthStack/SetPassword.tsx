@@ -77,7 +77,6 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation, route }) => {
 
         Toast.show({
           type: 'success',
-          text1: 'Thành công',
           text2: 'Tài khoản đã được tạo và đăng nhập thành công',
         });
         navigate(Screen_Name.Home_Screen);

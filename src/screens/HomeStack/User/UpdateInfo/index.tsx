@@ -17,21 +17,20 @@ import {
   updateUserInfo,
   uploadUserAvatar,
 } from '../../../../services/user';
-import { useFocusEffect } from '@react-navigation/native';
 import { colors } from '../../../../utils/color';
 import { link } from '../../../../utils/constants';
 import { useSelector } from 'react-redux';
-import LoadingScreen from '../../../../components/Loading';
 import Toast from 'react-native-toast-message';
+import images from '../../../../assets/images';
 
 const UpdateInfoScreen = ({ navigation }) => {
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState(`${images.avt}`);
   const [email, setEmail] = useState('');
 
   const [loading, setLoading] = useState(false);
-  const token = useSelector((state: any) => state.user.token);
+  console.log('avatarUrl', avatarUrl);
 
   useEffect(() => {
     fetchUserInfo();
@@ -105,7 +104,7 @@ const UpdateInfoScreen = ({ navigation }) => {
     <View style={styles.container}>
       <NavBar title="Cập nhật thông tin" onPress={() => navigation.goBack()} />
       <TouchableOpacity style={styles.avatarContainer} onPress={pickImage}>
-        {avatarUrl ? (
+        {avatarUrl !== `${link.url}` ? (
           <Image source={{ uri: avatarUrl }} style={styles.avatar} />
         ) : (
           <View style={styles.avatarPlaceholder}>

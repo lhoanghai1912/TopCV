@@ -98,7 +98,7 @@ const RegisterScreen = () => {
           title={t('title.register')}
           onPress={() => handleregister()}
           textStyle={{ fontSize: Fonts.large }}
-          customStyle={[{ marginBottom: spacing.medium }]}
+          customStyle={{ marginBottom: spacing.medium }}
         />
         <View
           style={{
