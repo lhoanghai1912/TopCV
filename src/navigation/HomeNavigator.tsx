@@ -10,6 +10,9 @@ import DetailsCompanyScreen from '../screens/HomeStack/Company/DetailCompany';
 import DetailJobScreen from '../screens/HomeStack/Job/Detail_Job';
 import SavedJobScreen from '../screens/HomeStack/Job/Saved_Job';
 import EditCVScreen from '../screens/HomeStack/CreateCV/editCV';
+import UpdateInfoScreen from '../screens/HomeStack/User/UpdateInfo';
+import { updatePassword } from '../services/auth';
+import UpdatePasswordScreen from '../screens/HomeStack/User/ChangePassword';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,6 +53,14 @@ const HomeNavigator = () => {
         component={SavedJobScreen}
       />
       <Stack.Screen name={Screen_Name.EditCV_Screen} component={EditCVScreen} />
+      <Stack.Screen
+        name={Screen_Name.UpdateInfo_Screen}
+        component={UpdateInfoScreen}
+      />
+      <Stack.Screen
+        name={Screen_Name.UpdatePassword_Screen}
+        component={UpdatePasswordScreen}
+      />
     </Stack.Navigator>
   );
 };

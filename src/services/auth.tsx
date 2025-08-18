@@ -65,6 +65,22 @@ export const create_password = async (
   return res.data;
 };
 
+export const updatePassword = async (
+  currentPassword: string,
+  newPassword: string,
+) => {
+  try {
+    const response = await apiClient.put(`/Account/change-password`, {
+      currentPassword,
+      newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 export const getUserProfile = async () => {
   const res = await apiClient.get('/UserProfile/profile', {});
   return res.data;

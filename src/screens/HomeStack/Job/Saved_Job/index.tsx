@@ -35,7 +35,7 @@ const SavedJobScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const fetchListSavedJobs = async () => {
     const res = await getSavedJobs();
-    setListSavedJobs(res.data);
+    setListSavedJobs(res.data?.result);
     console.log('list saved job', res);
   };
   const renderSavedJob = ({ item }: { item: any }) => {

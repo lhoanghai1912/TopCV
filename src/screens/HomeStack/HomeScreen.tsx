@@ -69,7 +69,10 @@ const HomeScreen: React.FC = () => {
           if (isRefresh || currentPage === 1) {
             return data.result;
           } else {
-            return [...prevState, ...data.result];
+            // Loại bỏ job trùng id
+            const existingIds = new Set(prevState.map(job => job.id));
+            const newJobs = data.result.filter(job => !existingIds.has(job.id));
+            return [...prevState, ...newJobs];
           }
         });
       }
@@ -145,7 +148,15 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       </LinearGradient>
       <View style={styles.category}>
-        <TouchableOpacity style={{ alignItems: 'center' }}>
+        <TouchableOpacity
+          onPress={() => {
+            onRefresh();
+            if (flatListRef.current) {
+              flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+            }
+          }}
+          style={{ alignItems: 'center' }}
+        >
           <View style={styles.iconWrap}>
             <Image
               source={icons.apple}
@@ -183,9 +194,7 @@ const HomeScreen: React.FC = () => {
             ) : null
           }
           renderItem={renderJob}
-          keyExtractor={(item, index) =>
-            item.id?.toString() || index.toString()
-          }
+          keyExtractor={(item, index) => item.id || index.toString()}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }

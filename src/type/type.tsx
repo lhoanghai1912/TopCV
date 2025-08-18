@@ -21,3 +21,9 @@ export type jobList = {
   salaryTo;
   title;
 };
+
+export type userInfo = {
+  fullName: string;
+  phoneNumber: string;
+  avatarUrl: string;
+};

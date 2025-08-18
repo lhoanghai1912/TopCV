@@ -7,12 +7,13 @@ import {
   Image,
   TouchableOpacity,
   Linking,
+  StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import styles from './styles';
 import AppButton from '../../../components/AppButton';
 import { navigate } from '../../../navigation/RootNavigator';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLoading } from '../../../store/reducers/loadingSlice';
 import LoadingScreen from '../../../components/Loading';
 import { logout } from '../../../store/reducers/userSlice';
 import { Screen_Name } from '../../../navigation/ScreenName';
@@ -29,6 +30,7 @@ import { link } from '../../../utils/constants';
 import { getSavedJobs } from '../../../services/job';
 import Toast from 'react-native-toast-message';
 import { colors } from '../../../utils/color';
+import images from '../../../assets/images';
 
 const UserScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -38,6 +40,8 @@ const UserScreen: React.FC = () => {
   const [showFixedHeader, setShowFixedHeader] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [listSavedJobs, setListSavedJobs] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
   useFocusEffect(
     React.useCallback(() => {
       if (!token) return;
@@ -63,14 +67,16 @@ const UserScreen: React.FC = () => {
     } catch (error) {}
   };
   const handleLogout = () => {
-    dispatch(setLoading(true));
-    dispatch(logout());
-    dispatch(setLoading(false));
-    setListSavedJobs([]);
+    setLoading(true);
+    setTimeout(() => {
+      dispatch(logout());
+      setListSavedJobs([]);
+      setLoading(false);
+      navigate(Screen_Name.Login_Screen);
+    });
   };
   return (
     <View style={styles.container}>
-      <LoadingScreen />
       {showFixedHeader && (
         <View
           style={[
@@ -87,7 +93,7 @@ const UserScreen: React.FC = () => {
             source={
               userProfile?.avatarUrl
                 ? { uri: `${link.url}${userProfile?.avatarUrl}` }
-                : icons.add
+                : images.avt
             }
             style={{
               width: ms(50),
@@ -101,11 +107,12 @@ const UserScreen: React.FC = () => {
         </View>
       )}
       <ScrollView
-        style={[styles.container, { backgroundColor: 'red' }]}
+        style={[styles.container]}
         scrollEventThrottle={16}
         onScroll={event => {
           if (token) {
             const scrollY = event.nativeEvent.contentOffset.y;
+
             setShowFixedHeader(scrollY > ms(20));
           } else {
             setShowFixedHeader(false);
@@ -148,9 +155,11 @@ const UserScreen: React.FC = () => {
                         }}
                       >
                         <Image
-                          source={{
-                            uri: `${link.url}${userProfile?.avatarUrl}`,
-                          }}
+                          source={
+                            userProfile?.avatarUrl
+                              ? { uri: `${link.url}${userProfile?.avatarUrl}` }
+                              : images.avt
+                          }
                           style={{
                             width: ms(80),
                             height: ms(80),
@@ -221,301 +230,218 @@ const UserScreen: React.FC = () => {
                 </View>
               </View>
             </View>
-            {/* Info List */}
-            <View style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}>
-              {/* Kinh nghiệm làm việc */}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: spacing.small,
-                }}
-              >
-                <View>
+            {token && (
+              <>
+                {/* Info List */}
+                <View
+                  style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}
+                >
+                  {/* Kinh nghiệm làm việc */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: spacing.small,
+                    }}
+                  >
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.label,
+                          { fontWeight: '500', marginBottom: 8 },
+                        ]}
+                      >
+                        Kinh nghiệm làm việc
+                      </Text>
+                      <Text
+                        style={{ color: '#FF9800', fontSize: Fonts.normal }}
+                      >
+                        Chưa cập nhật
+                      </Text>
+                    </View>
+                    <Text style={{ color: '#1A7FEE', fontWeight: '500' }}>
+                      Sửa
+                    </Text>
+                  </View>
+                  {/* Vị trí chuyên môn */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: spacing.small,
+                    }}
+                  >
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.label,
+                          { fontWeight: '500', marginBottom: 8 },
+                        ]}
+                      >
+                        Vị trí chuyên môn
+                      </Text>
+                      <Text
+                        style={{ color: '#FF9800', fontSize: Fonts.normal }}
+                      >
+                        Chưa cập nhật
+                      </Text>
+                    </View>
+                    <Text style={{ color: '#1A7FEE', fontWeight: '500' }}>
+                      Sửa
+                    </Text>
+                  </View>
+                  {/* Địa điểm làm việc mong muốn */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: spacing.small,
+                    }}
+                  >
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.label,
+                          { fontWeight: '500', marginBottom: 8 },
+                        ]}
+                      >
+                        Địa điểm làm việc mong muốn
+                      </Text>
+                      <Text
+                        style={{ color: '#FF9800', fontSize: Fonts.normal }}
+                      >
+                        Chưa cập nhật
+                      </Text>
+                    </View>
+                    <Text style={{ color: '#1A7FEE', fontWeight: '500' }}>
+                      Sửa
+                    </Text>
+                  </View>
+                </View>
+                {/* Quản lý hồ sơ */}
+                <View
+                  style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}
+                >
                   <Text
                     style={[
                       AppStyles.label,
                       { fontWeight: '500', marginBottom: 8 },
                     ]}
                   >
-                    Kinh nghiệm làm việc
+                    Quản lý hồ sơ
                   </Text>
-                  <Text style={{ color: '#FF9800', fontSize: Fonts.normal }}>
-                    Chưa cập nhật
-                  </Text>
-                </View>
-                <Text style={{ color: '#1A7FEE', fontWeight: '500' }}>Sửa</Text>
-              </View>
-              {/* Vị trí chuyên môn */}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: spacing.small,
-                }}
-              >
-                <View>
-                  <Text
-                    style={[
-                      AppStyles.label,
-                      { fontWeight: '500', marginBottom: 8 },
-                    ]}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginBottom: spacing.small,
+                    }}
                   >
-                    Vị trí chuyên môn
-                  </Text>
-                  <Text style={{ color: '#FF9800', fontSize: Fonts.normal }}>
-                    Chưa cập nhật
-                  </Text>
-                </View>
-                <Text style={{ color: '#1A7FEE', fontWeight: '500' }}>Sửa</Text>
-              </View>
-              {/* Địa điểm làm việc mong muốn */}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: spacing.small,
-                }}
-              >
-                <View>
-                  <Text
-                    style={[
-                      AppStyles.label,
-                      { fontWeight: '500', marginBottom: 8 },
-                    ]}
+                    <Text style={{ flex: 1 }}>Trạng thái tìm việc</Text>
+                    {/* Switch component */}
+                    <View style={{ marginLeft: 8 }}>
+                      {/* Replace with <Switch /> from react-native */}
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginBottom: spacing.small,
+                    }}
                   >
-                    Địa điểm làm việc mong muốn
+                    <Text style={{ flex: 1 }}>Cho phép NTD liên hệ</Text>
+                    {/* Switch component */}
+                    <View style={{ marginLeft: 8 }}>
+                      {/* Replace with <Switch /> from react-native */}
+                    </View>
+                  </View>
+                  <View style={{ marginLeft: 8, marginBottom: 8 }}>
+                    <Text style={{ color: '#888', fontSize: Fonts.normal }}>
+                      NTD có thể liên hệ tôi qua:
+                    </Text>
+                    <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
+                      Nhắn tin qua TopConnect
+                    </Text>
+                    <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
+                      Email và số điện thoại
+                    </Text>
+                  </View>
+                </View>
+              </>
+            )}
+
+            {/* Quản lý tìm việc */}
+            <View style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}>
+              <Text
+                style={[
+                  AppStyles.label,
+                  { fontWeight: '500', marginBottom: 8 },
+                ]}
+              >
+                Quản lý tìm việc
+              </Text>
+              <View
+                style={{
+                  width: '48%',
+                  backgroundColor: '#F5F5F5',
+                  borderRadius: 8,
+                  padding: 12,
+                  marginBottom: spacing.small,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    token
+                      ? navigate(Screen_Name.SavedJob_Screen)
+                      : Toast.show({
+                          type: 'error',
+                          text1: 'Please login to view saved jobs',
+                        });
+                  }}
+                >
+                  <Text style={{ color: '#1A7FEE' }}>Việc làm đã lưu</Text>
+                  <Text style={{ fontWeight: 'bold', fontSize: Fonts.normal }}>
+                    {listSavedJobs?.data?.total
+                      ? `${listSavedJobs.data.total}`
+                      : '0'}
                   </Text>
-                  <Text style={{ color: '#FF9800', fontSize: Fonts.normal }}>
-                    Chưa cập nhật
-                  </Text>
-                </View>
-                <Text style={{ color: '#1A7FEE', fontWeight: '500' }}>Sửa</Text>
-              </View>
-            </View>
-
-            {/* Quản lý hồ sơ */}
-            <View style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}>
-              <Text
-                style={[
-                  AppStyles.label,
-                  { fontWeight: '500', marginBottom: 8 },
-                ]}
-              >
-                Quản lý hồ sơ
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: spacing.small,
-                }}
-              >
-                <Text style={{ flex: 1 }}>Trạng thái tìm việc</Text>
-                {/* Switch component */}
-                <View style={{ marginLeft: 8 }}>
-                  {/* Replace with <Switch /> from react-native */}
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: spacing.small,
-                }}
-              >
-                <Text style={{ flex: 1 }}>Cho phép NTD liên hệ</Text>
-                {/* Switch component */}
-                <View style={{ marginLeft: 8 }}>
-                  {/* Replace with <Switch /> from react-native */}
-                </View>
-              </View>
-              <View style={{ marginLeft: 8, marginBottom: 8 }}>
-                <Text style={{ color: '#888', fontSize: Fonts.normal }}>
-                  NTD có thể liên hệ tôi qua:
-                </Text>
-                <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
-                  Nhắn tin qua TopConnect
-                </Text>
-                <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
-                  Email và số điện thoại
-                </Text>
-              </View>
-            </View>
-
-            {/* Quản lý hồ sơ */}
-            <View style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}>
-              <Text
-                style={[
-                  AppStyles.label,
-                  { fontWeight: '500', marginBottom: 8 },
-                ]}
-              >
-                Quản lý hồ sơ
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: spacing.small,
-                }}
-              >
-                <Text style={{ flex: 1 }}>Trạng thái tìm việc</Text>
-                {/* Switch component */}
-                <View style={{ marginLeft: 8 }}>
-                  {/* Replace with <Switch /> from react-native */}
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: spacing.small,
-                }}
-              >
-                <Text style={{ flex: 1 }}>Cho phép NTD liên hệ</Text>
-                {/* Switch component */}
-                <View style={{ marginLeft: 8 }}>
-                  {/* Replace with <Switch /> from react-native */}
-                </View>
-              </View>
-              <View style={{ marginLeft: 8, marginBottom: 8 }}>
-                <Text style={{ color: '#888', fontSize: Fonts.normal }}>
-                  NTD có thể liên hệ tôi qua:
-                </Text>
-                <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
-                  Nhắn tin qua TopConnect
-                </Text>
-                <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
-                  Email và số điện thoại
-                </Text>
-              </View>
-            </View>
-
-            {/* Quản lý hồ sơ */}
-            <View style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}>
-              <Text
-                style={[
-                  AppStyles.label,
-                  { fontWeight: '500', marginBottom: 8 },
-                ]}
-              >
-                Quản lý hồ sơ
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: spacing.small,
-                }}
-              >
-                <Text style={{ flex: 1 }}>Trạng thái tìm việc</Text>
-                {/* Switch component */}
-                <View style={{ marginLeft: 8 }}>
-                  {/* Replace with <Switch /> from react-native */}
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: spacing.small,
-                }}
-              >
-                <Text style={{ flex: 1 }}>Cho phép NTD liên hệ</Text>
-                {/* Switch component */}
-                <View style={{ marginLeft: 8 }}>
-                  {/* Replace with <Switch /> from react-native */}
-                </View>
-              </View>
-              <View style={{ marginLeft: 8, marginBottom: 8 }}>
-                <Text style={{ color: '#888', fontSize: Fonts.normal }}>
-                  NTD có thể liên hệ tôi qua:
-                </Text>
-                <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
-                  Nhắn tin qua TopConnect
-                </Text>
-                <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
-                  Email và số điện thoại
-                </Text>
-              </View>
-            </View>
-
-            {/* Quản lý hồ sơ */}
-            <View style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}>
-              <Text
-                style={[
-                  AppStyles.label,
-                  { fontWeight: '500', marginBottom: 8 },
-                ]}
-              >
-                Quản lý hồ sơ
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: spacing.small,
-                }}
-              >
-                <Text style={{ flex: 1 }}>Trạng thái tìm việc</Text>
-                {/* Switch component */}
-                <View style={{ marginLeft: 8 }}>
-                  {/* Replace with <Switch /> from react-native */}
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: spacing.small,
-                }}
-              >
-                <Text style={{ flex: 1 }}>Cho phép NTD liên hệ</Text>
-                {/* Switch component */}
-                <View style={{ marginLeft: 8 }}>
-                  {/* Replace with <Switch /> from react-native */}
-                </View>
-              </View>
-              <View style={{ marginLeft: 8, marginBottom: 8 }}>
-                <Text style={{ color: '#888', fontSize: Fonts.normal }}>
-                  NTD có thể liên hệ tôi qua:
-                </Text>
-                <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
-                  Nhắn tin qua TopConnect
-                </Text>
-                <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
-                  Email và số điện thoại
-                </Text>
+                </TouchableOpacity>
               </View>
             </View>
             {token && (
-              <View
-                style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}
-              >
-                <Text
-                  style={[
-                    AppStyles.label,
-                    { fontWeight: '500', marginBottom: 8 },
-                  ]}
+              <>
+                <View
+                  style={{ marginTop: spacing.medium, paddingHorizontal: 20 }}
                 >
-                  Cài đặt tài khoản
-                </Text>
-                <View>
-                  <TouchableOpacity style={styles.link} onPress={() => {}}>
-                    <View>
-                      <Text style={AppStyles.text}>Cập nhật thông tin</Text>
-                    </View>
-                    <View>
-                      <Image source={icons.arrow} style={AppStyles.icon} />
-                    </View>
-                  </TouchableOpacity>
-                </View>
-                <View>
-                  <TouchableOpacity style={styles.link} onPress={() => {}}>
+                  <Text
+                    style={[
+                      AppStyles.label,
+                      { fontWeight: '500', marginBottom: 8 },
+                    ]}
+                  >
+                    Cài đặt tài khoản
+                  </Text>
+                  <View>
+                    <TouchableOpacity
+                      style={styles.link}
+                      onPress={() => navigate(Screen_Name.UpdateInfo_Screen)}
+                    >
+                      <View>
+                        <Text style={AppStyles.text}>Cập nhật thông tin</Text>
+                      </View>
+                      <View>
+                        <Image source={icons.arrow} style={AppStyles.icon} />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.link}
+                    onPress={() => navigate(Screen_Name.UpdatePassword_Screen)}
+                  >
                     <View>
                       <Text style={AppStyles.text}>Đổi mật khẩu</Text>
                     </View>
@@ -523,18 +449,18 @@ const UserScreen: React.FC = () => {
                       <Image source={icons.arrow} style={AppStyles.icon} />
                     </View>
                   </TouchableOpacity>
+                  <View>
+                    <TouchableOpacity style={styles.link} onPress={() => {}}>
+                      <View>
+                        <Text style={AppStyles.text}>Xóa tài khoản</Text>
+                      </View>
+                      <View>
+                        <Image source={icons.arrow} style={AppStyles.icon} />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <View>
-                  <TouchableOpacity style={styles.link} onPress={() => {}}>
-                    <View>
-                      <Text style={AppStyles.text}>Xóa tài khoản</Text>
-                    </View>
-                    <View>
-                      <Image source={icons.arrow} style={AppStyles.icon} />
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              </View>
+              </>
             )}
             {/*  Cài đặt tài khoản */}
             <View
@@ -597,13 +523,26 @@ const UserScreen: React.FC = () => {
             <View>
               <AppButton
                 title="Đăng xuất"
-                onPress={() => dispatch(logout())}
+                onPress={() => handleLogout()}
                 customStyle={{ marginBottom: spacing.medium }}
               />
             </View>
           )}
         </View>
       </ScrollView>
+      {loading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10,
+          }}
+        >
+          <ActivityIndicator size="large" color="#E53935" />
+        </View>
+      )}
     </View>
   );
 };

@@ -115,12 +115,12 @@ const ModalEnterOtp: React.FC<EnterOtpProp> = ({
             <AppButton
               title="Hủy bỏ"
               onPress={onClose}
-              customStyle={[{ width: '30%' }]}
+              customStyle={{ width: '30%' }}
             />
             <AppButton
               title="Xác nhận"
               onPress={handleSubmit}
-              customStyle={[{ width: '30%' }]}
+              customStyle={{ width: '30%' }}
             />
           </View>
         </View>

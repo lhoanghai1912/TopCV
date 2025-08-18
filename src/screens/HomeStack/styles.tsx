@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.medium,
   },
   body: {
-    paddingBottom: ms(150),
+    paddingBottom: ms(250),
   },
   text: {
     fontSize: Fonts.normal,
