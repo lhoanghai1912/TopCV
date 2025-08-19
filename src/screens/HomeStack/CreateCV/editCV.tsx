@@ -252,6 +252,7 @@ const EditCVScreen = ({ route, navigation }) => {
                         style={styles.input}
                         value={form[field.key] || ''}
                         onChangeText={text => setValue(idx, field.key, text)}
+                        autoCapitalize="none"
                         placeholder={field.placeholder}
                         multiline={true}
                       />

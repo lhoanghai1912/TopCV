@@ -9,49 +9,63 @@ export type UserProfile = {
   address?: string;
 };
 
-export type CareerGoal = string;
-
 export type Education = {
+  institutionName?: string;
+  degree?: string;
+  fieldOfStudy?: string;
   startDate?: string;
   endDate?: string;
-  school?: string;
-  major?: string;
-  desc?: string;
+  description?: string;
 };
+
+export type EducationList = Education[];
 
 export type Experience = {
+  jobTitle?: string;
+  companyName?: string;
   startDate?: string;
   endDate?: string;
-  company?: string;
-  position?: string;
-  desc?: string;
+  description?: string;
 };
+
+export type ExperienceList = Experience[];
 
 export type Activity = {
   startDate?: string;
   endDate?: string;
   organization?: string;
   position?: string;
-  desc?: string;
+  description?: string;
 };
+
+export type ActivityList = Activity[];
 
 export type Certificate = {
-  time?: string;
   name?: string;
+  issueDate?: string;
+  expiryDate?: string;
 };
 
-export type Award = {
-  time?: string;
-  name?: string;
-};
+export type CertificateList = Certificate[];
 
 export type Skill = {
+  skillName?: string;
+  category?: string;
+  proficiencyLevel?: number;
+  proficiencyType?: string;
+};
+
+export type SkillList = Skill[];
+
+export type Sections = {
+  sectionType?: string;
+  title?: string;
+  content?: string;
+  isVisible?: boolean;
+};
+export type SectionsList = Sections[];
+
+export type Award = {
   name?: string;
-  desc?: string;
+  time?: string;
 };
-
-export type Reference = {
-  info?: string;
-};
-
-export type Hobby = string;
