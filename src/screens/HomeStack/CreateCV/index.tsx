@@ -170,7 +170,7 @@ const CreateCVScreen: React.FC = navigation => {
     isPublic: true,
     photoCard,
     sections: [], // TODO: lấy từ state sections nếu có
-    skills: Array.isArray(skill)
+    skill: Array.isArray(skill)
       ? skill.map(sk => ({
           skillName: sk.skillName || '',
           category: sk.category || '',
@@ -178,7 +178,7 @@ const CreateCVScreen: React.FC = navigation => {
           proficiencyType: sk.proficiencyType || '',
         }))
       : [],
-    experiences: Array.isArray(experience)
+    experience: Array.isArray(experience)
       ? experience.map(exp => ({
           jobTitle: exp.jobTitle || '',
           companyName: exp.companyName || '',
@@ -187,7 +187,7 @@ const CreateCVScreen: React.FC = navigation => {
           description: exp.description || '',
         }))
       : [],
-    educations: Array.isArray(education)
+    education: Array.isArray(education)
       ? education.map(ed => ({
           institutionName: ed.institutionName || '',
           degree: ed.degree || '',
@@ -197,7 +197,7 @@ const CreateCVScreen: React.FC = navigation => {
           description: ed.description || '',
         }))
       : [],
-    certifications: Array.isArray(certificate)
+    certification: Array.isArray(certificate)
       ? certificate.map(cert => ({
           name: cert.name || '',
           issueDate: formatDate(cert.issueDate || ''),
@@ -209,29 +209,21 @@ const CreateCVScreen: React.FC = navigation => {
   console.log('CV data chuẩn hóa:', cvDataToSend);
 
   const handleEditField = (sectionKey, sectionTitle, fields) => {
-    const sectionKeys = [
-      'educations',
-      'skills',
-      'experiences',
-      'certifications',
-      'card',
-      'userProfile',
-    ];
     // Map UI keys to state keys
     const keyMap = {
-      educations: 'educations',
-      skills: 'skills',
-      experiences: 'experiences',
-      certifications: 'certificates',
+      education: 'education',
+      skill: 'skill',
+      experience: 'experience',
+      certification: 'certification',
       card: 'card',
       userProfile: 'userProfile',
     };
     const stateKey = keyMap[sectionKey] || sectionKey;
     // If not a core array, treat as section
     const coreKeys = [
-      'educations',
-      'skills',
-      'experiences',
+      'education',
+      'skill',
+      'experience',
       'certificates',
       'card',
       'userProfile',
@@ -276,6 +268,7 @@ const CreateCVScreen: React.FC = navigation => {
             placeholder="Enter CV Title"
             onChangeText={text => setTitle(text)}
             value={title}
+            autoCapitalize="none"
           />
         </View>
         <TouchableOpacity>
@@ -408,7 +401,7 @@ const CreateCVScreen: React.FC = navigation => {
             <TouchableOpacity
               style={styles.bodyContentItem}
               onPress={() =>
-                handleEditField('educations', 'Học vấn', [
+                handleEditField('education', 'Học vấn', [
                   {
                     key: 'institutionName',
                     label: 'Tên trường/học viện',
@@ -446,7 +439,7 @@ const CreateCVScreen: React.FC = navigation => {
                 <Text style={styles.title}>HỌC VẤN</Text>
               </View>
               {/* Education */}
-              {Array.isArray(education) ? (
+              {Array.isArray(education) && education.length > 0 ? (
                 education.map((edu, idx) => (
                   <View
                     key={idx}
@@ -476,19 +469,17 @@ const CreateCVScreen: React.FC = navigation => {
                   </View>
                 ))
               ) : (
-                <View style={{ flexDirection: 'row' }}>
-                  <View style={{ width: '100%' }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                      Bắt đầu - Kết thúc
-                    </Text>
-                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                      Tên trường:
-                    </Text>
-                    <Text style={{ fontSize: 15 }}>Ngành học/ môn học</Text>
-                    <Text style={{ fontSize: 15 }}>
-                      Mô tả quá trình học tập hoặc thành tích của bạn
-                    </Text>
-                  </View>
+                <View style={{ width: '100%' }}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
+                    Bắt đầu - Kết thúc
+                  </Text>
+                  <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
+                    Tên trường/học viện
+                  </Text>
+                  <Text style={{ fontSize: 15 }}>Ngành học</Text>
+                  <Text style={{ fontSize: 15 }}>
+                    Mô tả quá trình học tập hoặc thành tích của bạn
+                  </Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -497,7 +488,7 @@ const CreateCVScreen: React.FC = navigation => {
             <TouchableOpacity
               style={styles.bodyContentItem}
               onPress={() =>
-                handleEditField('experiences', 'Kinh nghiệm làm việc', [
+                handleEditField('experience', 'Kinh nghiệm làm việc', [
                   {
                     key: 'jobTitle',
                     label: 'Chức danh công việc',
@@ -530,7 +521,7 @@ const CreateCVScreen: React.FC = navigation => {
                 <Text style={styles.title}>KINH NGHIỆM LÀM VIỆC</Text>
               </View>
               {/* Experience */}
-              {Array.isArray(experience) ? (
+              {Array.isArray(experience) && experience.length > 0 ? (
                 experience.map((exp, idx) => (
                   <View key={idx} style={{ flexDirection: 'row' }}>
                     <View style={{ width: '35%' }}>
@@ -559,7 +550,7 @@ const CreateCVScreen: React.FC = navigation => {
                     Bắt đầu - Kết thúc
                   </Text>
                   <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                    Tên công ty:
+                    Tên công ty
                   </Text>
                   <Text style={{ fontSize: 15 }}>Vị trí công việc</Text>
                   <Text style={{ fontSize: 15 }}>
@@ -602,49 +593,33 @@ const CreateCVScreen: React.FC = navigation => {
                 ])
               }
             >
-              <View style={styles.title_underLine}>
-                <Text style={styles.title}>HOẠT ĐỘNG</Text>
-              </View>
               {/* Activity */}
-              {Array.isArray(activity) ? (
-                activity.length > 0 ? (
-                  activity.map((act, idx) => (
-                    <View
-                      key={idx}
-                      style={{ flexDirection: 'row', marginBottom: 16 }}
-                    >
-                      <View style={{ width: '35%' }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                          {act.startDate && act.endDate
-                            ? `${act.startDate} - ${act.endDate}`
-                            : 'Bắt đầu - Kết thúc'}
-                        </Text>
-                      </View>
-                      <View style={{ flexShrink: 1, width: '70%' }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                          {act.organization || 'Tên tổ chức:'}
-                        </Text>
-                        <Text style={{ fontSize: 15 }}>
-                          {act.position || 'Vị trí'}
-                        </Text>
-                        <Text style={{ fontSize: 15 }}>
-                          {act.description || 'Mô tả hoạt động'}
-                        </Text>
-                      </View>
+              {Array.isArray(activity) && activity.length > 0 ? (
+                activity.map((act, idx) => (
+                  <View
+                    key={idx}
+                    style={{ flexDirection: 'row', marginBottom: 16 }}
+                  >
+                    <View style={{ width: '35%' }}>
+                      <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
+                        {act.startDate && act.endDate
+                          ? `${act.startDate} - ${act.endDate}`
+                          : 'Bắt đầu - Kết thúc'}
+                      </Text>
                     </View>
-                  ))
-                ) : (
-                  <View style={{ width: '100%' }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                      Bắt đầu - Kết thúc
-                    </Text>
-                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                      Tên tổ chức:
-                    </Text>
-                    <Text style={{ fontSize: 15 }}>Vị trí</Text>
-                    <Text style={{ fontSize: 15 }}>Mô tả hoạt động</Text>
+                    <View style={{ flexShrink: 1, width: '70%' }}>
+                      <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
+                        {act.organization || 'Tên tổ chức:'}
+                      </Text>
+                      <Text style={{ fontSize: 15 }}>
+                        {act.position || 'Vị trí'}
+                      </Text>
+                      <Text style={{ fontSize: 15 }}>
+                        {act.description || 'Mô tả hoạt động'}
+                      </Text>
+                    </View>
                   </View>
-                )
+                ))
               ) : (
                 <View style={{ width: '100%' }}>
                   <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
@@ -726,7 +701,7 @@ const CreateCVScreen: React.FC = navigation => {
             <TouchableOpacity
               style={styles.bodyContentItem}
               onPress={() =>
-                handleEditField('skills', 'Kỹ năng', [
+                handleEditField('skill', 'Kỹ năng', [
                   {
                     key: 'skillName',
                     label: 'Tên kỹ năng',
