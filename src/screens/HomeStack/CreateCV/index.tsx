@@ -1,4 +1,4 @@
-import React, { use, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
@@ -8,8 +8,6 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  Modal,
-  Button,
   TextInput,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,8 +23,7 @@ import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import { useCVData } from './useCVData';
 import moment from 'moment';
-const removeDiacritics = (str: string) =>
-  str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
 const CreateCVScreen: React.FC = navigation => {
   const [avatarUri, setAvatarUri] = useState<string>('');
   const [uploading, setUploading] = useState(false);
@@ -45,26 +42,13 @@ const CreateCVScreen: React.FC = navigation => {
     email,
     website,
     address,
-    careerGoal,
     education,
     experience,
-    activity,
     certificate,
-    award,
     skill,
-    reference,
-    hobby,
     updateSection,
     getCVData,
   } = useCVData();
-
-  // Log ra CV DATA mới nhất mỗi khi state thay đổi
-
-  // Giả sử bạn đã có hàm getCV()
-  console.log(
-    'jdoawjdoaw',
-    moment('10/11/12', 'DD/MM/YY').format('YYYY-MM-DD'),
-  );
 
   // Hàm điều hướng đến EditCVScreen
   const goToEditCV = (sectionKey, sectionTitle, fields) => {
@@ -82,32 +66,17 @@ const CreateCVScreen: React.FC = navigation => {
           address,
         };
         break;
-      case 'careerGoal':
-        currentData = careerGoal;
-        break;
       case 'education':
         currentData = education;
         break;
       case 'experience':
         currentData = experience;
         break;
-      case 'activity':
-        currentData = activity;
-        break;
       case 'certificate':
         currentData = certificate;
         break;
-      case 'award':
-        currentData = award;
-        break;
       case 'skill':
         currentData = skill;
-        break;
-      case 'reference':
-        currentData = reference;
-        break;
-      case 'hobby':
-        currentData = hobby;
         break;
       case 'card':
         currentData = {
@@ -206,10 +175,9 @@ const CreateCVScreen: React.FC = navigation => {
       : [],
     languages: [], // TODO: lấy từ state languages nếu có
   };
-  console.log('CV data chuẩn hóa:', cvDataToSend);
 
   const handleEditField = (sectionKey, sectionTitle, fields) => {
-    // Map UI keys to state keys
+    // Map UI keys to state keys for core fields only
     const keyMap = {
       education: 'education',
       skill: 'skill',
@@ -219,43 +187,7 @@ const CreateCVScreen: React.FC = navigation => {
       userProfile: 'userProfile',
     };
     const stateKey = keyMap[sectionKey] || sectionKey;
-    // If not a core array, treat as section
-    const coreKeys = [
-      'education',
-      'skill',
-      'experience',
-      'certificates',
-      'card',
-      'userProfile',
-    ];
-    if (!coreKeys.includes(stateKey)) {
-      let existingSectionContent = '';
-      const sections = getCVData().sections;
-      if (Array.isArray(sections)) {
-        const found = sections.find(
-          s =>
-            s &&
-            typeof s.title === 'string' &&
-            removeDiacritics(s.title || '')
-              .replace(/\s+/g, '')
-              .toLowerCase() ===
-              removeDiacritics(sectionTitle).replace(/\s+/g, '').toLowerCase(),
-        );
-        if (found && typeof found.content === 'string') {
-          existingSectionContent = found.content;
-        }
-      }
-      goToEditCV('sections', sectionTitle, [
-        {
-          key: 'content',
-          label: 'Nội dung phần',
-          placeholder: `Nhập nội dung cho ${sectionTitle}`,
-          defaultValue: existingSectionContent,
-        },
-      ]);
-    } else {
-      goToEditCV(stateKey, sectionTitle, fields);
-    }
+    goToEditCV(stateKey, sectionTitle, fields);
   };
 
   return (
@@ -359,42 +291,6 @@ const CreateCVScreen: React.FC = navigation => {
             </View>
           </View>
           <View style={styles.bodyContent}>
-            {/* Career Goal */}
-            <TouchableOpacity
-              style={styles.bodyContentItem}
-              onPress={() =>
-                handleEditField('careerGoal', 'Mục tiêu nghề nghiệp', [
-                  {
-                    key: 'careerGoal',
-                    label: 'Mục tiêu nghề nghiệp',
-                    placeholder: 'Nhập mục tiêu nghề nghiệp',
-                  },
-                ])
-              }
-            >
-              <View style={styles.title_underLine}>
-                <Text style={styles.title}>MỤC TIÊU NGHỀ NGHIỆP</Text>
-              </View>
-              <Text key="careerGoal">
-                {careerGoal || 'Nhập mục tiêu nghề nghiệp'}
-              </Text>
-            </TouchableOpacity>
-            {/* Dynamic Sections */}
-            {Array.isArray(getCVData().sections) &&
-              getCVData().sections.length > 0 &&
-              getCVData().sections.map(
-                (section, idx) =>
-                  section.sectionType !== 'careerGoal' && (
-                    <View key={idx} style={styles.bodyContentItem}>
-                      <View style={styles.title_underLine}>
-                        <Text style={styles.title}>
-                          {section.title || section.sectionType}
-                        </Text>
-                      </View>
-                      <Text>{section.content || ''}</Text>
-                    </View>
-                  ),
-              )}
             {/* Education */}
             <TouchableOpacity
               style={styles.bodyContentItem}
@@ -556,96 +452,27 @@ const CreateCVScreen: React.FC = navigation => {
                 </View>
               )}
             </TouchableOpacity>
-            {/* Activity */}
-            <View style={styles.title_underLine}>
-              <Text style={styles.title}>Hoạt động</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.bodyContentItem}
-              onPress={() =>
-                handleEditField('activities', 'Hoạt động', [
-                  {
-                    key: 'startDate',
-                    label: 'Bắt đầu',
-                    placeholder: 'YYYY-MM-DD',
-                  },
-                  {
-                    key: 'endDate',
-                    label: 'Kết thúc',
-                    placeholder: 'YYYY-MM-DD',
-                  },
-                  {
-                    key: 'organization',
-                    label: 'Tên tổ chức',
-                    placeholder: 'Nhập tên tổ chức',
-                  },
-                  {
-                    key: 'position',
-                    label: 'Vị trí',
-                    placeholder: 'Nhập vị trí',
-                  },
-                  {
-                    key: 'description',
-                    label: 'Mô tả',
-                    placeholder: 'Mô tả hoạt động',
-                  },
-                ])
-              }
-            >
-              {/* Activity */}
-              {Array.isArray(activity) && activity.length > 0 ? (
-                activity.map((act, idx) => (
-                  <View
-                    key={idx}
-                    style={{ flexDirection: 'row', marginBottom: 16 }}
-                  >
-                    <View style={{ width: '35%' }}>
-                      <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                        {act.startDate && act.endDate
-                          ? `${act.startDate} - ${act.endDate}`
-                          : 'Bắt đầu - Kết thúc'}
-                      </Text>
-                    </View>
-                    <View style={{ flexShrink: 1, width: '70%' }}>
-                      <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                        {act.organization || 'Tên tổ chức:'}
-                      </Text>
-                      <Text style={{ fontSize: 15 }}>
-                        {act.position || 'Vị trí'}
-                      </Text>
-                      <Text style={{ fontSize: 15 }}>
-                        {act.description || 'Mô tả hoạt động'}
-                      </Text>
-                    </View>
-                  </View>
-                ))
-              ) : (
-                <View style={{ width: '100%' }}>
-                  <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                    Bắt đầu - Kết thúc
-                  </Text>
-                  <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                    Tên tổ chức:
-                  </Text>
-                  <Text style={{ fontSize: 15 }}>Vị trí</Text>
-                  <Text style={{ fontSize: 15 }}>Mô tả hoạt động</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+
+            {/* Certificate */}
             {/* Certificate */}
             <TouchableOpacity
               style={styles.bodyContentItem}
               onPress={() =>
-                handleEditField('certificates', 'Chứng chỉ', [
-                  {
-                    key: 'time',
-                    label: 'Thời gian',
-                    placeholder: 'Chọn thời gian',
-                  },
+                handleEditField('certification', 'Chứng chỉ', [
                   {
                     key: 'name',
                     label: 'Tên chứng chỉ',
                     placeholder: 'Nhập tên chứng chỉ',
+                  },
+                  {
+                    key: 'issueDate',
+                    label: 'Ngày cấp',
+                    placeholder: 'YYYY-MM-DD',
+                  },
+                  {
+                    key: 'expiryDate',
+                    label: 'Ngày hết hạn',
+                    placeholder: 'YYYY-MM-DD (tùy chọn)',
                   },
                 ])
               }
@@ -763,68 +590,12 @@ const CreateCVScreen: React.FC = navigation => {
                 )}
               </View>
             </TouchableOpacity>
-            {/* Cover letter */}
-            <TouchableOpacity
-              style={styles.bodyContentItem}
-              onPress={() =>
-                handleEditField('reference', 'Người giới thiệu', [
-                  {
-                    key: 'info',
-                    label: 'Thông tin người giới thiệu',
-                    placeholder: 'Nhập thông tin người giới thiệu',
-                  },
-                ])
-              }
-            >
-              <View style={styles.title_underLine}>
-                <Text style={styles.title}>NGƯỜI GIỚI THIỆU</Text>
-              </View>
-              <View style={{}}>
-                {Array.isArray(reference) && reference.length > 0 ? (
-                  reference.map((ref, idx) => (
-                    <View key={idx} style={{ marginBottom: 8 }}>
-                      <Text>{ref.content || 'Thông tin người giới thiệu'}</Text>
-                    </View>
-                  ))
-                ) : (
-                  <Text>Thông tin người giới thiệu</Text>
-                )}
-              </View>
-            </TouchableOpacity>
-            {/* Hobby */}
-            <TouchableOpacity
-              style={styles.bodyContentItem}
-              onPress={() =>
-                handleEditField('hobbies', 'Sở thích', [
-                  {
-                    key: 'hobby',
-                    label: 'Sở thích',
-                    placeholder: 'Điền các sở thích của bạn',
-                  },
-                ])
-              }
-            >
-              <View style={styles.title_underLine}>
-                <Text style={styles.title}>SỞ THÍCH</Text>
-              </View>
-              <View style={{}}>
-                <View style={{ flexShrink: 1 }}>
-                  {Array.isArray(hobby) ? (
-                    hobby.map((item, idx) => (
-                      <Text key={idx}>{item.content || String(item)}</Text>
-                    ))
-                  ) : (
-                    <Text>{hobby || ''}</Text>
-                  )}
-                </View>
-              </View>
-            </TouchableOpacity>
           </View>
         </View>
         <AppButton
           title="Lưu CV"
           onPress={() => {
-            console.log('CV vừa nhập:', cvDataToSend);
+            // TODO: Implement save CV logic
           }}
           customStyle={{ marginBottom: spacing.large }}
         />

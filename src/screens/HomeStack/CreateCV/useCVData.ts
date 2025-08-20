@@ -67,22 +67,57 @@ export function useCVData() {
         setExperience(Array.isArray(data) ? data : [data]);
         break;
       case 'activity':
-        setActivity(Array.isArray(data) ? data : [data]);
+      case 'award':
+      case 'reference':
+      case 'hobby':
+      case 'careerGoal':
+        // Các dynamic sections - chuyển thành section object và lưu vào sections array
+        let sectionObj;
+        if (Array.isArray(data)) {
+          sectionObj = data[0];
+        } else {
+          sectionObj = data;
+        }
+        
+        // Đảm bảo có đủ thông tin section
+        if (!sectionObj?.sectionType) {
+          sectionObj = {
+            sectionType: sectionKey,
+            title: sectionKey,
+            content: typeof sectionObj === 'string' ? sectionObj : (sectionObj?.content || sectionObj?.careerGoal || sectionObj?.hobby || ''),
+            isVisible: true,
+          };
+        }
+        
+        setSections(prevSections => {
+          const idx = prevSections.findIndex(s => s.sectionType === sectionKey);
+          if (idx !== -1) {
+            const updated = [...prevSections];
+            updated[idx] = { ...updated[idx], ...sectionObj };
+            return updated;
+          } else {
+            return [...prevSections, sectionObj];
+          }
+        });
+        
+        // Cũng cập nhật state riêng cho backward compatibility
+        if (sectionKey === 'careerGoal') {
+          setCareerGoal(sectionObj.content || '');
+        } else if (sectionKey === 'activity') {
+          setActivity(Array.isArray(data) ? data : [data]);
+        } else if (sectionKey === 'award') {
+          setAward(Array.isArray(data) ? data : [data]);
+        } else if (sectionKey === 'reference') {
+          setReference(Array.isArray(data) ? data : [data]);
+        } else if (sectionKey === 'hobby') {
+          setHobby(sectionObj.content || '');
+        }
         break;
       case 'certificate':
         setCertificate(Array.isArray(data) ? data : [data]);
         break;
-      case 'award':
-        setAward(Array.isArray(data) ? data : [data]);
-        break;
       case 'skill':
         setSkill(Array.isArray(data) ? data : [data]);
-        break;
-      case 'reference':
-        setReference(Array.isArray(data) ? data : [data]);
-        break;
-      case 'hobby':
-        setHobby(Array.isArray(data) ? (data[0]?.hobby || '') : (data.hobby || ''));
         break;
       case 'sections': {
         // Add or update section in sections array
