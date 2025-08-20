@@ -26,7 +26,39 @@ export function useCVData() {
   const updateSection = useCallback((sectionKey, data) => {
     switch (sectionKey) {
       case 'careerGoal':
-        setCareerGoal(Array.isArray(data) ? data[0]?.careerGoal || '' : data.careerGoal || '');
+        // Cập nhật cả state riêng và sections array
+        let careerGoalContent = '';
+        if (Array.isArray(data)) {
+          if (typeof data[0] === 'string') {
+            careerGoalContent = data[0];
+          } else if (typeof data[0] === 'object' && data[0]?.careerGoal) {
+            careerGoalContent = data[0].careerGoal;
+          }
+        } else if (typeof data === 'string') {
+          careerGoalContent = data;
+        } else if (typeof data === 'object' && data?.careerGoal) {
+          careerGoalContent = data.careerGoal;
+        }
+        
+        setCareerGoal(careerGoalContent);
+        
+        // Cũng cập nhật vào sections array
+        setSections(prevSections => {
+          const careerGoalSection = {
+            sectionType: 'careerGoal',
+            title: 'Mục tiêu nghề nghiệp',
+            content: careerGoalContent,
+            isVisible: true,
+          };
+          const idx = prevSections.findIndex(s => s.sectionType === 'careerGoal');
+          if (idx !== -1) {
+            const updated = [...prevSections];
+            updated[idx] = careerGoalSection;
+            return updated;
+          } else {
+            return [...prevSections, careerGoalSection];
+          }
+        });
         break;
       case 'education':
         setEducation(Array.isArray(data) ? data : [data]);
@@ -119,7 +151,7 @@ export function useCVData() {
       skill,
       sections,
     };
-  }, [name, position, birthday, gender, phone, email, website, address, careerGoal, education, experience, activity, certificate, award, skill, reference, hobby]);
+  }, [name, position, birthday, gender, phone, email, website, address, careerGoal, education, experience, activity, certificate, award, skill, reference, hobby, sections]);
 
   return {
     name,
@@ -139,6 +171,7 @@ export function useCVData() {
     skill,
     reference,
     hobby,
+    sections,
     updateSection,
     getCVData,
   };

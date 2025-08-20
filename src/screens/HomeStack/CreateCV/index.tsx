@@ -379,7 +379,6 @@ const CreateCVScreen: React.FC = navigation => {
                 {careerGoal || 'Nhập mục tiêu nghề nghiệp'}
               </Text>
             </TouchableOpacity>
-
             {/* Dynamic Sections */}
             {Array.isArray(getCVData().sections) &&
               getCVData().sections.length > 0 &&
@@ -396,7 +395,6 @@ const CreateCVScreen: React.FC = navigation => {
                     </View>
                   ),
               )}
-
             {/* Education */}
             <TouchableOpacity
               style={styles.bodyContentItem}
@@ -483,7 +481,6 @@ const CreateCVScreen: React.FC = navigation => {
                 </View>
               )}
             </TouchableOpacity>
-
             {/* Experience */}
             <TouchableOpacity
               style={styles.bodyContentItem}
@@ -559,8 +556,10 @@ const CreateCVScreen: React.FC = navigation => {
                 </View>
               )}
             </TouchableOpacity>
-
             {/* Activity */}
+            <View style={styles.title_underLine}>
+              <Text style={styles.title}>Hoạt động</Text>
+            </View>
             <TouchableOpacity
               style={styles.bodyContentItem}
               onPress={() =>
@@ -633,7 +632,6 @@ const CreateCVScreen: React.FC = navigation => {
                 </View>
               )}
             </TouchableOpacity>
-
             {/* Certificate */}
             <TouchableOpacity
               style={styles.bodyContentItem}
@@ -696,7 +694,6 @@ const CreateCVScreen: React.FC = navigation => {
                 </View>
               )}
             </TouchableOpacity>
-
             {/* Skill */}
             <TouchableOpacity
               style={styles.bodyContentItem}
@@ -766,7 +763,6 @@ const CreateCVScreen: React.FC = navigation => {
                 )}
               </View>
             </TouchableOpacity>
-
             {/* Cover letter */}
             <TouchableOpacity
               style={styles.bodyContentItem}
@@ -795,7 +791,6 @@ const CreateCVScreen: React.FC = navigation => {
                 )}
               </View>
             </TouchableOpacity>
-
             {/* Hobby */}
             <TouchableOpacity
               style={styles.bodyContentItem}

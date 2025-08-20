@@ -92,10 +92,28 @@ const EditCVScreen = ({ route, navigation }) => {
       });
       return;
     }
-    // Nếu là mục tiêu nghề nghiệp thì chỉ lưu object đầu tiên
+    // Kiểm tra xem có phải là section động không
+    // Section động thường chỉ có 1 field duy nhất với key 'content'
+    const isDynamicSection = fields.length === 1 && fields[0]?.key === 'content';
+    
     if (title === 'Mục tiêu nghề nghiệp') {
+      // Xử lý đặc biệt cho career goal
       onSave(forms[0]);
+    } else if (isDynamicSection) {
+      // Các section động khác (hoạt động, sở thích, v.v.)
+      // Trả về object section chuẩn
+      const removeDiacritics = str =>
+        str.normalize('NFD').replace(/[ --]|[\u0300-\u036f]/g, '').replace(/\s+/g, '').toLowerCase();
+      const sectionType = removeDiacritics(title);
+      const sectionObj = {
+        sectionType,
+        title,
+        content: forms[0]?.content || '',
+        isVisible: true,
+      };
+      onSave(sectionObj);
     } else {
+      // Core fields (education, experience, v.v.) - trả về mảng
       onSave(forms);
     }
 
