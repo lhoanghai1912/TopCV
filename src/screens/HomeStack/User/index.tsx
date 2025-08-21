@@ -15,7 +15,6 @@ import styles from './styles';
 import AppButton from '../../../components/AppButton';
 import { navigate } from '../../../navigation/RootNavigator';
 import { useDispatch, useSelector } from 'react-redux';
-import LoadingScreen from '../../../components/Loading';
 import { logout } from '../../../store/reducers/userSlice';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import { useTranslation } from 'react-i18next';
@@ -26,13 +25,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import icons from '../../../assets/icons';
 import { getUserProfile } from '../../../services/auth';
 import { useFocusEffect } from '@react-navigation/native';
-import App from '../../../App';
 import { link } from '../../../utils/constants';
 import { getSavedJobs } from '../../../services/job';
 import Toast from 'react-native-toast-message';
-import { colors } from '../../../utils/color';
 import images from '../../../assets/images';
-import apiClient from '../../../services/apiClient';
 import { deleteUserAccount } from '../../../services/user';
 
 const UserScreen: React.FC = () => {
@@ -127,7 +123,7 @@ const UserScreen: React.FC = () => {
           <View
             style={{
               backgroundColor: '#1A7FEE',
-              height: ms(120),
+              height: ms(80),
             }}
           >
             {/* ...background pattern if needed... */}

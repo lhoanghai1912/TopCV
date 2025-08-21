@@ -61,7 +61,11 @@ const ChangePasswordScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <NavBar title="Đổi mật khẩu" onPress={() => navigation.goBack()} />
+      <NavBar
+        title="Đổi mật khẩu"
+        onPress={() => navigation.goBack()}
+        customStyle={[{ marginBottom: spacing.large }]}
+      />
       <AppInput
         placeholder="Mật khẩu hiện tại"
         secureTextEntry

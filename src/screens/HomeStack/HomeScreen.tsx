@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ms, spacing } from '../../utils/spacing';
@@ -22,6 +23,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
 import CardJob from './Job/Card/CardJob';
+import { colors } from '../../utils/color';
 
 const HomeScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
@@ -116,20 +118,62 @@ const HomeScreen: React.FC = () => {
   };
 
   const renderFooter = () => {
+    console.log(
+      '🏁 renderFooter - loadingMore:',
+      loadingMore,
+      'noMoreData:',
+      noMoreData,
+    );
+
     if (loadingMore) {
       return (
-        <View style={styles.footerLoader}>
-          <Text style={styles.loadingText}>{t('message.loadingMore')}</Text>
+        <View
+          style={{
+            paddingVertical: spacing.large,
+            paddingHorizontal: spacing.medium,
+            backgroundColor: '#f0f0f0',
+            borderTopWidth: 1,
+            borderTopColor: '#ddd',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: 60,
+          }}
+        >
+          <ActivityIndicator
+            size="small"
+            color={colors.primary}
+            style={{ marginVertical: spacing.medium }}
+          />
         </View>
       );
     }
+
     if (noMoreData && listJob.length > 0) {
       return (
-        <View style={styles.footerLoader}>
-          <Text style={styles.noMoreText}>{t('message.noMoreJob')}</Text>
+        <View
+          style={{
+            paddingVertical: spacing.large,
+            paddingHorizontal: spacing.medium,
+            backgroundColor: '#fafafa',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: 50,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              color: '#666',
+              textAlign: 'center',
+              fontStyle: 'italic',
+            }}
+          >
+            Đã hết bài viết
+          </Text>
         </View>
       );
     }
+
     return null;
   };
 
@@ -182,8 +226,12 @@ const HomeScreen: React.FC = () => {
           </Text>
         </TouchableOpacity>
       </View>
-      <View style={[styles.body]}>
+      <View style={[styles.body, { marginBottom: ms(170) }]}>
         <FlatList
+          contentContainerStyle={{
+            paddingVertical: spacing.medium,
+            paddingBottom: spacing.large * 2, // Thêm bottom padding để footer không bị che
+          }}
           ref={flatListRef}
           data={listJob}
           ListEmptyComponent={
@@ -199,7 +247,7 @@ const HomeScreen: React.FC = () => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           onEndReached={loadMoreData}
-          onEndReachedThreshold={0.1}
+          onEndReachedThreshold={0.3}
           ListFooterComponent={renderFooter}
           showsVerticalScrollIndicator={false}
         />

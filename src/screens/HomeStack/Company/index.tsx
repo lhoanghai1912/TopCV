@@ -117,13 +117,11 @@ const CompanyScreen = ({ navigation }: { navigation: any }) => {
               : `company_${index}`
           }
           ListEmptyComponent={
-            loading ? (
-              <LoadingScreen />
-            ) : (
+            !loading ? (
               <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
-                {t('message.noData')}
+                No data
               </Text>
-            )
+            ) : null
           }
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />

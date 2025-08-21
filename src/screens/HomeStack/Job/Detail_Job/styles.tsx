@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
   benefit: {},
   mainContent: {},
   fixedHeader: {
+    paddingTop: spacing.medium,
     position: 'absolute',
     top: 0,
     left: 0,

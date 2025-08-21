@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 import SplashScreen from '../screens/Splash';
 const AppNavigator = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const { token } = useSelector((state: any) => state.user);
 
   useEffect(() => {
     // delay splash 1.5s để hiển thị logo

@@ -57,6 +57,7 @@ const SavedJobScreen: React.FC<Props> = ({ navigation, route }) => {
         onPress={() => {
           navigation.goBack();
         }}
+        customStyle={[{ marginBottom: spacing.medium }]}
       />
       <FlatList
         data={listSavedJobs}
@@ -76,6 +77,7 @@ const SavedJobScreen: React.FC<Props> = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   container: {
+    padding: spacing.medium,
     flex: 1,
   },
 });

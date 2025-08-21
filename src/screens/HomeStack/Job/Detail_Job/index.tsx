@@ -204,7 +204,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
         scrollEventThrottle={16}
         onScroll={event => {
           const scrollY = event.nativeEvent.contentOffset.y;
-          setShowFixedHeader(scrollY > ms(mainContent - fixedHeaderH + 20));
+          setShowFixedHeader(scrollY > ms(mainContent - fixedHeaderH - 65));
         }}
       >
         <View style={{ flex: 1 }}>
@@ -215,7 +215,12 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
             <NavBar
               onPress={() => navigation.goBack()}
               icon1={icons.more}
-              customStyle={[{ paddingHorizontal: spacing.medium }]}
+              customStyle={[
+                {
+                  paddingHorizontal: spacing.medium,
+                  marginTop: spacing.medium,
+                },
+              ]}
             />
 
             <View style={[styles.overview]}>

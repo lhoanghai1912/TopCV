@@ -22,6 +22,34 @@ apiClient.interceptors.request.use(config => {
 
 apiClient.interceptors.response.use(
   response => {
+    // Kiểm tra status code - nếu khác 200 thì vào error
+    if (response.status !== 200) {
+      const status = response.status;
+      const data = response.data;
+      const value = data?.value;
+      const message =
+        value ||
+        data?.message ||
+        data?.error ||
+        JSON.stringify(data) ||
+        'Request không thành công';
+
+      console.log('📥 Non-200 status:', status);
+      console.log('📦 Response data:', data);
+
+      Toast.show({
+        type: 'error',
+        text1: `Lỗi ${status}`,
+        text2: message,
+      });
+
+      // Tạo error object để reject
+      const error = new Error(message);
+      (error as any).response = response;
+      (error as any).status = status;
+      return Promise.reject(error);
+    }
+
     return response;
   },
   error => {
@@ -34,6 +62,7 @@ apiClient.interceptors.response.use(
         value || data?.message || data?.error || JSON.stringify(data);
       console.log('📥 Response status:', status);
       console.log('📦 Response data:', data);
+
       Toast.show({
         type: 'error',
         text1: `Lỗi ${status}`,
@@ -41,8 +70,18 @@ apiClient.interceptors.response.use(
       });
     } else if (error.request) {
       console.log('📡 No response received:', error.request);
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi kết nối',
+        text2: 'Không thể kết nối đến server',
+      });
     } else {
       console.log('⚠️ Error setting up request:', error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi',
+        text2: error.message,
+      });
     }
 
     return Promise.reject(error);

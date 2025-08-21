@@ -30,7 +30,6 @@ interface Props {
 }
 
 const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
-  console.log('data prop: ', route.params);
   const [companyDetail, setCompanyDetail] = useState<any>([]);
   const [showFixedHeader, setShowFixedHeader] = useState(false);
   const [onCategory, setOnCategory] = useState('info');
@@ -39,6 +38,28 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
   const scrollRef = React.useRef<ScrollView>(null);
   const [mainTop, setMainTop] = useState(0);
   const [fixedHeaderH, setFixedHeaderH] = useState(0);
+  const [mainContent, setMainContent] = useState(0);
+
+  useEffect(() => {
+    console.log(
+      'maincontent',
+      mainContent,
+      'maintop',
+      mainTop,
+      'fixedHeaderH',
+      fixedHeaderH,
+    );
+  }, [mainContent, mainTop, fixedHeaderH]);
+
+  console.log(
+    'maincontent',
+    mainContent,
+    'maintop',
+    mainTop,
+    'fixedHeaderH',
+    fixedHeaderH,
+  );
+
   useEffect(() => {
     if (route.params) {
       fetchCompanyDetails();
@@ -52,7 +73,6 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
     setCompanyDetail(data.data);
     setLoading(false);
   };
-  console.log('fixedheader', fixedHeaderH, 'maintop', mainTop);
 
   const scrollToMain = () => {
     const y = Math.max(mainTop - fixedHeaderH, 0);
@@ -76,7 +96,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
       {showFixedHeader && (
         <View
           style={[styles.fixedHeader]}
-          onLayout={e => setFixedHeaderH(e.nativeEvent.layout.height)}
+          onLayout={e => setFixedHeaderH(e.nativeEvent.layout.y)}
         >
           <NavBar
             title={companyDetail?.name || ''}
@@ -137,7 +157,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
         onScroll={e => {
           const y = e.nativeEvent.contentOffset.y;
           // chỉnh ngưỡng tuỳ banner/cover của bạn
-          setShowFixedHeader(y > ms(fixedHeaderH - 20));
+          setShowFixedHeader(y > ms(mainTop + fixedHeaderH + 10));
         }}
       >
         <View style={styles.container}>
@@ -158,7 +178,13 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
               onPress={() => navigation.goBack()}
               icon1={icons.more}
               iconStyle={styles.customIcon}
-              customStyle={[{ marginBottom: spacing.medium }]}
+              customStyle={[
+                {
+                  marginTop: spacing.medium,
+                  paddingHorizontal: spacing.small,
+                  marginBottom: spacing.medium,
+                },
+              ]}
             />
           </ImageBackground>
           <View
@@ -251,106 +277,112 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                 />
               </View>
             </View>
-            <ScrollView horizontal={true} style={styles.category}>
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  paddingHorizontal: spacing.medium,
-                  borderBottomWidth: 2,
-                  borderBottomColor:
-                    onCategory === 'info' ? colors.blue : colors.Gray,
-                }}
-                onPress={() => setTab('info')}
-              >
-                <Text style={AppStyles.text}>Giới thiệu công ty</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  paddingHorizontal: spacing.medium,
-                  borderBottomWidth: 2,
-                  borderBottomColor:
-                    onCategory === 'job' ? colors.blue : colors.Gray,
-                }}
-                onPress={() => setTab('job')}
-              >
-                <Text style={AppStyles.text}>Tin tuyển dụng</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  paddingHorizontal: spacing.medium,
-                  borderBottomWidth: 2,
-                  borderBottomColor:
-                    onCategory === 'others' ? colors.blue : colors.Gray,
-                }}
-                onPress={() => setTab('others')}
-              >
-                <Text style={AppStyles.text}>Top công ty cùng lĩnh vực</Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
-          <View
-            style={styles.mainContent}
-            onLayout={e => setMainTop(e.nativeEvent.layout.y)}
-          >
-            {onCategory === 'info' ? (
-              <>
-                <View
+            <View
+              onLayout={e => {
+                // Gán mainTop là vị trí y của viewCategory khi không có fixedHeader
+                if (!showFixedHeader) {
+                  setMainTop(e.nativeEvent.layout.y);
+                }
+              }}
+            >
+              <ScrollView horizontal={true} style={styles.category}>
+                <TouchableOpacity
                   style={{
-                    backgroundColor: colors.white,
+                    flex: 1,
                     paddingHorizontal: spacing.medium,
-                    paddingBottom: spacing.medium,
+                    borderBottomWidth: 2,
+                    borderBottomColor:
+                      onCategory === 'info' ? colors.blue : colors.Gray,
                   }}
+                  onPress={() => setTab('info')}
                 >
+                  <Text style={AppStyles.text}>Giới thiệu công ty</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    paddingHorizontal: spacing.medium,
+                    borderBottomWidth: 2,
+                    borderBottomColor:
+                      onCategory === 'job' ? colors.blue : colors.Gray,
+                  }}
+                  onPress={() => setTab('job')}
+                >
+                  <Text style={AppStyles.text}>Tin tuyển dụng</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    paddingHorizontal: spacing.medium,
+                    borderBottomWidth: 2,
+                    borderBottomColor:
+                      onCategory === 'others' ? colors.blue : colors.Gray,
+                  }}
+                  onPress={() => setTab('others')}
+                >
+                  <Text style={AppStyles.text}>Top công ty cùng lĩnh vực</Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+            <View style={styles.mainContent}>
+              {onCategory === 'info' ? (
+                <>
                   <View
                     style={{
-                      borderBottomColor: colors.Gray,
-                      borderBottomWidth: 1,
-                      paddingBottom: spacing.small,
-                      marginBottom: spacing.medium,
+                      backgroundColor: colors.white,
+                      paddingHorizontal: spacing.medium,
+                      paddingBottom: spacing.medium,
                     }}
                   >
-                    <Text style={styles.label}>{`Giới thiệu công ty`}</Text>
-                    <Text
-                      style={AppStyles.text}
-                    >{`${companyDetail.description}`}</Text>
+                    <View
+                      style={{
+                        borderBottomColor: colors.Gray,
+                        borderBottomWidth: 1,
+                        paddingBottom: spacing.small,
+                        marginBottom: spacing.medium,
+                      }}
+                    >
+                      <Text style={styles.label}>{`Giới thiệu công ty`}</Text>
+                      <Text
+                        style={AppStyles.text}
+                      >{`${companyDetail.description}`}</Text>
+                    </View>
+                    <View>
+                      <Text style={styles.label}>{`Địa chỉ công ty`}</Text>
+                      <Text
+                        style={AppStyles.text}
+                      >{`${companyDetail.address}`}</Text>
+                    </View>
                   </View>
-                  <View>
-                    <Text style={styles.label}>{`Địa chỉ công ty`}</Text>
+                  <View style={styles.other}>
                     <Text
-                      style={AppStyles.text}
-                    >{`${companyDetail.address}`}</Text>
+                      style={[
+                        styles.label,
+                        { paddingHorizontal: spacing.medium },
+                      ]}
+                    >{`Tin tuyển dụng`}</Text>
+                    <FlatList
+                      scrollEnabled={false}
+                      data={companyDetail?.jobs?.slice(0, 10)}
+                      renderItem={renderJobOfCompany}
+                      keyExtractor={item => item.id.toString()}
+                    />
                   </View>
-                </View>
-                <View style={styles.other}>
-                  <Text
-                    style={[
-                      styles.label,
-                      { paddingHorizontal: spacing.medium },
-                    ]}
-                  >{`Tin tuyển dụng`}</Text>
+                </>
+              ) : onCategory === 'job' ? (
+                <>
                   <FlatList
+                    style={{ paddingTop: spacing.medium }}
                     scrollEnabled={false}
-                    data={companyDetail?.jobs?.slice(0, 10)}
+                    data={companyDetail.jobs}
                     renderItem={renderJobOfCompany}
                     keyExtractor={item => item.id.toString()}
-                  />
-                </View>
-              </>
-            ) : onCategory === 'job' ? (
-              <>
-                <FlatList
-                  style={{ paddingTop: spacing.medium }}
-                  scrollEnabled={false}
-                  data={companyDetail.jobs}
-                  renderItem={renderJobOfCompany}
-                  keyExtractor={item => item.id.toString()}
-                ></FlatList>
-              </>
-            ) : (
-              <></>
-            )}
+                  ></FlatList>
+                </>
+              ) : (
+                <></>
+              )}
+            </View>
           </View>
         </View>
         {loading && (
