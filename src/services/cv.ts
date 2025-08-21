@@ -55,8 +55,8 @@ export const createCV = async (
           proficiencyType: sk.proficiencyType || '',
         }))
       : [],
-    experiences: Array.isArray(cvData.experiences || cvData.experience)
-      ? (cvData.experiences || cvData.experience).map(exp => ({
+    experiences: Array.isArray(cvData.experiences || cvData.experiences)
+      ? (cvData.experiences || cvData.experiences).map(exp => ({
           jobTitle: exp.jobTitle || exp.position || '',
           companyName: exp.companyName || exp.company || '',
           startDate: formatDate(exp.startDate || ''),
@@ -64,8 +64,8 @@ export const createCV = async (
           description: exp.description || exp.desc || '',
         }))
       : [],
-    educations: Array.isArray(cvData.educations || cvData.education)
-      ? (cvData.educations || cvData.education).map(ed => ({
+    educations: Array.isArray(cvData.educations || cvData.educations)
+      ? (cvData.educations || cvData.educations).map(ed => ({
           institutionName: ed.institutionName || ed.school || '',
           degree: ed.degree || '',
           fieldOfStudy: ed.fieldOfStudy || ed.major || '',
@@ -74,8 +74,8 @@ export const createCV = async (
           description: ed.description || ed.desc || '',
         }))
       : [],
-    certifications: Array.isArray(cvData.certifications || cvData.certificate)
-      ? (cvData.certifications || cvData.certificate).map(cert => ({
+    certificationss: Array.isArray(cvData.certificationss || cvData.certificate || cvData.certifications)
+      ? (cvData.certificationss || cvData.certificate || cvData.certifications).map(cert => ({
           name: cert.name || '',
           issueDate: formatDate(cert.issueDate || cert.startDate || ''),
           expiryDate: cert.expiryDate ? formatDate(cert.expiryDate) : null,
@@ -85,7 +85,7 @@ export const createCV = async (
       ? cvData.languages.map(lang => ({
           languageName: lang.languageName || lang.name || '',
           proficiencyLevel: lang.proficiencyLevel || '',
-          certification: lang.certification || '',
+          certifications: lang.certifications || '',
         }))
       : [],
   };
@@ -107,6 +107,78 @@ export const createCV = async (
     });
     return res.data;
   } catch (error) {
+    throw error;
+  }
+};
+
+// Hàm tạo CV mới dựa trên curl command
+export const createCVWithImage = async (
+  cvData: any,
+  imageUri?: string
+) => {
+  try {
+    const formData = new FormData();
+    
+    // Chuẩn bị dữ liệu CV theo format API
+    const jsonCvData = {
+      templateId: cvData.templateId || 2,
+      isPublic: cvData.isPublic || true,
+      title: cvData.title || '',
+      name: cvData.name || '',
+      content: cvData.content || '',
+      birthday: cvData.birthday || '',
+      gender: cvData.gender || '',
+      phone: cvData.phone || '',
+      email: cvData.email || '',
+      website: cvData.website || '',
+      address: cvData.address || '',
+      educations: cvData.educations || [],
+      experiences: cvData.experiences || [],
+      activity: cvData.activity || [],
+      certifications: cvData.certificate || cvData.certifications || [],
+      skills: cvData.skills || [],
+      sections: cvData.sections || [],
+      // Nếu có ảnh thì cập nhật photoCard, nếu không thì để rỗng
+      photoCard: (imageUri && imageUri.length > 0) ? cvData.photoCard || "" : ""
+    };
+
+    // Log dữ liệu CV
+    console.log('=== CV DATA GỬI LÊN API ===');
+    console.log('JSON CV Data:', JSON.stringify(jsonCvData, null, 2));
+    console.log('PhotoCard status:', jsonCvData.photoCard ? 'Có ảnh' : 'Không có ảnh');
+    
+    // Append JSON data
+    formData.append('jsonCvData', JSON.stringify(jsonCvData));
+    
+    // Nếu có ảnh thì append ảnh, nếu không thì không append images
+    if (imageUri && imageUri.length > 0) {
+      // Lấy tên file từ uri hoặc tạo tên mặc định
+      const fileName = imageUri.split('/').pop() || 'photo-card.jpg';
+      
+      formData.append('images', {
+        uri: imageUri,
+        type: 'image/jpeg',
+        name: fileName,
+      } as any);
+      
+      console.log('Đang upload ảnh:', imageUri);
+      console.log('Tên file ảnh:', fileName);
+    } else {
+      console.log('Không có ảnh để upload - photoCard sẽ là rỗng');
+    }
+
+    const response = await apiClient.post('/Cv/create-cv', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    console.log('=== KẾT QUẢ TẠO CV ===');
+    console.log('Response:', response.data);
+    
+    return response.data;
+  } catch (error) {
+    console.error('Lỗi tạo CV:', error);
     throw error;
   }
 };

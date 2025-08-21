@@ -1,6 +1,6 @@
 export type UserProfile = {
   name?: string;
-  position?: string;
+  content?: string;
   birthday?: string;
   gender?: string;
   phone?: string;
@@ -61,6 +61,7 @@ export type Sections = {
   sectionType?: string;
   title?: string;
   content?: string;
+  records?: Record<string, any>[]; // Thêm support cho nhiều records
   isVisible?: boolean;
 };
 export type SectionsList = Sections[];

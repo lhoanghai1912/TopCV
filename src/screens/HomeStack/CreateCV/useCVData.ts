@@ -1,23 +1,67 @@
 import { useState, useCallback } from 'react';
 import { Activity, Skill, UserProfile, Sections, Certificate, Education, Experience } from './typeCV';
 
+// Helper function để format date theo chuẩn yyyy-mm-dd
+const formatDateField = (dateString: string): string => {
+  if (!dateString) return '';
+  
+  // Nếu đã đúng format yyyy-mm-dd thì trả về luôn
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+  
+  // Convert từ các format khác
+  try {
+    let date: Date | null = null;
+    
+    // Format dd/mm/yyyy
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+      const [day, month, year] = dateString.split('/');
+      date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    }
+    // Format mm/yy -> yyyy-mm-01
+    else if (/^\d{2}\/\d{2}$/.test(dateString)) {
+      const [month, year] = dateString.split('/');
+      const fullYear = parseInt(year) < 50 ? 2000 + parseInt(year) : 1900 + parseInt(year);
+      date = new Date(fullYear, parseInt(month) - 1, 1);
+    }
+    // Format yyyy-mm -> yyyy-mm-01
+    else if (/^\d{4}-\d{2}$/.test(dateString)) {
+      return `${dateString}-01`;
+    }
+    
+    if (date && !isNaN(date.getTime())) {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+  } catch (error) {
+    console.warn('Error formatting date:', dateString, error);
+  }
+  
+  return dateString; // Trả về nguyên bản nếu không convert được
+};
+
 export function useCVData() {
+  // Title CV
+  const [title, setTitle] = useState<string>('');
+  // Photo Card cho CV
+  const [photoCard, setPhotoCard] = useState<string>('');
   // Từng trường riêng lẻ cho userProfile
   const [careerGoal, setCareerGoal] = useState<string>('');
   const [name, setName] = useState<string>('');
-  const [position, setPosition] = useState<string>('');
+  const [content, setContent] = useState<string>('');
   const [birthday, setBirthday] = useState<string>('');
   const [gender, setGender] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [website, setWebsite] = useState<string>('');
   const [address, setAddress] = useState<string>('');
-  const [education, setEducation] = useState<Education[]>([]);
-  const [experience, setExperience] = useState<Experience[]>([]);
+  const [educations, setEducation] = useState<Education[]>([]);
+  const [experiences, setExperience] = useState<Experience[]>([]);
   const [activity, setActivity] = useState<Activity[]>([]);
   const [certificate, setCertificate] = useState<Certificate[]>([]);
   const [award, setAward] = useState<Sections[]>([]);
-  const [skill, setSkill] = useState<Skill[]>([]);
+  const [skills, setSkill] = useState<Skill[]>([]);
   const [reference, setReference] = useState<Sections[]>([]);
   const [hobby, setHobby] = useState<Sections[]>([]);
   const [sections, setSections] = useState<Sections[]>([]);
@@ -25,6 +69,12 @@ export function useCVData() {
   // Hàm cập nhật từng section
   const updateSection = useCallback((sectionKey, data) => {
     switch (sectionKey) {
+      case 'title':
+        setTitle(typeof data === 'string' ? data : data?.title || '');
+        break;
+      case 'photoCard':
+        setPhotoCard(typeof data === 'string' ? data : data?.photoCard || '');
+        break;
       case 'careerGoal':
         // Cập nhật cả state riêng và sections array
         let careerGoalContent = '';
@@ -60,10 +110,10 @@ export function useCVData() {
           }
         });
         break;
-      case 'education':
+      case 'educations':
         setEducation(Array.isArray(data) ? data : [data]);
         break;
-      case 'experience':
+      case 'experiences':
         setExperience(Array.isArray(data) ? data : [data]);
         break;
       case 'activity':
@@ -116,7 +166,7 @@ export function useCVData() {
       case 'certificate':
         setCertificate(Array.isArray(data) ? data : [data]);
         break;
-      case 'skill':
+      case 'skills':
         setSkill(Array.isArray(data) ? data : [data]);
         break;
       case 'sections': {
@@ -140,7 +190,7 @@ export function useCVData() {
         // Cập nhật từng trường riêng lẻ
         if (Array.isArray(data)) data = data[0];
         setName(data?.name || '');
-        setPosition(data?.position || '');
+        setContent(data?.content || '');
         setBirthday(data?.birthday || '');
         setGender(data?.gender || '');
         setPhone(data?.phone || '');
@@ -155,7 +205,7 @@ export function useCVData() {
           cardData = data[0];
         }
         setName(cardData.name || '');
-        setPosition(cardData.position || '');
+        setContent(cardData.content || '');
         break;
       }
       default:
@@ -165,32 +215,97 @@ export function useCVData() {
 
   // Lấy toàn bộ data CV
   const getCVData = useCallback(() => {
+    // Format tất cả date fields
+    const formatEducation = educations.map(edu => ({
+      ...edu,
+      startDate: edu.startDate ? formatDateField(edu.startDate) : '',
+      endDate: edu.endDate ? formatDateField(edu.endDate) : '',
+    }));
+
+    const formatExperience = experiences.map(exp => ({
+      ...exp,
+      startDate: exp.startDate ? formatDateField(exp.startDate) : '',
+      endDate: exp.endDate ? formatDateField(exp.endDate) : '',
+    }));
+
+    const formatActivity = activity.map(act => ({
+      ...act,
+      startDate: act.startDate ? formatDateField(act.startDate) : '',
+      endDate: act.endDate ? formatDateField(act.endDate) : '',
+    }));
+
+    const formatCertificate = certificate.map(cert => ({
+      ...cert,
+      issueDate: cert.issueDate ? formatDateField(cert.issueDate) : '',
+      expiryDate: cert.expiryDate ? formatDateField(cert.expiryDate) : '',
+    }));
+
     // Các trường thuộc typeCV
     const userProfile = {
       name,
-      position,
-      birthday,
+      content,
+      birthday: birthday ? formatDateField(birthday) : '',
       gender,
       phone,
       email,
       website,
       address,
     };
+
+    // Format sections có chứa date fields
+    const formatSections = sections.map(section => {
+      if (section.records && Array.isArray(section.records)) {
+        const formattedRecords = section.records.map(record => {
+          const formattedRecord = { ...record };
+          
+          // Format các trường date trong records
+          Object.keys(formattedRecord).forEach(key => {
+            if ((key.includes('date') || key.includes('Date') || key === 'time') && 
+                formattedRecord[key] && typeof formattedRecord[key] === 'string') {
+              formattedRecord[key] = formatDateField(formattedRecord[key]);
+            }
+          });
+          
+          return formattedRecord;
+        });
+        
+        return {
+          ...section,
+          records: formattedRecords
+        };
+      }
+      return section;
+    });
+
     // Các sections động
     return {
+      title,
+      photoCard, // Thêm photoCard vào CVData
+      templateId: 2, // Fixed value
+      isPublic: true, // Fixed value
       ...userProfile,
-      education,
-      experience,
-      activity,
-      certificate,
-      skill,
-      sections,
+      educations: formatEducation,
+      experiences: formatExperience,
+      activity: formatActivity,
+      certifications: formatCertificate,
+      skills,
+      sections: formatSections,
     };
-  }, [name, position, birthday, gender, phone, email, website, address, careerGoal, education, experience, activity, certificate, award, skill, reference, hobby, sections]);
+  }, [title, photoCard, name, content, birthday, gender, phone, email, website, address, careerGoal, educations, experiences, activity, certificate, award, skills, reference, hobby, sections]);
+
+  const removeSection = useCallback((sectionType: string) => {
+    setSections(prevSections => 
+      prevSections.filter(section => section.sectionType !== sectionType)
+    );
+  }, []);
 
   return {
+    title,
+    setTitle,
+    photoCard,
+    setPhotoCard,
     name,
-    position,
+    content,
     birthday,
     gender,
     phone,
@@ -198,16 +313,17 @@ export function useCVData() {
     website,
     address,
     careerGoal,
-    education,
-    experience,
+    educations: educations,
+    experience: experiences,
     activity,
-    certificate,
+    certificate: certificate,
     award,
-    skill,
+    skills: skills,
     reference,
     hobby,
     sections,
     updateSection,
+    removeSection,
     getCVData,
   };
 }

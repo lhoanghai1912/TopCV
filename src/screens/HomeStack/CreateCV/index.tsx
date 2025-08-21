@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 import {
   View,
   Text,
@@ -19,34 +20,77 @@ import images from '../../../assets/images';
 import { Fonts } from '../../../utils/fontSize';
 import AppButton from '../../../components/AppButton';
 import { uploadUserAvatar } from '../../../services/user';
+import { createCVWithImage } from '../../../services/cv';
 import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import { useCVData } from './useCVData';
 import moment from 'moment';
 
+// Helper function để format date theo chuẩn yyyy-mm-dd
+const formatDateToYYYYMMDD = (date: Date) => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+// Helper function để format date cho hiển thị (yyyy-mm-dd -> dd/mm/yyyy)
+const formatDateForDisplay = (dateString: string) => {
+  if (!dateString) return '';
+
+  // Nếu là format yyyy-mm-dd thì convert sang dd/mm/yyyy
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  }
+
+  // Nếu là format yyyy-mm-01 thì convert sang mm/yyyy
+  if (/^\d{4}-\d{2}-01$/.test(dateString)) {
+    const [year, month] = dateString.split('-');
+    return `${month}/${year}`;
+  }
+
+  return dateString; // Trả về nguyên bản nếu không match
+};
+
+// Helper function để tạo UUID giả lập cho photo path
+const generatePhotoPath = () => {
+  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+    /[xy]/g,
+    function (c) {
+      const r = (Math.random() * 16) | 0;
+      const v = c == 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    },
+  );
+  return `/uploads/cv/photo-card/${uuid}.jpg`;
+};
+
 const CreateCVScreen: React.FC = navigation => {
   const [avatarUri, setAvatarUri] = useState<string>('');
-  const [uploading, setUploading] = useState(false);
   const insets = useSafeAreaInsets();
-
-  const [title, setTitle] = React.useState('');
-  const [photoCard, setPhotoCard] = useState('');
 
   // Sử dụng hook quản lý data CV
   const {
+    title,
+    setTitle,
+    photoCard,
+    setPhotoCard,
     name,
-    position,
-    birthday,
+    content,
+    birthday: birthday,
     gender,
     phone,
     email,
     website,
     address,
-    education,
-    experience,
+    educations,
+    experience: experiences,
     certificate,
-    skill,
+    skills,
+    sections,
     updateSection,
+    removeSection,
     getCVData,
   } = useCVData();
 
@@ -57,7 +101,7 @@ const CreateCVScreen: React.FC = navigation => {
       case 'userProfile':
         currentData = {
           name,
-          position,
+          content,
           birthday,
           gender,
           phone,
@@ -66,22 +110,22 @@ const CreateCVScreen: React.FC = navigation => {
           address,
         };
         break;
-      case 'education':
-        currentData = education;
+      case 'educations':
+        currentData = educations;
         break;
-      case 'experience':
-        currentData = experience;
+      case 'experiences':
+        currentData = experiences;
         break;
       case 'certificate':
         currentData = certificate;
         break;
-      case 'skill':
-        currentData = skill;
+      case 'skills':
+        currentData = skills;
         break;
       case 'card':
         currentData = {
           name,
-          position,
+          content,
         };
         break;
       default:
@@ -126,69 +170,63 @@ const CreateCVScreen: React.FC = navigation => {
     ]).format('YYYY-MM-DD');
   };
 
-  // Khi tạo dữ liệu gửi lên API:
-  const cvDataToSend = {
-    name,
-    birthday: formatDate(birthday || ''),
-    gender,
-    phoneNumber: phone || '',
-    address,
-    title,
-    templateId: 2,
-    content: position || '',
-    isPublic: true,
-    photoCard,
-    sections: [], // TODO: lấy từ state sections nếu có
-    skill: Array.isArray(skill)
-      ? skill.map(sk => ({
-          skillName: sk.skillName || '',
-          category: sk.category || '',
-          proficiencyLevel: sk.proficiencyLevel || 0,
-          proficiencyType: sk.proficiencyType || '',
-        }))
-      : [],
-    experience: Array.isArray(experience)
-      ? experience.map(exp => ({
-          jobTitle: exp.jobTitle || '',
-          companyName: exp.companyName || '',
-          startDate: formatDate(exp.startDate || ''),
-          endDate: formatDate(exp.endDate || ''),
-          description: exp.description || '',
-        }))
-      : [],
-    education: Array.isArray(education)
-      ? education.map(ed => ({
-          institutionName: ed.institutionName || '',
-          degree: ed.degree || '',
-          fieldOfStudy: ed.fieldOfStudy || '',
-          startDate: formatDate(ed.startDate || ''),
-          endDate: formatDate(ed.endDate || ''),
-          description: ed.description || '',
-        }))
-      : [],
-    certification: Array.isArray(certificate)
-      ? certificate.map(cert => ({
-          name: cert.name || '',
-          issueDate: formatDate(cert.issueDate || ''),
-          expiryDate: cert.expiryDate ? formatDate(cert.expiryDate) : null,
-        }))
-      : [],
-    languages: [], // TODO: lấy từ state languages nếu có
-  };
-
   const handleEditField = (sectionKey, sectionTitle, fields) => {
     // Map UI keys to state keys for core fields only
     const keyMap = {
-      education: 'education',
-      skill: 'skill',
-      experience: 'experience',
-      certification: 'certification',
+      educations: 'educations',
+      skills: 'skills',
+      experiences: 'experiences',
+      certificate: 'certificate',
       card: 'card',
       userProfile: 'userProfile',
     };
     const stateKey = keyMap[sectionKey] || sectionKey;
     goToEditCV(stateKey, sectionTitle, fields);
   };
+
+  const handleAddCustomSection = () => {
+    navigate(Screen_Name.EditCV_Screen, {
+      title: 'Thêm trường tùy chỉnh',
+      fields: [
+        {
+          key: 'title',
+          label: 'Tiêu đề phần',
+          placeholder: 'Nhập tiêu đề phần (VD: Dự án, Hoạt động...)',
+        },
+        {
+          key: 'content',
+          label: 'Nội dung phần',
+          placeholder: 'Nhập nội dung cho phần này',
+        },
+      ],
+      initialData: null,
+      sectionKey: 'sections', // Đánh dấu đây là custom section
+      onSave: data => {
+        // Tạo custom section object với unique sectionType
+        const timestamp = Date.now();
+        const baseType =
+          data.title?.toLowerCase().replace(/\s+/g, '') || 'custom';
+        const customSection = {
+          sectionType: `${baseType}_${timestamp}`, // Thêm timestamp để unique
+          title: data.title || 'Trường tùy chỉnh',
+          content: data.content || '',
+          isVisible: true,
+        };
+        console.log('Đang thêm custom section:', customSection);
+        updateSection('sections', customSection);
+
+        // Log CV data sau khi thêm
+        setTimeout(() => {
+          const cvData = getCVData();
+          console.log(
+            'CV đã tạo sau khi thêm custom section:',
+            JSON.stringify(cvData, null, 2),
+          );
+        }, 100);
+      },
+    });
+  };
+  console.log('avatar', avatarUri);
 
   return (
     <View style={[styles.container]}>
@@ -218,6 +256,33 @@ const CreateCVScreen: React.FC = navigation => {
                   const uri = result.assets[0].uri;
                   if (typeof uri === 'string') {
                     setAvatarUri(uri);
+
+                    // Tạo đường dẫn ảnh giả lập (như sau khi upload lên API)
+                    const simulatedPhotoPath = generatePhotoPath();
+                    console.log(
+                      'Đường dẫn ảnh sau khi upload:',
+                      simulatedPhotoPath,
+                    );
+
+                    // Lưu đường dẫn ảnh vào photoCard của CVData
+                    setPhotoCard(simulatedPhotoPath);
+
+                    // Hiển thị toast thông báo
+                    Toast.show({
+                      type: 'success',
+                      text1: 'Ảnh đã được chọn! 📷',
+                      text2: 'Đường dẫn ảnh đã được lưu vào CV',
+                      visibilityTime: 3000,
+                    });
+
+                    // Log CVData sau khi cập nhật ảnh
+                    setTimeout(() => {
+                      const cvData = getCVData();
+                      console.log('=== CV Data sau khi cập nhật ảnh ===');
+                      console.log('PhotoCard:', cvData.photoCard);
+                      console.log('=== CV Data hoàn chỉnh ===');
+                      console.log(JSON.stringify(cvData, null, 2));
+                    }, 100);
                   }
                 }
               }}
@@ -234,7 +299,7 @@ const CreateCVScreen: React.FC = navigation => {
                   handleEditField('card', 'Card', [
                     { key: 'name', label: 'Tên', placeholder: 'Nhập tên' },
                     {
-                      key: 'position',
+                      key: 'content',
                       label: 'Vị trí ứng tuyển',
                       placeholder: 'Nhập vị trí ứng tuyển',
                     },
@@ -243,7 +308,7 @@ const CreateCVScreen: React.FC = navigation => {
               >
                 <Text style={AppStyles.title}>{name || 'Họ và tên'}</Text>
                 <Text style={AppStyles.text}>
-                  {position || 'Vị trí ứng tuyển'}
+                  {content || 'Vị trí ứng tuyển'}
                 </Text>
               </TouchableOpacity>
 
@@ -281,7 +346,9 @@ const CreateCVScreen: React.FC = navigation => {
                   ])
                 }
               >
-                <Text>Ngày sinh: {birthday || ''}</Text>
+                <Text>
+                  Ngày sinh: {birthday ? formatDateForDisplay(birthday) : ''}
+                </Text>
                 <Text>Giới tính: {gender || ''}</Text>
                 <Text>Số điện thoại: {phone || ''}</Text>
                 <Text>Email: {email || ''}</Text>
@@ -295,7 +362,7 @@ const CreateCVScreen: React.FC = navigation => {
             <TouchableOpacity
               style={styles.bodyContentItem}
               onPress={() =>
-                handleEditField('education', 'Học vấn', [
+                handleEditField('educations', 'Học vấn', [
                   {
                     key: 'institutionName',
                     label: 'Tên trường/học viện',
@@ -333,8 +400,8 @@ const CreateCVScreen: React.FC = navigation => {
                 <Text style={styles.title}>HỌC VẤN</Text>
               </View>
               {/* Education */}
-              {Array.isArray(education) && education.length > 0 ? (
-                education.map((edu, idx) => (
+              {Array.isArray(educations) && educations.length > 0 ? (
+                educations.map((edu, idx) => (
                   <View
                     key={idx}
                     style={{ flexDirection: 'row', marginBottom: 16 }}
@@ -342,7 +409,9 @@ const CreateCVScreen: React.FC = navigation => {
                     <View style={{ width: '35%' }}>
                       <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
                         {edu.startDate && edu.endDate
-                          ? `${edu.startDate} - ${edu.endDate}`
+                          ? `${formatDateForDisplay(
+                              edu.startDate,
+                            )} - ${formatDateForDisplay(edu.endDate)}`
                           : 'Bắt đầu - Kết thúc'}
                       </Text>
                     </View>
@@ -381,7 +450,7 @@ const CreateCVScreen: React.FC = navigation => {
             <TouchableOpacity
               style={styles.bodyContentItem}
               onPress={() =>
-                handleEditField('experience', 'Kinh nghiệm làm việc', [
+                handleEditField('experiences', 'Kinh nghiệm làm việc', [
                   {
                     key: 'jobTitle',
                     label: 'Chức danh công việc',
@@ -414,13 +483,15 @@ const CreateCVScreen: React.FC = navigation => {
                 <Text style={styles.title}>KINH NGHIỆM LÀM VIỆC</Text>
               </View>
               {/* Experience */}
-              {Array.isArray(experience) && experience.length > 0 ? (
-                experience.map((exp, idx) => (
+              {Array.isArray(experiences) && experiences.length > 0 ? (
+                experiences.map((exp, idx) => (
                   <View key={idx} style={{ flexDirection: 'row' }}>
                     <View style={{ width: '35%' }}>
                       <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
                         {exp.startDate && exp.endDate
-                          ? `${exp.startDate} - ${exp.endDate}`
+                          ? `${formatDateForDisplay(
+                              exp.startDate,
+                            )} - ${formatDateForDisplay(exp.endDate)}`
                           : 'Bắt đầu - Kết thúc'}
                       </Text>
                     </View>
@@ -458,7 +529,7 @@ const CreateCVScreen: React.FC = navigation => {
             <TouchableOpacity
               style={styles.bodyContentItem}
               onPress={() =>
-                handleEditField('certification', 'Chứng chỉ', [
+                handleEditField('certificate', 'Chứng chỉ', [
                   {
                     key: 'name',
                     label: 'Tên chứng chỉ',
@@ -489,7 +560,9 @@ const CreateCVScreen: React.FC = navigation => {
                     >
                       <View style={{ width: '35%' }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                          {cert.issueDate || 'Ngày cấp'}
+                          {cert.issueDate
+                            ? formatDateForDisplay(cert.issueDate)
+                            : 'Ngày cấp'}
                         </Text>
                       </View>
                       <View style={{ flexShrink: 1, width: '70%' }}>
@@ -497,7 +570,9 @@ const CreateCVScreen: React.FC = navigation => {
                           {cert.name || 'Tên chứng chỉ'}
                         </Text>
                         <Text style={{ fontSize: 15 }}>
-                          {cert.expiryDate || 'Ngày hết hạn'}
+                          {cert.expiryDate
+                            ? formatDateForDisplay(cert.expiryDate)
+                            : 'Ngày hết hạn'}
                         </Text>
                       </View>
                     </View>
@@ -525,7 +600,7 @@ const CreateCVScreen: React.FC = navigation => {
             <TouchableOpacity
               style={styles.bodyContentItem}
               onPress={() =>
-                handleEditField('skill', 'Kỹ năng', [
+                handleEditField('skills', 'Kỹ năng', [
                   {
                     key: 'skillName',
                     label: 'Tên kỹ năng',
@@ -553,49 +628,186 @@ const CreateCVScreen: React.FC = navigation => {
                 <Text style={styles.title}>KỸ NĂNG</Text>
               </View>
               {/* Skill */}
-              <View style={{ flexDirection: 'row' }}>
-                {Array.isArray(skill) && skill.length > 0 ? (
-                  skill.map((sk, idx) => (
-                    <View
-                      key={idx}
-                      style={{ flexDirection: 'row', marginBottom: 8 }}
-                    >
-                      <View style={{ width: '35%' }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                          {sk.skillName || 'Tên kỹ năng'}
-                        </Text>
-                      </View>
-                      <View style={{ flexShrink: 1, width: '70%' }}>
-                        <Text style={{ fontSize: 15 }}>
-                          {sk.category || 'Phân loại kỹ năng'}
-                        </Text>
-                        <Text style={{ fontSize: 15 }}>
-                          {sk.proficiencyLevel
-                            ? `Level: ${sk.proficiencyLevel}`
-                            : 'Mức độ thành thạo'}
-                        </Text>
-                        <Text style={{ fontSize: 15 }}>
-                          {sk.proficiencyType || 'Loại thành thạo'}
-                        </Text>
-                      </View>
+              {Array.isArray(skills) && skills.length > 0 ? (
+                skills.map((sk, idx) => (
+                  <View
+                    key={idx}
+                    style={{ flexDirection: 'row', marginBottom: 16 }}
+                  >
+                    <View style={{ width: '35%' }}>
+                      <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
+                        {sk.skillName || 'Tên kỹ năng'}
+                      </Text>
                     </View>
-                  ))
-                ) : (
-                  <View style={{ width: '100%' }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                      Tên kỹ năng
-                    </Text>
-                    <Text style={{ fontSize: 15 }}>Mô tả kỹ năng</Text>
+                    <View style={{ flexShrink: 1, width: '70%' }}>
+                      <Text style={{ fontSize: 15 }}>
+                        {sk.category || 'Phân loại kỹ năng'}
+                      </Text>
+                      <Text style={{ fontSize: 15 }}>
+                        {sk.proficiencyLevel
+                          ? `Level: ${sk.proficiencyLevel}`
+                          : 'Mức độ thành thạo'}
+                      </Text>
+                      <Text style={{ fontSize: 15 }}>
+                        {sk.proficiencyType || 'Loại thành thạo'}
+                      </Text>
+                    </View>
                   </View>
-                )}
-              </View>
+                ))
+              ) : (
+                <View style={{ width: '100%' }}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
+                    Tên kỹ năng
+                  </Text>
+                  <Text style={{ fontSize: 15 }}>Mô tả kỹ năng</Text>
+                </View>
+              )}
             </TouchableOpacity>
           </View>
+
+          {/* Custom Sections */}
+          {Array.isArray(sections) &&
+            sections.length > 0 &&
+            sections.map((section, index) => (
+              <View key={index} style={styles.bodyContentItem}>
+                <TouchableOpacity
+                  style={styles.bodyContentItem}
+                  onPress={() => {
+                    navigate(Screen_Name.EditCV_Screen, {
+                      title: section.title,
+                      fields: [
+                        {
+                          key: 'title',
+                          label: 'Tiêu đề phần',
+                          placeholder: 'Nhập tiêu đề phần',
+                        },
+                        {
+                          key: 'content',
+                          label: 'Nội dung phần',
+                          placeholder: 'Nhập nội dung cho phần này',
+                        },
+                      ],
+                      initialData: {
+                        title: section.title,
+                        content: section.content,
+                      },
+                      sectionKey: 'sections',
+                      onSave: data => {
+                        const updatedSection = {
+                          sectionType: section.sectionType,
+                          title: data.title || section.title,
+                          content: data.content || '',
+                          isVisible: true,
+                        };
+                        console.log(
+                          'Đang cập nhật custom section:',
+                          updatedSection,
+                        );
+                        updateSection('sections', updatedSection);
+
+                        // Log CV data sau khi cập nhật
+                        setTimeout(() => {
+                          const cvData = getCVData();
+                          console.log(
+                            'CV sau khi cập nhật custom section:',
+                            JSON.stringify(cvData, null, 2),
+                          );
+                        }, 100);
+                      },
+                    });
+                  }}
+                >
+                  <View style={styles.title_underLine}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Text style={styles.title}>
+                        {(section.title || 'TRƯỜNG TÙY CHỈNH').toUpperCase()}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          // Xóa section bằng sectionType
+                          if (section.sectionType) {
+                            removeSection(section.sectionType);
+                            console.log('Đã xóa custom section:', section);
+                          }
+                        }}
+                        style={{ padding: 5 }}
+                      >
+                        <Text style={{ color: 'red', fontSize: 18 }}>🗑️</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View style={{ width: '100%' }}>
+                    <Text style={{ fontSize: 15 }}>
+                      {section.content || 'Nhấn để chỉnh sửa nội dung'}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            ))}
+
+          {/* Custom Section Button */}
+          <TouchableOpacity
+            style={styles.addCustomSectionButton}
+            onPress={() => handleAddCustomSection()}
+          >
+            <Text style={styles.addCustomSectionText}>
+              + Thêm trường tùy chỉnh
+            </Text>
+          </TouchableOpacity>
         </View>
+
         <AppButton
           title="Lưu CV"
-          onPress={() => {
-            // TODO: Implement save CV logic
+          onPress={async () => {
+            try {
+              // Lấy tất cả data CV (đã bao gồm title và photoCard)
+              const cvData = getCVData();
+
+              console.log('=== THÔNG TIN CV TRƯỚC KHI GỬI API ===');
+              console.log('Tiêu đề CV:', cvData.title);
+              console.log('Ảnh đại diện:', cvData.photoCard);
+              console.log('Template ID:', cvData.templateId);
+              console.log('Public Status:', cvData.isPublic);
+              console.log('=== CV DATA HOÀN CHỈNH ===');
+              console.log(JSON.stringify(cvData, null, 2));
+
+              // Hiển thị loading toast
+              Toast.show({
+                type: 'info',
+                text1: 'Đang tạo CV...',
+                text2: 'Vui lòng đợi',
+                visibilityTime: 2000,
+              });
+
+              // Gọi API tạo CV với ảnh
+              const imageUri = avatarUri; // URI ảnh thực tế từ device
+              const result = await createCVWithImage(cvData, imageUri);
+
+              // Hiển thị Toast thông báo thành công
+              Toast.show({
+                type: 'success',
+                text1: 'Tạo CV thành công! 🎉',
+                text2: `"${cvData.title || 'CV không có tiêu đề'}" đã được tạo`,
+                visibilityTime: 3000,
+              });
+
+              console.log('=== KẾT QUẢ TẠO CV ===');
+              console.log('API Response:', result);
+            } catch (error) {
+              console.error('Lỗi tạo CV:', error);
+              Toast.show({
+                type: 'error',
+                text1: 'Lỗi tạo CV',
+                text2: 'Không thể tạo CV. Vui lòng thử lại.',
+                visibilityTime: 3000,
+              });
+            }
           }}
           customStyle={{ marginBottom: spacing.large }}
         />
@@ -660,6 +872,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     flex: 1,
     marginBottom: spacing.medium,
+  },
+  addCustomSectionButton: {
+    backgroundColor: colors.primary,
+    paddingVertical: spacing.medium,
+    paddingHorizontal: spacing.large,
+    borderRadius: 8,
+    marginVertical: spacing.medium,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  addCustomSectionText: {
+    color: colors.white,
+    fontSize: Fonts.normal,
+    fontWeight: 'bold',
   },
 });
 
