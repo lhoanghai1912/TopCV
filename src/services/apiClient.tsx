@@ -39,7 +39,6 @@ apiClient.interceptors.response.use(
 
       Toast.show({
         type: 'error',
-        text1: `Lỗi ${status}`,
         text2: message,
       });
 
@@ -65,7 +64,6 @@ apiClient.interceptors.response.use(
 
       Toast.show({
         type: 'error',
-        text1: `Lỗi ${status}`,
         text2: message,
       });
     } else if (error.request) {
@@ -79,7 +77,6 @@ apiClient.interceptors.response.use(
       console.log('⚠️ Error setting up request:', error.message);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
         text2: error.message,
       });
     }

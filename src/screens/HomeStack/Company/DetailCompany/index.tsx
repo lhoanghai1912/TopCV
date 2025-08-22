@@ -75,8 +75,10 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const scrollToMain = () => {
-    const y = Math.max(mainTop - fixedHeaderH, 0);
-    scrollRef.current?.scrollTo({ y, animated: true });
+    scrollRef.current?.scrollTo({
+      y: ms(mainTop + fixedHeaderH + 25),
+      animated: true,
+    });
   };
 
   const setTab = (key: 'info' | 'job' | 'others') => {
@@ -102,12 +104,10 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
             title={companyDetail?.name || ''}
             onPress={() => navigation.goBack()}
             icon1={icons.more}
-            customStyle={[
-              {
-                paddingHorizontal: spacing.medium,
-                backgroundColor: colors.white,
-              },
-            ]}
+            customStyle={{
+              paddingHorizontal: spacing.medium,
+              backgroundColor: colors.white,
+            }}
           />
 
           <ScrollView horizontal={true} style={styles.category}>
@@ -178,13 +178,11 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
               onPress={() => navigation.goBack()}
               icon1={icons.more}
               iconStyle={styles.customIcon}
-              customStyle={[
-                {
-                  marginTop: spacing.medium,
-                  paddingHorizontal: spacing.small,
-                  marginBottom: spacing.medium,
-                },
-              ]}
+              customStyle={{
+                marginTop: spacing.medium,
+                paddingHorizontal: spacing.small,
+                marginBottom: spacing.medium,
+              }}
             />
           </ImageBackground>
           <View

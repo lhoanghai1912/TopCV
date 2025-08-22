@@ -9,7 +9,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { getJobDetails, getJobofCompany } from '../../../../services/job';
+import {
+  getJobDetails,
+  getJobofCompany,
+  patchSavedJob,
+} from '../../../../services/job';
 import NavBar from '../../../../components/Navbar';
 import icons from '../../../../assets/icons';
 import LinearGradient from 'react-native-linear-gradient';
@@ -28,12 +32,15 @@ import Toast from 'react-native-toast-message';
 import CardJob from '../Card/CardJob';
 import { Screen_Name } from '../../../../navigation/ScreenName';
 import { navigate } from '../../../../navigation/RootNavigator';
+import { useTranslation } from 'react-i18next';
 interface Props {
   navigation: any;
   route: any;
 }
 
 const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { t } = useTranslation();
+
   const insets = useSafeAreaInsets();
   console.log('job id: ', route.params.job.id);
   const { token } = useSelector((state: any) => state.user);
@@ -50,28 +57,33 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   const [mainTop, setMainTop] = useState(0);
   const [fixedHeaderH, setFixedHeaderH] = useState(0);
   const [mainContent, setMainContent] = useState(0);
+  const [isSaved, setIsSaved] = useState(route.params?.job?.isSaved);
 
   const jobOverview = [
     {
       icon: icons.apple,
-      label: 'Hạn ứng tuyển',
+      label: t('label.job_app_deadline'),
       value: moment(jobDetails.applicationDeadline).format('DD/MM/YYYY'),
     },
-    { icon: icons.apple, label: 'Cấp bậc', value: jobDetails.jobLevelName },
+    {
+      icon: icons.apple,
+      label: t('label.job_level'),
+      value: jobDetails.jobLevelName,
+    },
 
     {
       icon: icons.apple,
-      label: 'Trình độ giáo dục',
+      label: t('label.job_edu_level'),
       value: jobDetails.educationLevelName,
     },
     {
       icon: icons.apple,
-      label: 'Số lượng ứng tuyển',
+      label: t('label.job_num_vacancies'),
       value: jobDetails.numberOfVacancies,
     },
     {
       icon: icons.apple,
-      label: 'Hình thức làm việc',
+      label: t('label.job_type'),
       value: jobDetails.jobTypeName,
     },
   ];
@@ -111,10 +123,32 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
     );
   };
 
+  const handleSaveJob = async () => {
+    try {
+      const res = await patchSavedJob(jobId);
+      console.log(res);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Thông báo',
+        text2: `${
+          res.isSaved === true
+            ? t('message.job_saved_success')
+            : t('message.job_unsaved_success')
+        } `,
+        visibilityTime: 1500,
+      });
+      setIsSaved(!isSaved);
+    } catch (error) {}
+  };
+
   const scrollToMain = () => {
     // Scroll đến vị trí fixedHeaderH (đầu header mới)
     showFixedHeader;
-    scrollRef.current?.scrollTo({ y: fixedHeaderH, animated: true });
+    scrollRef.current?.scrollTo({
+      y: mainContent - fixedHeaderH + 50,
+      animated: true,
+    });
   };
   console.log(
     'fixedHeaderH',
@@ -140,12 +174,11 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const applyNow = () => {
     if (!token) {
-      Toast.show({
-        type: 'error',
-        text1: 'Thông báo',
-        text2: 'Cần đăng nhập để thực hiện tính năng này',
-        visibilityTime: 1500,
-      });
+      // Toast.show({
+      //   type: 'error',
+      //   text2: 'Cần đăng nhập để thực hiện tính năng này',
+      //   visibilityTime: 1500,
+      // });
     }
   };
   return (
@@ -159,12 +192,10 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
             title={jobDetails?.title || ''}
             onPress={() => navigation.goBack()}
             icon1={icons.more}
-            customStyle={[
-              {
-                paddingHorizontal: spacing.medium,
-                backgroundColor: colors.white,
-              },
-            ]}
+            customStyle={{
+              paddingHorizontal: spacing.medium,
+              backgroundColor: colors.white,
+            }}
             textStyle={{ fontSize: Fonts.large }}
           />
           <View style={styles.category}>
@@ -178,7 +209,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
               }}
             >
               <Text style={[AppStyles.label, { textAlign: 'center' }]}>
-                Thông tin
+                {t('label.info')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -192,7 +223,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
               }}
             >
               <Text style={[AppStyles.label, { textAlign: 'center' }]}>
-                Công ty
+                {t('label.company')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -204,7 +235,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
         scrollEventThrottle={16}
         onScroll={event => {
           const scrollY = event.nativeEvent.contentOffset.y;
-          setShowFixedHeader(scrollY > ms(mainContent - fixedHeaderH - 65));
+          setShowFixedHeader(scrollY > ms(mainContent - fixedHeaderH + 30));
         }}
       >
         <View style={{ flex: 1 }}>
@@ -215,12 +246,10 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
             <NavBar
               onPress={() => navigation.goBack()}
               icon1={icons.more}
-              customStyle={[
-                {
-                  paddingHorizontal: spacing.medium,
-                  marginTop: spacing.medium,
-                },
-              ]}
+              customStyle={{
+                paddingHorizontal: spacing.medium,
+                marginTop: spacing.medium,
+              }}
             />
 
             <View style={[styles.overview]}>
@@ -259,7 +288,12 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                 <Text
                   style={[
                     AppStyles.label,
-                    { textAlign: 'center', marginBottom: spacing.small },
+                    {
+                      fontSize: Fonts.xlarge,
+                      textAlign: 'center',
+                      marginBottom: spacing.small,
+                      fontWeight: 'bold',
+                    },
                   ]}
                 >
                   {jobDetails.company?.name}
@@ -268,7 +302,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
               <View style={styles.headerContent}>
                 <View style={[styles.jobOverview]}>
                   <Image source={icons.salary} style={[AppStyles.icon]} />
-                  <Text style={AppStyles.text}>Mức lương</Text>
+                  <Text style={AppStyles.text}>{t('label.salary')}</Text>
                   <Text style={AppStyles.text}>{`${formatPriceToTy(
                     jobDetails.salaryFrom,
                   )} - ${formatPriceToTy(jobDetails.salaryTo)}`}</Text>
@@ -278,7 +312,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                 />
                 <View style={[styles.jobOverview, { alignItems: 'center' }]}>
                   <Image source={icons.location} style={[AppStyles.icon]} />
-                  <Text style={AppStyles.text}>Địa điểm</Text>
+                  <Text style={AppStyles.text}>{t('label.location')}</Text>
                   <Text style={AppStyles.text}>{jobDetails.provinceName}</Text>
                 </View>
                 <View
@@ -286,7 +320,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                 />
                 <View style={[styles.jobOverview, { alignItems: 'center' }]}>
                   <Image source={icons.exep} style={[AppStyles.icon]} />
-                  <Text style={AppStyles.text}>Kinh nghiệm</Text>
+                  <Text style={AppStyles.text}>{t('label.exep')}</Text>
                   <Text style={AppStyles.text}>
                     {`${jobDetails.experienceYear} ${
                       jobDetails.experienceYear > 1 ? 'years' : 'year'
@@ -308,7 +342,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                 }}
               >
                 <Text style={[AppStyles.label, { textAlign: 'center' }]}>
-                  Thông tin
+                  {t('label.info')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -324,21 +358,9 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                 }}
               >
                 <Text style={[AppStyles.label, { textAlign: 'center' }]}>
-                  Công ty
+                  {t('label.company')}
                 </Text>
               </TouchableOpacity>
-              {/* <TouchableOpacity
-              onPress={() => setOnSelectedCategory('competition')}
-              style={{
-                flex: 2,
-                borderColor: colors.blue,
-                borderBottomWidth: onSelectedCategory === 'competition' ? 1 : 0,
-              }}
-            >
-              <Text style={[AppStyles.label, { textAlign: 'center' }]}>
-                Mức độ cạnh tranh
-              </Text>
-            </TouchableOpacity> */}
             </View>
             <View style={styles.mainContent}>
               {onSelectedCategory === 'info' ? (
@@ -351,7 +373,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                           { marginBottom: spacing.small },
                         ]}
                       >
-                        Description
+                        {t('label.description')}
                       </Text>
                       <Text style={AppStyles.text}>
                         {jobDetails.description}
@@ -364,7 +386,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                           { marginBottom: spacing.small },
                         ]}
                       >
-                        Requirement
+                        {t('label.requirement')}
                       </Text>
                       <Text style={AppStyles.text}>
                         {jobDetails.requirement}
@@ -377,7 +399,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                           { marginBottom: spacing.small },
                         ]}
                       >
-                        Benefit
+                        {t('label.benefit')}
                       </Text>
                       <Text style={AppStyles.text}>{jobDetails.benefit}</Text>
                     </View>
@@ -388,7 +410,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                           { marginBottom: spacing.small },
                         ]}
                       >
-                        Address
+                        {t('label.address')}
                       </Text>
                       <Text style={AppStyles.text}>{jobDetails.address}</Text>
                     </View>
@@ -404,7 +426,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                           { marginBottom: spacing.small },
                         ]}
                       >
-                        OverView
+                        {t('label.overview')}
                       </Text>
                       <View style={styles.jobOverviewContainer}>
                         {jobOverview.map((item, index) => (
@@ -437,7 +459,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                           { marginBottom: spacing.small },
                         ]}
                       >
-                        Requirement Skill
+                        {t('label.requirement_skill')}
                       </Text>
                       <View
                         style={[
@@ -490,7 +512,9 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                           style={[AppStyles.icon]}
                         />
                         <View style={{ paddingHorizontal: spacing.medium }}>
-                          <Text style={AppStyles.label}>Địa chỉ công ty</Text>
+                          <Text style={AppStyles.label}>
+                            {t('label.company_address')}
+                          </Text>
                           <Text style={[AppStyles.text, { flexWrap: 'wrap' }]}>
                             {jobDetails?.company?.address}
                           </Text>
@@ -508,7 +532,9 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                           style={[AppStyles.icon]}
                         />
                         <View style={{ paddingHorizontal: spacing.medium }}>
-                          <Text style={AppStyles.label}>Website công ty</Text>
+                          <Text style={AppStyles.label}>
+                            {t('label.company_website')}
+                          </Text>
                           <TouchableOpacity
                             onPress={() =>
                               handleLinkPress(jobDetails?.company?.website)
@@ -532,7 +558,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                           { marginBottom: spacing.small },
                         ]}
                       >
-                        Company Introduction
+                        {t('label.company_introduction')}
                       </Text>
                       <Text style={AppStyles.text}>
                         {jobDetails?.company?.description}
@@ -554,7 +580,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                   <Text
                     style={[AppStyles.title, { marginBottom: spacing.small }]}
                   >
-                    Jobs from the selected company:
+                    {t('label.job_of_company')}
                   </Text>
                   <FlatList
                     scrollEnabled={false}
@@ -571,8 +597,14 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
         </View>
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-        <TouchableOpacity style={styles.iconWrap}>
-          <Image source={icons.heart} style={AppStyles.icon} />
+        <TouchableOpacity
+          style={styles.iconWrap}
+          onPress={() => handleSaveJob()}
+        >
+          <Image
+            source={isSaved ? icons.heart_like : icons.heart}
+            style={AppStyles.icon}
+          />
         </TouchableOpacity>
         <View
           style={{
@@ -580,7 +612,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
             flex: 1,
           }}
         >
-          <AppButton title="Apply Now" onPress={() => applyNow()} />
+          <AppButton title={t('button.apply_now')} onPress={() => applyNow()} />
         </View>
       </View>
       {loading && (

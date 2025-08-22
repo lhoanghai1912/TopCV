@@ -39,8 +39,12 @@ import exep from './exep.png';
 import location from './location.png';
 import internet from './internet.png';
 import share from './share.png';
+import job from './job.png';
+import company from './company.png';
 
 export default {
+  job,
+  company,
   arrow,
   share,
   add,

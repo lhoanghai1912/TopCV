@@ -23,7 +23,7 @@ interface NavBarProps {
   icon2?: any;
   onRightPress1?: () => void;
   onRightPress2?: () => void;
-  customStyle?: ViewStyle[];
+  customStyle?: ViewStyle;
   textStyle?: TextStyle;
   iconStyle?: ImageStyle;
 }
@@ -36,12 +36,12 @@ const NavBar = ({
   onRightPress1,
   onRightPress2,
   textStyle,
-  customStyle = [],
+  customStyle,
   iconStyle,
 }: NavBarProps) => {
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.navBar, ...customStyle, { paddingTop: insets.top }]}>
+    <View style={[styles.navBar, customStyle, { paddingTop: insets.top }]}>
       {/* Left icon */}
       <View style={styles.leftIconWrap}>
         <TouchableOpacity onPress={onPress} style={styles.iconButton}>

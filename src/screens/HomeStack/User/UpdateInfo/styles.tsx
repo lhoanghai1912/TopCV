@@ -6,8 +6,10 @@ import { colors } from '../../../../utils/color';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: spacing.medium,
+  },
+  body: {
+    paddingHorizontal: spacing.medium,
+    paddingVertical: spacing.medium,
   },
   title: {
     fontSize: Fonts.large,

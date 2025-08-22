@@ -1,9 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
 import { navigationRef } from './RootNavigator';
 import HomeNavigator from './HomeNavigator';
-import { useSelector } from 'react-redux';
 import SplashScreen from '../screens/Splash';
 const AppNavigator = () => {
   const [showSplash, setShowSplash] = useState(true);

@@ -129,21 +129,16 @@ const HomeScreen: React.FC = () => {
       return (
         <View
           style={{
-            paddingVertical: spacing.large,
-            paddingHorizontal: spacing.medium,
             backgroundColor: '#f0f0f0',
             borderTopWidth: 1,
             borderTopColor: '#ddd',
             alignItems: 'center',
             justifyContent: 'center',
-            minHeight: 60,
+            paddingVertical: spacing.medium,
           }}
         >
-          <ActivityIndicator
-            size="small"
-            color={colors.primary}
-            style={{ marginVertical: spacing.medium }}
-          />
+          <Text>{t(`message.loadingMore`)}</Text>
+          <ActivityIndicator size="small" color={colors.primary} />
         </View>
       );
     }
@@ -168,7 +163,7 @@ const HomeScreen: React.FC = () => {
               fontStyle: 'italic',
             }}
           >
-            Đã hết bài viết
+            {t(`message.noMoreJob`)}
           </Text>
         </View>
       );
@@ -181,14 +176,17 @@ const HomeScreen: React.FC = () => {
     <View style={styles.container}>
       <LinearGradient
         colors={['#095286', '#f5f5f5']}
-        style={[styles.header, { paddingTop: insets.top }]}
+        style={[
+          styles.header,
+          { paddingTop: insets.top, height: ms(50 + insets.top) },
+        ]}
       >
         <TouchableOpacity onPress={() => {}} style={styles.search}>
           <Image
             source={icons.search}
             style={[AppStyles.icon, { marginRight: spacing.small }]}
           />
-          <Text style={AppStyles.text}>{t('message.find')}</Text>
+          <Text style={AppStyles.text}>{t('message.job_find')}</Text>
         </TouchableOpacity>
       </LinearGradient>
       <View style={styles.category}>
@@ -203,12 +201,12 @@ const HomeScreen: React.FC = () => {
         >
           <View style={styles.iconWrap}>
             <Image
-              source={icons.apple}
+              source={icons.job}
               style={[AppStyles.icon, { resizeMode: 'cover' }]}
             />
           </View>
           <Text style={[AppStyles.text, { marginTop: spacing.small }]}>
-            Việc làm
+            {t(`label.job`)}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -217,12 +215,12 @@ const HomeScreen: React.FC = () => {
         >
           <View style={styles.iconWrap}>
             <Image
-              source={icons.apple}
+              source={icons.company}
               style={[AppStyles.icon, { resizeMode: 'cover' }]}
             />
           </View>
           <Text style={[AppStyles.text, { marginTop: spacing.small }]}>
-            Công ty
+            {t(`label.company`)}
           </Text>
         </TouchableOpacity>
       </View>
@@ -237,7 +235,7 @@ const HomeScreen: React.FC = () => {
           ListEmptyComponent={
             !isLoading ? (
               <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
-                No data
+                {t(`message.job_empty`)}
               </Text>
             ) : null
           }

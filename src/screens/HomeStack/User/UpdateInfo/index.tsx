@@ -19,11 +19,12 @@ import {
 } from '../../../../services/user';
 import { colors } from '../../../../utils/color';
 import { link } from '../../../../utils/constants';
-import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
 import images from '../../../../assets/images';
+import { useTranslation } from 'react-i18next';
 
 const UpdateInfoScreen = ({ navigation }) => {
+  const { t } = useTranslation();
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [avatarUrl, setAvatarUrl] = useState(`${images.avt}`);
@@ -41,8 +42,6 @@ const UpdateInfoScreen = ({ navigation }) => {
       setLoading(true);
       const res = await getUserInfo();
       if (res) {
-        console.log('userData', res);
-
         setFullName(res.fullName);
         setPhoneNumber(res.phoneNumber);
         setAvatarUrl(`${link.url}${res.avatarUrl}`);
@@ -89,46 +88,52 @@ const UpdateInfoScreen = ({ navigation }) => {
         avatarUrl,
       });
       const res1 = await uploadUserAvatar(avatarUrl);
+      Toast.show({
+        type: 'success',
+        text2: res.message || res1.message,
+      });
     } catch (error) {
     } finally {
       setLoading(false);
       navigation.goBack();
-      Toast.show({
-        type: 'success',
-        text1: 'Cập nhật thông tin thành công',
-      });
     }
   };
 
   return (
     <View style={styles.container}>
-      <NavBar title="Cập nhật thông tin" onPress={() => navigation.goBack()} />
-      <TouchableOpacity style={styles.avatarContainer} onPress={pickImage}>
-        {avatarUrl !== `${link.url}` ? (
-          <Image source={{ uri: avatarUrl }} style={styles.avatar} />
-        ) : (
-          <View style={styles.avatarPlaceholder}>
-            <Text>Upload Ảnh</Text>
-          </View>
-        )}
-      </TouchableOpacity>
-      <Text style={[styles.input, { backgroundColor: colors.Gray }]}>
-        {email}
-      </Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Họ và tên"
-        value={fullName}
-        onChangeText={setFullName}
+      <NavBar
+        title={t('label.update_info')}
+        onPress={() => navigation.goBack()}
+        customStyle={{ backgroundColor: colors.white }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Số điện thoại"
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-        keyboardType="phone-pad"
-      />
-      <AppButton title="Lưu thay đổi" onPress={handleSave} />
+      <View style={styles.body}>
+        <TouchableOpacity style={styles.avatarContainer} onPress={pickImage}>
+          {avatarUrl !== `${link.url}` ? (
+            <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatarPlaceholder}>
+              <Text>{t('label.update_image')}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+        <Text style={[styles.input, { backgroundColor: colors.Gray }]}>
+          {email}
+        </Text>
+        <TextInput
+          style={styles.input}
+          placeholder={t('label.fullname')}
+          value={fullName}
+          onChangeText={setFullName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder={t('label.phone')}
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
+          keyboardType="phone-pad"
+        />
+        <AppButton title={t('button.confirm')} onPress={handleSave} />
+      </View>
       {loading && (
         <View
           style={{

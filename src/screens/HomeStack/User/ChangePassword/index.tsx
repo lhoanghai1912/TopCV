@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 import AppButton from '../../../../components/AppButton';
 import LoadingScreen from '../../../../components/Loading';
@@ -8,12 +8,13 @@ import AppInput from '../../../../components/AppInput';
 import { colors } from '../../../../utils/color';
 import { spacing } from '../../../../utils/spacing';
 import icons from '../../../../assets/icons';
-import AppStyles from '../../../../components/AppStyle';
-import { Fonts } from '../../../../utils/fontSize';
 import { updatePassword } from '../../../../services/auth';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 
 const ChangePasswordScreen = ({ navigation }) => {
+  const { t } = useTranslation();
+
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -25,9 +26,8 @@ const ChangePasswordScreen = ({ navigation }) => {
   const hasUpperCase = /[A-Z]/.test(newPassword);
   const hasNumber = /\d/.test(newPassword);
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(newPassword);
-  const isMatch = newPassword === confirmPassword;
-  const isValid =
-    hasMinLength && hasUpperCase && hasNumber && hasSpecialChar && isMatch;
+  const isMatch =
+    newPassword && confirmPassword && newPassword === confirmPassword;
 
   const validate = () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
@@ -38,10 +38,7 @@ const ChangePasswordScreen = ({ navigation }) => {
       setError('Mật khẩu mới phải khác mật khẩu hiện tại');
       return false;
     }
-    if (!isValid) {
-      setError('Mật khẩu mới chưa đủ điều kiện hoặc xác nhận không khớp');
-      return false;
-    }
+
     setError('');
     return true;
   };
@@ -62,145 +59,150 @@ const ChangePasswordScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <NavBar
-        title="Đổi mật khẩu"
+        title={t('label.account_changePassword')}
         onPress={() => navigation.goBack()}
-        customStyle={[{ marginBottom: spacing.large }]}
+        customStyle={{
+          marginBottom: spacing.large,
+          backgroundColor: colors.white,
+        }}
       />
-      <AppInput
-        placeholder="Mật khẩu hiện tại"
-        secureTextEntry
-        value={currentPassword}
-        onChangeText={setCurrentPassword}
-      />
-      <AppInput
-        placeholder="Mật khẩu mới"
-        secureTextEntry
-        value={newPassword}
-        onChangeText={setNewPassword}
-      />
-      <AppInput
-        placeholder="Xác nhận mật khẩu mới"
-        secureTextEntry
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
-      {/* Hiển thị các tiêu chí giống SetPassword */}
-      <View style={{ marginBottom: spacing.xxlarge }}>
-        <View style={{ flexDirection: 'row' }}>
-          <Image
-            source={hasMinLength ? icons.valid : icons.dot}
-            style={{ width: 20, height: 20 }}
-          />
-          <Text
-            style={{
-              color: !newPassword
-                ? colors.Gray
-                : hasMinLength
-                ? colors.Gray
-                : colors.red,
-            }}
-          >
-            Mật khẩu tối thiểu 8 ký tự
-          </Text>
+      <View style={styles.body}>
+        <AppInput
+          placeholder={t('label.password_current')}
+          secureTextEntry
+          value={currentPassword}
+          onChangeText={setCurrentPassword}
+        />
+        <AppInput
+          placeholder={t('label.password_new')}
+          secureTextEntry
+          value={newPassword}
+          onChangeText={setNewPassword}
+        />
+        <AppInput
+          placeholder={t('label.password_confirm')}
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+        />
+        {/* Hiển thị các tiêu chí giống SetPassword */}
+        <View style={{ marginBottom: spacing.xxlarge }}>
+          <View style={{ flexDirection: 'row' }}>
+            <Image
+              source={hasMinLength ? icons.valid : icons.dot}
+              style={{ width: 20, height: 20 }}
+            />
+            <Text
+              style={{
+                color: !newPassword
+                  ? colors.Gray
+                  : hasMinLength
+                  ? colors.Gray
+                  : colors.red,
+              }}
+            >
+              {t('message.valid_password_length')}
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Image
+              source={hasUpperCase ? icons.valid : icons.dot}
+              style={{ width: 20, height: 20 }}
+            />
+            <Text
+              style={{
+                color: !newPassword
+                  ? colors.Gray
+                  : hasUpperCase
+                  ? colors.Gray
+                  : colors.red,
+              }}
+            >
+              {t('message.valid_password_uppercase')}
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Image
+              source={hasNumber ? icons.valid : icons.dot}
+              style={{ width: 20, height: 20 }}
+            />
+            <Text
+              style={{
+                color: !newPassword
+                  ? colors.Gray
+                  : hasNumber
+                  ? colors.Gray
+                  : colors.red,
+              }}
+            >
+              {t('message.valid_password_number')}
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Image
+              source={hasSpecialChar ? icons.valid : icons.dot}
+              style={{ width: 20, height: 20 }}
+            />
+            <Text
+              style={{
+                color: !newPassword
+                  ? colors.Gray
+                  : hasSpecialChar
+                  ? colors.Gray
+                  : colors.red,
+              }}
+            >
+              {t('message.valid_password_length')}
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Image
+              source={isMatch ? icons.valid : icons.dot}
+              style={{ width: 20, height: 20 }}
+            />
+            <Text
+              style={{
+                color: !newPassword
+                  ? colors.Gray
+                  : isMatch
+                  ? colors.Gray
+                  : colors.red,
+              }}
+            >
+              {t('message.valid_password_match')}
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Image
+              source={
+                newPassword &&
+                currentPassword &&
+                newPassword !== currentPassword
+                  ? icons.valid
+                  : icons.dot
+              }
+              style={{ width: 20, height: 20 }}
+            />
+            <Text
+              style={{
+                color: !newPassword
+                  ? colors.Gray
+                  : newPassword !== currentPassword
+                  ? colors.Gray
+                  : colors.red,
+              }}
+            >
+              {t('message.valid_password_dif')}
+            </Text>
+          </View>
         </View>
-        <View style={{ flexDirection: 'row' }}>
-          <Image
-            source={hasUpperCase ? icons.valid : icons.dot}
-            style={{ width: 20, height: 20 }}
-          />
-          <Text
-            style={{
-              color: !newPassword
-                ? colors.Gray
-                : hasUpperCase
-                ? colors.Gray
-                : colors.red,
-            }}
-          >
-            Chứa ít nhất 1 ký tự viết hoa
-          </Text>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <Image
-            source={hasNumber ? icons.valid : icons.dot}
-            style={{ width: 20, height: 20 }}
-          />
-          <Text
-            style={{
-              color: !newPassword
-                ? colors.Gray
-                : hasNumber
-                ? colors.Gray
-                : colors.red,
-            }}
-          >
-            Chứa ít nhất 1 ký tự số
-          </Text>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <Image
-            source={hasSpecialChar ? icons.valid : icons.dot}
-            style={{ width: 20, height: 20 }}
-          />
-          <Text
-            style={{
-              color: !newPassword
-                ? colors.Gray
-                : hasSpecialChar
-                ? colors.Gray
-                : colors.red,
-            }}
-          >
-            Chứa ít nhất 1 ký tự đặc biệt
-          </Text>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <Image
-            source={isMatch ? icons.valid : icons.dot}
-            style={{ width: 20, height: 20 }}
-          />
-          <Text
-            style={{
-              color: !newPassword
-                ? colors.Gray
-                : isMatch
-                ? colors.Gray
-                : colors.red,
-            }}
-          >
-            Mật khẩu và xác nhận mật khẩu trùng khớp
-          </Text>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <Image
-            source={
-              newPassword && currentPassword && newPassword !== currentPassword
-                ? icons.valid
-                : icons.dot
-            }
-            style={{ width: 20, height: 20 }}
-          />
-          <Text
-            style={{
-              color: !newPassword
-                ? colors.Gray
-                : newPassword !== currentPassword
-                ? colors.Gray
-                : colors.red,
-            }}
-          >
-            Mật khẩu mới phải khác mật khẩu hiện tại
-          </Text>
-        </View>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+        <AppButton
+          title={t('button.confirm')}
+          onPress={() => handleChangePassword()}
+          disabled={!currentPassword || !newPassword || !confirmPassword}
+        />
       </View>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <AppButton
-        title="Xác nhận"
-        onPress={() => handleChangePassword()}
-        disabled={
-          !currentPassword || !newPassword || !confirmPassword || !isValid
-        }
-      />
       <LoadingScreen isLoading={loading} />
     </View>
   );

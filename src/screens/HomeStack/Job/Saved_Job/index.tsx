@@ -1,21 +1,23 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { getSavedJobs } from '../../../../services/job';
-import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { spacing } from '../../../../utils/spacing';
+import { ms, spacing } from '../../../../utils/spacing';
 import NavBar from '../../../../components/Navbar';
 import { FlatList } from 'react-native-gesture-handler';
 import CardJob from '../Card/CardJob';
 import { colors } from '../../../../utils/color';
 import AppStyles from '../../../../components/AppStyle';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 interface Props {
   navigation: any;
   route: any;
 }
 
 const SavedJobScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
+
   const updateJobSaved = (id: number, isSaved: boolean) => {
     if (!isSaved) {
       setListSavedJobs(prev => prev.filter(job => job.id !== id));
@@ -53,31 +55,50 @@ const SavedJobScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <View style={[styles.container]}>
       <NavBar
-        title="Saved Jobs"
+        title={t('label.job_saved')}
         onPress={() => {
           navigation.goBack();
         }}
-        customStyle={[{ marginBottom: spacing.medium }]}
+        customStyle={{
+          marginBottom: spacing.medium,
+          backgroundColor: colors.white,
+          paddingTop: ms(50 + insets.top),
+        }}
       />
-      <FlatList
-        data={listSavedJobs}
-        keyExtractor={item => item.id}
-        renderItem={renderSavedJob}
-        ListEmptyComponent={() => (
-          <>
-            <View style={{ alignItems: 'center', marginTop: spacing.medium }}>
-              <Text style={AppStyles.title}>No saved jobs found</Text>
-            </View>
-          </>
-        )}
-      />
+      <View>
+        <View>
+          <Text
+            style={[
+              AppStyles.title,
+              {
+                paddingLeft: spacing.medium,
+                marginBottom: spacing.small,
+                display: listSavedJobs.length ? 'flex' : 'none',
+              },
+            ]}
+          >{`${listSavedJobs.length} ${t(`label.job_saved`)}`}</Text>
+        </View>
+        <FlatList
+          data={listSavedJobs}
+          keyExtractor={item => item.id}
+          renderItem={renderSavedJob}
+          ListEmptyComponent={() => (
+            <>
+              <View style={{ alignItems: 'center', marginTop: spacing.medium }}>
+                <Text style={AppStyles.title}>
+                  {t(`message.job_saved_none`)}
+                </Text>
+              </View>
+            </>
+          )}
+        />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: spacing.medium,
     flex: 1,
   },
 });

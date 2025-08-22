@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: spacing.medium,
-    height: ms(80), // Đặt chiều cao cho header, bạn có thể thay đổi theo nhu cầu
+    // height: ms(80 + paddi), // Đặt chiều cao cho header, bạn có thể thay đổi theo nhu cầu
     justifyContent: 'flex-end',
     marginBottom: spacing.medium,
   },

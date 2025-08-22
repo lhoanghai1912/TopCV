@@ -1,12 +1,19 @@
 import { StyleSheet } from 'react-native';
 import { spacing } from '../../../../utils/spacing';
 import { Fonts } from '../../../../utils/fontSize';
+import { colors } from '../../../../utils/color';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: spacing.large,
+    // backgroundColor: '#fff',
+    // padding: spacing.large,
+  },
+  body: {
+    padding: spacing.medium,
+    backgroundColor: colors.white,
+    marginHorizontal: spacing.small,
+    // flex: 1,
   },
   title: {
     fontSize: Fonts.large,

@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
   },
   jobOverview: {
     alignItems: 'center',
+    width: '32%',
   },
   category: {
     flexDirection: 'row',
@@ -59,6 +60,7 @@ const styles = StyleSheet.create({
   jobOverviewContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    width: '100%',
     justifyContent: 'space-between',
   },
   jobOverviewItem: {

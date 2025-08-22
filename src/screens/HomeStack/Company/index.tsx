@@ -3,15 +3,12 @@ import { View, Text, RefreshControl, FlatList } from 'react-native';
 import styles from './styles';
 import NavBar from '../../../components/Navbar';
 import icons from '../../../assets/icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { JobSearchParams } from '../../../type/type';
 import { getCompany } from '../../../services/company';
 import { useFocusEffect } from '@react-navigation/native';
 import CardCompany from './CardCompany';
 import AppStyles from '../../../components/AppStyle';
-import LoadingScreen from '../../../components/Loading';
 
 const PAGE_SIZE = 10;
 
@@ -40,6 +37,8 @@ const CompanyScreen = ({ navigation }: { navigation: any }) => {
         PageSize: PAGE_SIZE.toString(),
       };
       const data = await getCompany(params);
+      console.log('company', data);
+
       const result = data?.result || [];
       if (isRefresh || pageNum === 1) {
         setCompanies(result);
@@ -101,7 +100,7 @@ const CompanyScreen = ({ navigation }: { navigation: any }) => {
   return (
     <View style={styles.container}>
       <NavBar
-        title={'Thương hiệu lớn tiêu biểu'}
+        title={t('label.company_title')}
         onPress={() => navigation.goBack()}
         icon1={icons.search}
       />
@@ -119,7 +118,7 @@ const CompanyScreen = ({ navigation }: { navigation: any }) => {
           ListEmptyComponent={
             !loading ? (
               <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
-                No data
+                {t('message.company_empty')}
               </Text>
             ) : null
           }

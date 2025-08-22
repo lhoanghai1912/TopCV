@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: spacing.medium,
   },
-  mainContent: { marginBottom: spacing.medium },
+  mainContent: { marginBottom: spacing.medium, paddingTop: spacing.medium },
   label: {
     fontSize: Fonts.large,
     fontWeight: '500',

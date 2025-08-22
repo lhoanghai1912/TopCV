@@ -81,9 +81,6 @@ export const updatePassword = async (
     });
     return response.data;
   } catch (error) {
-    console.log();
-
-    console.log(error);
     throw error;
   }
 };

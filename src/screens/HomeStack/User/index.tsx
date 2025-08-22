@@ -10,6 +10,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Modal,
+  Pressable,
 } from 'react-native';
 import styles from './styles';
 import AppButton from '../../../components/AppButton';
@@ -18,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../store/reducers/userSlice';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../../language';
 import { ms, spacing } from '../../../utils/spacing';
 import { Fonts } from '../../../utils/fontSize';
 import AppStyles from '../../../components/AppStyle';
@@ -30,13 +33,17 @@ import { getSavedJobs } from '../../../services/job';
 import Toast from 'react-native-toast-message';
 import images from '../../../assets/images';
 import { deleteUserAccount } from '../../../services/user';
+import { colors } from '../../../utils/color';
 
 const UserScreen: React.FC = () => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const token = useSelector((state: any) => state.user.token);
   const dispatch = useDispatch();
+
   const [showFixedHeader, setShowFixedHeader] = useState(false);
+  const [modalLanguage, setModalLanguage] = useState(false);
+
   const [userProfile, setUserProfile] = useState<any>(null);
   const [listSavedJobs, setListSavedJobs] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -74,8 +81,20 @@ const UserScreen: React.FC = () => {
       navigate(Screen_Name.Login_Screen);
     });
   };
+  // Danh sách ngôn ngữ
+  const languages = [
+    { code: 'vi', label: '🇻🇳 Tiếng Việt' },
+    { code: 'lo', label: '🇱🇦 ພາສາລາວ' },
+    { code: 'en', label: '🇬🇧 English' },
+  ];
+
+  const handleChangeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+    setModalLanguage(false);
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       {showFixedHeader && (
         <View
           style={[
@@ -123,11 +142,9 @@ const UserScreen: React.FC = () => {
           <View
             style={{
               backgroundColor: '#1A7FEE',
-              height: ms(80),
+              height: ms(80 + insets.top),
             }}
-          >
-            {/* ...background pattern if needed... */}
-          </View>
+          ></View>
           <View style={[{ backgroundColor: 'white' }]}>
             <View style={{ marginTop: -60, alignItems: 'center' }}>
               <View
@@ -178,7 +195,7 @@ const UserScreen: React.FC = () => {
                           {userProfile?.fullName}
                         </Text>
                         <Text style={{ color: '#888', fontSize: Fonts.normal }}>
-                          {`Số điện thoại: ${userProfile?.phoneNumber}`}
+                          {`${t(`label.phone`)}: ${userProfile?.phoneNumber}`}
                         </Text>
                       </View>
                     </>
@@ -208,10 +225,10 @@ const UserScreen: React.FC = () => {
                             textAlign: 'center',
                           }}
                         >
-                          Vui lòng đăng nhập
+                          {t('message.login')}
                         </Text>
                         <AppButton
-                          title="Đăng nhập"
+                          title={t('button.login')}
                           onPress={() => {
                             navigate(Screen_Name.Login_Screen);
                           }}
@@ -251,16 +268,16 @@ const UserScreen: React.FC = () => {
                           { fontWeight: '500', marginBottom: 8 },
                         ]}
                       >
-                        Kinh nghiệm làm việc
+                        {t(`label.exep`)}
                       </Text>
                       <Text
                         style={{ color: '#FF9800', fontSize: Fonts.normal }}
                       >
-                        Chưa cập nhật
+                        {t(`label.not_update`)}
                       </Text>
                     </View>
                     <Text style={{ color: '#1A7FEE', fontWeight: '500' }}>
-                      Sửa
+                      {t(`button.edit`)}
                     </Text>
                   </View>
                   {/* Vị trí chuyên môn */}
@@ -279,16 +296,16 @@ const UserScreen: React.FC = () => {
                           { fontWeight: '500', marginBottom: 8 },
                         ]}
                       >
-                        Vị trí chuyên môn
+                        {t(`label.position`)}
                       </Text>
                       <Text
                         style={{ color: '#FF9800', fontSize: Fonts.normal }}
                       >
-                        Chưa cập nhật
+                        {t(`label.not_update`)}
                       </Text>
                     </View>
                     <Text style={{ color: '#1A7FEE', fontWeight: '500' }}>
-                      Sửa
+                      {t(`button.edit`)}
                     </Text>
                   </View>
                   {/* Địa điểm làm việc mong muốn */}
@@ -307,16 +324,16 @@ const UserScreen: React.FC = () => {
                           { fontWeight: '500', marginBottom: 8 },
                         ]}
                       >
-                        Địa điểm làm việc mong muốn
+                        {t(`label.location_desire`)}
                       </Text>
                       <Text
                         style={{ color: '#FF9800', fontSize: Fonts.normal }}
                       >
-                        Chưa cập nhật
+                        {t(`label.not_update`)}
                       </Text>
                     </View>
                     <Text style={{ color: '#1A7FEE', fontWeight: '500' }}>
-                      Sửa
+                      {t(`button.edit`)}
                     </Text>
                   </View>
                 </View>
@@ -330,7 +347,7 @@ const UserScreen: React.FC = () => {
                       { fontWeight: '500', marginBottom: 8 },
                     ]}
                   >
-                    Quản lý hồ sơ
+                    {t(`label.profile_management`)}
                   </Text>
                   <View
                     style={{
@@ -339,7 +356,7 @@ const UserScreen: React.FC = () => {
                       marginBottom: spacing.small,
                     }}
                   >
-                    <Text style={{ flex: 1 }}>Trạng thái tìm việc</Text>
+                    <Text style={{ flex: 1 }}>{t(`label.job_status`)}</Text>
                     {/* Switch component */}
                     <View style={{ marginLeft: 8 }}>
                       {/* Replace with <Switch /> from react-native */}
@@ -352,7 +369,7 @@ const UserScreen: React.FC = () => {
                       marginBottom: spacing.small,
                     }}
                   >
-                    <Text style={{ flex: 1 }}>Cho phép NTD liên hệ</Text>
+                    <Text style={{ flex: 1 }}>{t(`label.contact_allow`)}</Text>
                     {/* Switch component */}
                     <View style={{ marginLeft: 8 }}>
                       {/* Replace with <Switch /> from react-native */}
@@ -360,13 +377,13 @@ const UserScreen: React.FC = () => {
                   </View>
                   <View style={{ marginLeft: 8, marginBottom: 8 }}>
                     <Text style={{ color: '#888', fontSize: Fonts.normal }}>
-                      NTD có thể liên hệ tôi qua:
+                      {t(`label.contact_by`)}
                     </Text>
                     <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
-                      Nhắn tin qua TopConnect
+                      {t(`label.contact_topCV`)}
                     </Text>
                     <Text style={{ color: '#1A7FEE', fontSize: Fonts.normal }}>
-                      Email và số điện thoại
+                      {t(`label.contact_phone`)}
                     </Text>
                   </View>
                 </View>
@@ -381,7 +398,7 @@ const UserScreen: React.FC = () => {
                   { fontWeight: '500', marginBottom: 8 },
                 ]}
               >
-                Quản lý tìm việc
+                {t(`label.job_management`)}
               </Text>
               <View
                 style={{
@@ -398,11 +415,13 @@ const UserScreen: React.FC = () => {
                       ? navigate(Screen_Name.SavedJob_Screen)
                       : Toast.show({
                           type: 'error',
-                          text1: 'Please login to view saved jobs',
+                          text1: t('message.login_save'),
                         });
                   }}
                 >
-                  <Text style={{ color: '#1A7FEE' }}>Việc làm đã lưu</Text>
+                  <Text style={{ color: '#1A7FEE' }}>
+                    {t('label.job_saved')}
+                  </Text>
                   <Text style={{ fontWeight: 'bold', fontSize: Fonts.normal }}>
                     {listSavedJobs?.data?.total
                       ? `${listSavedJobs.data.total}`
@@ -422,7 +441,7 @@ const UserScreen: React.FC = () => {
                       { fontWeight: '500', marginBottom: 8 },
                     ]}
                   >
-                    Cài đặt tài khoản
+                    {t('label.account_setting')}
                   </Text>
                   <View>
                     <TouchableOpacity
@@ -430,7 +449,9 @@ const UserScreen: React.FC = () => {
                       onPress={() => navigate(Screen_Name.UpdateInfo_Screen)}
                     >
                       <View>
-                        <Text style={AppStyles.text}>Cập nhật thông tin</Text>
+                        <Text style={AppStyles.text}>
+                          {t('label.account_update')}
+                        </Text>
                       </View>
                       <View>
                         <Image source={icons.arrow} style={AppStyles.icon} />
@@ -442,7 +463,9 @@ const UserScreen: React.FC = () => {
                     onPress={() => navigate(Screen_Name.UpdatePassword_Screen)}
                   >
                     <View>
-                      <Text style={AppStyles.text}>Đổi mật khẩu</Text>
+                      <Text style={AppStyles.text}>
+                        {t('label.account_changePassword')}
+                      </Text>
                     </View>
                     <View>
                       <Image source={icons.arrow} style={AppStyles.icon} />
@@ -453,15 +476,15 @@ const UserScreen: React.FC = () => {
                       style={styles.link}
                       onPress={() => {
                         Alert.alert(
-                          'Xác nhận',
-                          'Bạn có muốn xóa tài khoản không?',
+                          t('button.confirm'),
+                          t('message.account_delete_confirm'),
                           [
                             {
-                              text: 'Không',
+                              text: t('button.cancel'),
                               style: 'cancel',
                             },
                             {
-                              text: 'Có',
+                              text: t('button.confirm'),
                               onPress: async () => {
                                 setLoading(true);
                                 try {
@@ -481,7 +504,9 @@ const UserScreen: React.FC = () => {
                       }}
                     >
                       <View>
-                        <Text style={AppStyles.text}>Xóa tài khoản</Text>
+                        <Text style={AppStyles.text}>
+                          {t('label.account_delete')}
+                        </Text>
                       </View>
                       <View>
                         <Image source={icons.arrow} style={AppStyles.icon} />
@@ -505,7 +530,7 @@ const UserScreen: React.FC = () => {
                   { fontWeight: '500', marginBottom: spacing.small },
                 ]}
               >
-                Chính sách và hỗ trợ
+                {t('label.account_setting')}
               </Text>
               <View>
                 <TouchableOpacity
@@ -513,7 +538,7 @@ const UserScreen: React.FC = () => {
                   onPress={() => Linking.openURL(link.company)}
                 >
                   <View>
-                    <Text style={AppStyles.text}>Về chúng tôi</Text>
+                    <Text style={AppStyles.text}>{t('label.about_us')}</Text>
                   </View>
                   <View>
                     <Image source={icons.arrow} style={AppStyles.icon} />
@@ -526,7 +551,9 @@ const UserScreen: React.FC = () => {
                   onPress={() => Linking.openURL(link.terms)}
                 >
                   <View>
-                    <Text style={AppStyles.text}>Điều khoản sử dụng</Text>
+                    <Text style={AppStyles.text}>
+                      {t('label.term_conditions')}
+                    </Text>
                   </View>
                   <View>
                     <Image source={icons.arrow} style={AppStyles.icon} />
@@ -539,7 +566,22 @@ const UserScreen: React.FC = () => {
                   onPress={() => Linking.openURL(link.privacy)}
                 >
                   <View>
-                    <Text style={AppStyles.text}>Chính sách bảo mật</Text>
+                    <Text style={AppStyles.text}>
+                      {t('label.privacy_policy')}
+                    </Text>
+                  </View>
+                  <View>
+                    <Image source={icons.arrow} style={AppStyles.icon} />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={styles.link}
+                  onPress={() => setModalLanguage(true)}
+                >
+                  <View>
+                    <Text style={AppStyles.text}>{t('label.language')}</Text>
                   </View>
                   <View>
                     <Image source={icons.arrow} style={AppStyles.icon} />
@@ -551,7 +593,7 @@ const UserScreen: React.FC = () => {
           {token && (
             <View>
               <AppButton
-                title="Đăng xuất"
+                title={t('button.logout')}
                 onPress={() => handleLogout()}
                 customStyle={{ marginBottom: spacing.medium }}
               />
@@ -559,6 +601,81 @@ const UserScreen: React.FC = () => {
           )}
         </View>
       </ScrollView>
+      {/* Modal chuyển đổi ngôn ngữ */}
+      <Modal
+        visible={modalLanguage}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalLanguage(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: 15,
+              padding: spacing.medium,
+              width: '60%',
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: Fonts.normal,
+                marginBottom: spacing.medium,
+                textAlign: 'center',
+              }}
+            >
+              {t('button.choose_language')}
+            </Text>
+            {languages.map(lang => (
+              <Pressable
+                key={lang.code}
+                onPress={() => handleChangeLanguage(lang.code)}
+                style={({ pressed }) => [
+                  {
+                    // paddingVertical: 12,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#eee',
+                  },
+                ]}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    paddingVertical: spacing.small,
+                    paddingHorizontal: spacing.medium,
+                    backgroundColor:
+                      i18n.language === lang.code
+                        ? colors.primary
+                        : colors.white,
+                    color:
+                      i18n.language === lang.code ? colors.white : colors.black,
+                  }}
+                >
+                  {lang.label}
+                </Text>
+              </Pressable>
+            ))}
+            <Pressable
+              onPress={() => setModalLanguage(false)}
+              style={{ marginTop: 12, alignItems: 'center' }}
+            >
+              <Text
+                style={{ color: '#1A7FEE', fontWeight: 'bold', fontSize: 16 }}
+              >
+                {t('button.close')}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       {loading && (
         <View
           style={{

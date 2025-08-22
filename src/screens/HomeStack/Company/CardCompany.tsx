@@ -10,13 +10,11 @@ import {
 } from 'react-native';
 import AppStyles from '../../../components/AppStyle';
 import icons from '../../../assets/icons';
-import images from '../../../assets/images';
 import { colors } from '../../../utils/color';
 import { link } from '../../../utils/constants';
 import { useTranslation } from 'react-i18next';
 import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
-import { formatPriceToTy } from '../../../components/formatPrice';
 import { ms, spacing } from '../../../utils/spacing';
 import AppButton from '../../../components/AppButton';
 
@@ -32,7 +30,6 @@ const CardCompany: React.FC<CardCompanyProps> = ({
   style,
 }) => {
   const { t } = useTranslation();
-  const [liked, setLiked] = useState(false);
   const companyId = company?.id;
 
   return (
@@ -75,7 +72,7 @@ const CardCompany: React.FC<CardCompanyProps> = ({
                 { color: colors.Gray, marginBottom: spacing.small },
               ]}
             >
-              Category
+              {company.companyField}
             </Text>
             <View style={{ width: 'auto', alignSelf: 'flex-start' }}>
               <Text
@@ -91,12 +88,16 @@ const CardCompany: React.FC<CardCompanyProps> = ({
                   },
                 ]}
               >
-                {`${company.jobs?.length} việc làm`}
+                {`${
+                  company.jobs?.length > 1
+                    ? `${company.jobs?.length} ${t('label.jobs')}`
+                    : `${company.jobs?.length} ${t('label.job')}`
+                }`}
               </Text>
             </View>
 
             <AppButton
-              title="Theo dõi"
+              title={t('button.follow')}
               leftIcon={icons.add}
               onPress={() => {}}
               customStyle={{

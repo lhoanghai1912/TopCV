@@ -8,15 +8,15 @@ export const formatPriceToTy = (price: number): string => {
   if (price >= 1_000_000_000) {
     const billion = price / 1_000_000_000;
     return billion % 1 === 0
-      ? `${billion.toFixed(0)} ${t('price.bilion')}` // Hiển thị số nguyên nếu chia hết
-      : `${billion.toFixed(2)} ${t('price.bilion')}`; // Hiển thị 2 chữ số thập phân nếu không chia hết
+      ? `${billion.toFixed(0)} ${t('price.billion')}` // Hiển thị số nguyên nếu chia hết
+      : `${billion.toFixed(2)} ${t('price.billion')}`; // Hiển thị 2 chữ số thập phân nếu không chia hết
   }
 
   if (price >= 1_000_000) {
     const million = price / 1_000_000;
     return million % 1 === 0
-      ? `${million.toFixed(0)} ${t('price.milion')}`
-      : `${million.toFixed(2)} ${t('price.milion')}`;
+      ? `${million.toFixed(0)} ${t('price.million')}`
+      : `${million.toFixed(2)} ${t('price.million')}`;
   }
 
   if (price >= 1_000) {
