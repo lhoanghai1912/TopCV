@@ -24,6 +24,7 @@ import { useCVData } from './useCVData';
 import { createCV } from '../../../services/cv';
 import { useSelector } from 'react-redux';
 import NavBar from '../../../components/Navbar';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   navigation: any;
@@ -61,6 +62,8 @@ const generatePhotoPath = () => {
 };
 
 const CreateCVScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
+
   const { token } = useSelector((state: any) => state.user);
   const [avatarUri, setAvatarUri] = useState<string>('');
   const insets = useSafeAreaInsets();
@@ -205,7 +208,7 @@ const CreateCVScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.headerTitleContainer}>
               <TextInput
                 style={[AppStyles.title, { paddingLeft: ms(40) }]}
-                placeholder="Enter CV Title"
+                placeholder={t('label.cv_enter_title')}
                 onChangeText={text => setTitle(text)}
                 value={title}
                 autoCapitalize="none"
@@ -242,8 +245,7 @@ const CreateCVScreen: React.FC<Props> = ({ navigation }) => {
                         // Hiển thị toast thông báo
                         Toast.show({
                           type: 'success',
-                          text1: 'Ảnh đã được chọn! 📷',
-                          text2: 'Đường dẫn ảnh đã được lưu vào CV',
+                          text2: t('message.cv_upload_photo'),
                           visibilityTime: 3000,
                         });
 
@@ -794,7 +796,10 @@ const CreateCVScreen: React.FC<Props> = ({ navigation }) => {
         </>
       ) : (
         <View style={{ padding: spacing.medium, flex: 1 }}>
-          <NavBar title="Tạo CV" onPress={() => navigation.goBack()} />
+          <NavBar
+            title={t('label.cv_create')}
+            onPress={() => navigation.goBack()}
+          />
           <View
             style={{
               flex: 1,
@@ -807,7 +812,7 @@ const CreateCVScreen: React.FC<Props> = ({ navigation }) => {
                 { marginTop: spacing.medium, textAlign: 'center' },
               ]}
             >
-              Login để tạo CV
+              {t('label.cv_login')}
             </Text>
           </View>
         </View>

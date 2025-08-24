@@ -31,6 +31,7 @@ export default {
     valid_password_special:
       'Password must contain at least 1 special character',
     valid_password_match: 'Password and confirm password match',
+    cv_upload_photo: 'Upload photo',
   },
 
   button: {
@@ -105,6 +106,15 @@ export default {
     company_website: 'Company website',
     company_introduction: 'Company introduction',
     company_title: 'Featured Company',
+    company_job: 'Company Jobs',
+    company_field_top: 'Top Companies in the Same Field',
+    company_follow: 'Followed Companies',
+    company_staff: 'employees',
+
+    cv_create: 'Create CV',
+    cv_login: 'Log in to create CV',
+    cv_template: 'CV Templates',
+    cv_enter_title: 'Enter CV title',
   },
 
   price: {

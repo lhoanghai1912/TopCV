@@ -69,7 +69,7 @@ const RegisterScreen = () => {
       </View>
 
       <View style={styles.body}>
-        <Text style={AppStyles.title}>{t('title.register')}</Text>
+        <Text style={AppStyles.title}>{t('button.register')}</Text>
         <View>
           <AppInput
             leftIcon={icons.mail}
@@ -91,11 +91,11 @@ const RegisterScreen = () => {
               },
             ]}
           >
-            {t('title.forgot_pw')}
+            {t('button.forgot_pw')}
           </Text>
         </TouchableOpacity>
         <AppButton
-          title={t('title.register')}
+          title={t('button.register')}
           onPress={() => handleregister()}
           textStyle={{ fontSize: Fonts.large }}
           customStyle={{ marginBottom: spacing.medium }}
@@ -162,7 +162,7 @@ const RegisterScreen = () => {
                 { color: colors.blue, marginLeft: spacing.small },
               ]}
             >
-              {t('title.login')}
+              {t('button.login')}
             </Text>
           </TouchableOpacity>
         </View>

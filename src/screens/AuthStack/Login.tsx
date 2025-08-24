@@ -75,7 +75,7 @@ const LoginScreen = () => {
       </View>
 
       <View style={styles.body}>
-        <Text style={AppStyles.title}>{t('title.login')}</Text>
+        <Text style={AppStyles.title}>{t('button.login')}</Text>
         <View>
           <AppInput
             leftIcon={icons.mail}
@@ -105,11 +105,11 @@ const LoginScreen = () => {
               },
             ]}
           >
-            {t('title.forgot_pw')}
+            {t('button.forgot_pw')}
           </Text>
         </TouchableOpacity>
         <AppButton
-          title={t('title.login')}
+          title={t('button.login')}
           onPress={() => handleLogin()}
           textStyle={{ fontSize: Fonts.large }}
           customStyle={{ marginBottom: spacing.medium }}
@@ -176,7 +176,7 @@ const LoginScreen = () => {
                 { color: colors.blue, marginLeft: spacing.small },
               ]}
             >
-              {t('title.register')}
+              {t('button.register')}
             </Text>
           </TouchableOpacity>
         </View>

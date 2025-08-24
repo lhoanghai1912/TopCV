@@ -15,14 +15,12 @@ import { getCompanyDetails } from '../../../../services/company';
 import { link } from '../../../../utils/constants';
 import NavBar from '../../../../components/Navbar';
 import icons from '../../../../assets/icons';
-import { navigate } from '../../../../navigation/RootNavigator';
-import { Screen_Name } from '../../../../navigation/ScreenName';
+
 import { colors } from '../../../../utils/color';
 import AppStyles from '../../../../components/AppStyle';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppButton from '../../../../components/AppButton';
-import CardCompany from '../CardCompany';
 import CardJob from '../../Job/Card/CardJob';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   navigation: any;
@@ -30,6 +28,7 @@ interface Props {
 }
 
 const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { t } = useTranslation();
   const [companyDetail, setCompanyDetail] = useState<any>([]);
   const [showFixedHeader, setShowFixedHeader] = useState(false);
   const [onCategory, setOnCategory] = useState('info');
@@ -121,7 +120,9 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                   onCategory === 'info' ? colors.blue : colors.Gray,
               }}
             >
-              <Text style={AppStyles.text}>Giới thiệu công ty</Text>
+              <Text style={AppStyles.text}>
+                {t('label.company_introduction')}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setTab('job')}
@@ -133,7 +134,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                   onCategory === 'job' ? colors.blue : colors.Gray,
               }}
             >
-              <Text style={AppStyles.text}>Tin tuyển dụng</Text>
+              <Text style={AppStyles.text}>{t('label.company_job')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setTab('others')}
@@ -145,7 +146,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                   onCategory === 'others' ? colors.blue : colors.Gray,
               }}
             >
-              <Text style={AppStyles.text}>Top công ty cùng lĩnh vực</Text>
+              <Text style={AppStyles.text}>{t('label.company_field_top')}</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -224,9 +225,9 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                   source={icons.apple}
                   style={{ height: ms(20), width: ms(20) }}
                 />
-                <Text
-                  style={AppStyles.text}
-                >{`${companyDetail?.followers?.length} người theo dõi`}</Text>
+                <Text style={AppStyles.text}>{`${
+                  companyDetail?.followers?.length
+                } ${t('label.company_follow')}`}</Text>
               </View>
               <View
                 style={{
@@ -239,7 +240,9 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                   source={icons.apple}
                   style={{ height: ms(20), width: ms(20) }}
                 />
-                <Text style={AppStyles.text}>{`${staff}+ nhân viên`}</Text>
+                <Text style={AppStyles.text}>{`${staff}+ ${t(
+                  'label.company_staff',
+                )}`}</Text>
               </View>
             </View>
             <View
@@ -251,7 +254,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
               }}
             >
               <AppButton
-                title={`Theo dõi công ty`}
+                title={t('button.follow')}
                 onPress={() => {}}
                 leftIcon={icons.add}
                 customStyle={{
@@ -294,7 +297,9 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                   }}
                   onPress={() => setTab('info')}
                 >
-                  <Text style={AppStyles.text}>Giới thiệu công ty</Text>
+                  <Text style={AppStyles.text}>
+                    {t('label.company_introduction')}
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={{
@@ -306,7 +311,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                   }}
                   onPress={() => setTab('job')}
                 >
-                  <Text style={AppStyles.text}>Tin tuyển dụng</Text>
+                  <Text style={AppStyles.text}>{t('label.company_job')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={{
@@ -318,7 +323,9 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                   }}
                   onPress={() => setTab('others')}
                 >
-                  <Text style={AppStyles.text}>Top công ty cùng lĩnh vực</Text>
+                  <Text style={AppStyles.text}>
+                    {t('label.company_field_top')}
+                  </Text>
                 </TouchableOpacity>
               </ScrollView>
             </View>
@@ -340,13 +347,17 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                         marginBottom: spacing.medium,
                       }}
                     >
-                      <Text style={styles.label}>{`Giới thiệu công ty`}</Text>
+                      <Text style={styles.label}>
+                        {t('label.company_introduction')}
+                      </Text>
                       <Text
                         style={AppStyles.text}
                       >{`${companyDetail.description}`}</Text>
                     </View>
                     <View>
-                      <Text style={styles.label}>{`Địa chỉ công ty`}</Text>
+                      <Text style={styles.label}>
+                        {t('label.company_address')}
+                      </Text>
                       <Text
                         style={AppStyles.text}
                       >{`${companyDetail.address}`}</Text>
@@ -358,7 +369,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                         styles.label,
                         { paddingHorizontal: spacing.medium },
                       ]}
-                    >{`Tin tuyển dụng`}</Text>
+                    >{`${t('label.company_job')}`}</Text>
                     <FlatList
                       scrollEnabled={false}
                       data={companyDetail?.jobs?.slice(0, 10)}
