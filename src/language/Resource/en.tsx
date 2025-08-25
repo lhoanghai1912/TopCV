@@ -25,9 +25,9 @@ export default {
     company_find: 'Find a company',
     company_login: 'Log in to save company',
     company_empty: 'No companies',
-    company_saved_none: 'No companies yet saved',
-    company_saved: 'Company saved',
-    companies_saved: 'Companies saved',
+    company_followed_none: 'No companies yet followed',
+    company_followed: 'Company followed',
+    companies_followed: 'Companies followed',
     company_saved_success: 'Company saved successfully',
     company_unsaved_success: 'Company unsaved successfully',
 
@@ -41,8 +41,6 @@ export default {
       'Password must contain at least 1 special character',
     valid_password_match: 'Password and confirm password match',
     cv_upload_photo: 'Upload photo',
-
-    company_followed_none: 'No followed companies',
   },
 
   button: {
@@ -120,7 +118,7 @@ export default {
     company_title: 'Featured Company',
     company_job: 'Company Jobs',
     company_field_top: 'Top Companies in the Same Field',
-    company_followed: 'Followed',
+    company_followed: 'Followed companies',
     company_staff: 'Employees',
 
     cv_create: 'Create CV',

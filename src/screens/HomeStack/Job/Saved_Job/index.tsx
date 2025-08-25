@@ -17,6 +17,8 @@ interface Props {
 
 const SavedJobScreen: React.FC<Props> = ({ navigation, route }) => {
   const { t } = useTranslation();
+  const [listSavedJobs, setListSavedJobs] = React.useState<any>([]);
+  console.log('abc', listSavedJobs);
 
   const updateJobSaved = (id: number, isSaved: boolean) => {
     if (!isSaved) {
@@ -28,8 +30,6 @@ const SavedJobScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
   const insets = useSafeAreaInsets();
-  const token = useSelector((state: any) => state.user.token);
-  const [listSavedJobs, setListSavedJobs] = React.useState<any>([]);
 
   useEffect(() => {
     fetchListSavedJobs();

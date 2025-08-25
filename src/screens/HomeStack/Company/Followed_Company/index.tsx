@@ -6,7 +6,6 @@ import NavBar from '../../../../components/Navbar';
 import { FlatList } from 'react-native-gesture-handler';
 import { colors } from '../../../../utils/color';
 import AppStyles from '../../../../components/AppStyle';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import CardCompany from '../CardCompany';
 import { getFollowedCompanies } from '../../../../services/company';
@@ -18,7 +17,9 @@ interface Props {
 
 const FollowedCompanyScreen: React.FC<Props> = ({ navigation, route }) => {
   const { t } = useTranslation();
-
+  const [listFollowedCompanies, setListFollowedCompanies] = React.useState<any>(
+    [],
+  );
   const updateCompanyFollowed = (id: number, isFollowing: boolean) => {
     if (!isFollowing) {
       setListFollowedCompanies(prev =>
@@ -33,9 +34,6 @@ const FollowedCompanyScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
   const insets = useSafeAreaInsets();
-  const [listFollowedCompanies, setListFollowedCompanies] = React.useState<any>(
-    [],
-  );
 
   useFocusEffect(
     useCallback(() => {
@@ -44,7 +42,7 @@ const FollowedCompanyScreen: React.FC<Props> = ({ navigation, route }) => {
   );
   const fetchListFollowedCompanies = async () => {
     const res = await getFollowedCompanies();
-    setListFollowedCompanies(res);
+    setListFollowedCompanies(res.companies);
     console.log('list followed companies', res);
   };
   const renderFollowedCompany = ({ item }: { item: any }) => {
@@ -82,17 +80,21 @@ const FollowedCompanyScreen: React.FC<Props> = ({ navigation, route }) => {
               {
                 paddingLeft: spacing.medium,
                 marginBottom: spacing.small,
-                display: listFollowedCompanies?.companies?.length
-                  ? 'flex'
-                  : 'none',
+                display: listFollowedCompanies?.length ? 'flex' : 'none',
               },
             ]}
-          >{`${listFollowedCompanies?.companies?.length} ${t(
-            `label.company_followed`,
-          )}`}</Text>
+          >{`${
+            listFollowedCompanies.length > 1
+              ? `${listFollowedCompanies.length} ${t(
+                  `message.companies_followed`,
+                )}`
+              : `${listFollowedCompanies.length} ${t(
+                  `message.company_followed`,
+                )}`
+          }`}</Text>
         </View>
         <FlatList
-          data={listFollowedCompanies?.companies}
+          data={listFollowedCompanies}
           keyExtractor={item => item.id}
           renderItem={renderFollowedCompany}
           style={{ marginBottom: ms(180) }}
