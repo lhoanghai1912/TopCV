@@ -11,7 +11,7 @@ import {
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import styles from './styles';
 import { ms, s, spacing } from '../../../../utils/spacing';
-import { getCompanyDetails } from '../../../../services/company';
+import { followCompany, getCompanyDetails } from '../../../../services/company';
 import { link } from '../../../../utils/constants';
 import NavBar from '../../../../components/Navbar';
 import icons from '../../../../assets/icons';
@@ -38,26 +38,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
   const [mainTop, setMainTop] = useState(0);
   const [fixedHeaderH, setFixedHeaderH] = useState(0);
   const [mainContent, setMainContent] = useState(0);
-
-  useEffect(() => {
-    console.log(
-      'maincontent',
-      mainContent,
-      'maintop',
-      mainTop,
-      'fixedHeaderH',
-      fixedHeaderH,
-    );
-  }, [mainContent, mainTop, fixedHeaderH]);
-
-  console.log(
-    'maincontent',
-    mainContent,
-    'maintop',
-    mainTop,
-    'fixedHeaderH',
-    fixedHeaderH,
-  );
+  const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
     if (route.params) {
@@ -70,6 +51,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
     const data = await getCompanyDetails(route.params.companyId);
     console.log('company Details', data);
     setCompanyDetail(data.data);
+    setIsFollowing(data.data.isFollowing);
     setLoading(false);
   };
 
@@ -90,6 +72,18 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
         <CardJob job={item} key={item.id} />
       </View>
     );
+  };
+
+  const { updateCompanyFollowed } = route.params || {};
+  const handleFollowCompany = async () => {
+    try {
+      const res = await followCompany(companyDetail.id);
+      console.log('res follow', res);
+      setIsFollowing(!isFollowing);
+      if (typeof updateCompanyFollowed === 'function') {
+        updateCompanyFollowed(companyDetail.id, !isFollowing);
+      }
+    } catch (error) {}
   };
   return (
     <View style={{ flex: 1 }}>
@@ -227,7 +221,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
                 />
                 <Text style={AppStyles.text}>{`${
                   companyDetail?.followers?.length
-                } ${t('label.company_follow')}`}</Text>
+                } ${t('label.company_followed')}`}</Text>
               </View>
               <View
                 style={{
@@ -254,9 +248,13 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
               }}
             >
               <AppButton
-                title={t('button.follow')}
-                onPress={() => {}}
-                leftIcon={icons.add}
+                title={
+                  isFollowing === true
+                    ? t('button.following')
+                    : t('button.follow')
+                }
+                onPress={() => handleFollowCompany()}
+                leftIcon={isFollowing === true ? icons.checked : icons.add}
                 customStyle={{
                   alignItems: 'center',
                   paddingVertical: ms(5),

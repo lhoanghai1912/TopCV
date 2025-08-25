@@ -76,10 +76,15 @@ const SavedJobScreen: React.FC<Props> = ({ navigation, route }) => {
                 display: listSavedJobs.length ? 'flex' : 'none',
               },
             ]}
-          >{`${listSavedJobs.length} ${t(`label.job_saved`)}`}</Text>
+          >{`${
+            listSavedJobs.length > 1
+              ? `${listSavedJobs.length} ${t(`message.jobs_saved`)}`
+              : `${listSavedJobs.length} ${t(`message.job_saved`)}`
+          }`}</Text>
         </View>
         <FlatList
           data={listSavedJobs}
+          style={{ marginBottom: ms(180) }}
           keyExtractor={item => item.id}
           renderItem={renderSavedJob}
           ListEmptyComponent={() => (

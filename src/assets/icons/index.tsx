@@ -41,8 +41,10 @@ import internet from './internet.png';
 import share from './share.png';
 import job from './job.png';
 import company from './company.png';
+import checked from './checked.png';
 
 export default {
+  checked,
   job,
   company,
   arrow,

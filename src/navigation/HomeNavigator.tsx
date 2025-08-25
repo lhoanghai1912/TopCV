@@ -13,6 +13,7 @@ import EditCVScreen from '../screens/HomeStack/CreateCV/editCV';
 import UpdateInfoScreen from '../screens/HomeStack/User/UpdateInfo';
 import { updatePassword } from '../services/auth';
 import UpdatePasswordScreen from '../screens/HomeStack/User/ChangePassword';
+import FollowedCompanyScreen from '../screens/HomeStack/Company/Followed_Company';
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +61,10 @@ const HomeNavigator = () => {
       <Stack.Screen
         name={Screen_Name.UpdatePassword_Screen}
         component={UpdatePasswordScreen}
+      />
+      <Stack.Screen
+        name={Screen_Name.FollowedCompany_Screen}
+        component={FollowedCompanyScreen}
       />
     </Stack.Navigator>
   );

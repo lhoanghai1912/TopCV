@@ -34,6 +34,7 @@ import Toast from 'react-native-toast-message';
 import images from '../../../assets/images';
 import { deleteUserAccount } from '../../../services/user';
 import { colors } from '../../../utils/color';
+import { getFollowedCompanies } from '../../../services/company';
 
 const UserScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -46,6 +47,7 @@ const UserScreen: React.FC = () => {
 
   const [userProfile, setUserProfile] = useState<any>(null);
   const [listSavedJobs, setListSavedJobs] = useState<any>(null);
+  const [listFollowedCompanies, setListFollowedCompanies] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   useFocusEffect(
@@ -54,6 +56,7 @@ const UserScreen: React.FC = () => {
       console.log('abc');
       fetchUserProfile();
       getListSavedJobs();
+      getListFollowedCompanies();
     }, [token]),
   );
 
@@ -72,11 +75,22 @@ const UserScreen: React.FC = () => {
       setListSavedJobs(res);
     } catch (error) {}
   };
+  const getListFollowedCompanies = async () => {
+    if (!token) return;
+    try {
+      const res = await getFollowedCompanies();
+      console.log('followed', res);
+      setListFollowedCompanies(res);
+    } catch (error) {}
+  };
+  console.log('followed', listFollowedCompanies);
+
   const handleLogout = () => {
     setLoading(true);
     setTimeout(() => {
       dispatch(logout());
       setListSavedJobs([]);
+      setListFollowedCompanies([]);
       setLoading(false);
       navigate(Screen_Name.Login_Screen);
     });
@@ -402,32 +416,73 @@ const UserScreen: React.FC = () => {
               </Text>
               <View
                 style={{
-                  width: '48%',
-                  backgroundColor: '#F5F5F5',
-                  borderRadius: 8,
-                  padding: 12,
-                  marginBottom: spacing.small,
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  justifyContent: 'space-between',
                 }}
               >
-                <TouchableOpacity
-                  onPress={() => {
-                    token
-                      ? navigate(Screen_Name.SavedJob_Screen)
-                      : Toast.show({
-                          type: 'error',
-                          text1: t('message.login_save'),
-                        });
+                <View
+                  style={{
+                    width: '48%',
+                    backgroundColor: '#F5F5F5',
+                    borderRadius: 8,
+                    padding: 12,
+                    marginBottom: spacing.small,
                   }}
                 >
-                  <Text style={{ color: '#1A7FEE' }}>
-                    {t('label.job_saved')}
-                  </Text>
-                  <Text style={{ fontWeight: 'bold', fontSize: Fonts.normal }}>
-                    {listSavedJobs?.data?.total
-                      ? `${listSavedJobs.data.total}`
-                      : '0'}
-                  </Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      token
+                        ? navigate(Screen_Name.SavedJob_Screen)
+                        : Toast.show({
+                            type: 'error',
+                            text1: t('message.login_save'),
+                          });
+                    }}
+                  >
+                    <Text style={{ color: '#1A7FEE' }}>
+                      {t('label.job_saved')}
+                    </Text>
+                    <Text
+                      style={{ fontWeight: 'bold', fontSize: Fonts.normal }}
+                    >
+                      {listSavedJobs?.data?.total
+                        ? `${listSavedJobs.data.total}`
+                        : '0'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{
+                    width: '48%',
+                    backgroundColor: '#F5F5F5',
+                    borderRadius: 8,
+                    padding: 12,
+                    marginBottom: spacing.small,
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      token
+                        ? navigate(Screen_Name.FollowedCompany_Screen)
+                        : Toast.show({
+                            type: 'error',
+                            text1: t('message.login_save'),
+                          });
+                    }}
+                  >
+                    <Text style={{ color: '#1A7FEE' }}>
+                      {t('label.company_followed')}
+                    </Text>
+                    <Text
+                      style={{ fontWeight: 'bold', fontSize: Fonts.normal }}
+                    >
+                      {listFollowedCompanies?.companies?.length
+                        ? `${listFollowedCompanies.companies.length}`
+                        : '0'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
             {token && (

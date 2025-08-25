@@ -17,26 +17,51 @@ import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import { ms, spacing } from '../../../utils/spacing';
 import AppButton from '../../../components/AppButton';
+import { followCompany } from '../../../services/company';
+import Toast from 'react-native-toast-message';
+import { useSelector } from 'react-redux';
 
 type CardCompanyProps = {
   company: any;
-  onReload?: () => void;
+  updateCompanyFollowed?: (companyId: string, isFollowed: boolean) => void;
   style?: ViewStyle;
 };
 
 const CardCompany: React.FC<CardCompanyProps> = ({
   company,
-  onReload,
+  updateCompanyFollowed,
   style,
 }) => {
   const { t } = useTranslation();
+  const token = useSelector((state: any) => state.user.token);
   const companyId = company?.id;
+  const [isFollowing, setIsFollowing] = useState(company.isFollowing);
+
+  useEffect(() => {
+    setIsFollowing(company.isFollowing);
+  }, [company.isFollowing]);
+
+  const handleFollowCompany = async (companyId: string) => {
+    if (!token) {
+      Toast.show({
+        type: 'error',
+        text1: t('message.company_login'),
+      });
+    } else {
+      const res = await followCompany(companyId);
+      setIsFollowing(prev => !prev);
+      if (typeof updateCompanyFollowed === 'function')
+        updateCompanyFollowed(companyId, !isFollowing);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() =>
-          navigate(Screen_Name.DetailCompany_Screen, { companyId })
+          navigate(Screen_Name.DetailCompany_Screen, {
+            companyId,
+          })
         }
         style={[styles.cardCompanyWrapper, style]}
       >
@@ -97,9 +122,9 @@ const CardCompany: React.FC<CardCompanyProps> = ({
             </View>
 
             <AppButton
-              title={t('button.follow')}
-              leftIcon={icons.add}
-              onPress={() => {}}
+              title={isFollowing ? t('button.following') : t('button.follow')}
+              leftIcon={isFollowing ? icons.checked : icons.add}
+              onPress={() => handleFollowCompany(companyId)}
               customStyle={{
                 paddingVertical: ms(8),
                 backgroundColor: colors.background,

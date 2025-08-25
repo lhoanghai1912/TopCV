@@ -16,6 +16,8 @@ export const Screen_Name = {
   EditCV_Screen: 'EditCV_Screen',
   UpdateInfo_Screen: 'UpdateInfo_Screen',
   UpdatePassword_Screen: 'UpdatePassword_Screen',
+  FollowedCompany_Screen: 'FollowedCompany_Screen',
+
   //Other
   Splash_Screen: 'Splash_Screen',
   Loading_Screen: 'Splash_Screen',

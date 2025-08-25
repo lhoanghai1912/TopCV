@@ -10,17 +10,26 @@ export default {
     loadingMore: 'Loading more...',
     noMoreJob: 'No more jobs',
     login: 'Log in here ↓',
-    login_save: 'Log in to save jobs',
     account_delete_confirm: 'Are you sure you want to delete your account?',
     update_success: 'Updated successfully',
 
     job_find: 'Find a job',
     job_empty: 'No jobs',
+    job_login: 'Log in to save job',
     job_saved_none: 'No jobs yet saved',
+    job_saved: 'Job saved',
+    jobs_saved: 'Jobs saved',
     job_saved_success: 'Job saved successfully',
     job_unsaved_success: 'Job unsaved successfully',
 
-    company_empty: 'No featured companies',
+    company_find: 'Find a company',
+    company_login: 'Log in to save company',
+    company_empty: 'No companies',
+    company_saved_none: 'No companies yet saved',
+    company_saved: 'Company saved',
+    companies_saved: 'Companies saved',
+    company_saved_success: 'Company saved successfully',
+    company_unsaved_success: 'Company unsaved successfully',
 
     valid_notEnough: 'Please enter enough information',
     valid_password_dif: 'New password must be different from current password',
@@ -32,6 +41,8 @@ export default {
       'Password must contain at least 1 special character',
     valid_password_match: 'Password and confirm password match',
     cv_upload_photo: 'Upload photo',
+
+    company_followed_none: 'No followed companies',
   },
 
   button: {
@@ -46,6 +57,7 @@ export default {
     choose_language: 'Select language',
     apply_now: 'Apply now',
     follow: 'Follow',
+    following: 'Following',
   },
 
   label: {
@@ -108,8 +120,8 @@ export default {
     company_title: 'Featured Company',
     company_job: 'Company Jobs',
     company_field_top: 'Top Companies in the Same Field',
-    company_follow: 'Followed Companies',
-    company_staff: 'employees',
+    company_followed: 'Followed',
+    company_staff: 'Employees',
 
     cv_create: 'Create CV',
     cv_login: 'Log in to create CV',

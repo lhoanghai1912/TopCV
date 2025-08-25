@@ -113,7 +113,6 @@ const HomeScreen: React.FC = () => {
   };
 
   const renderJob = ({ item }: { item: jobList }) => {
-    const key = item.id ? item.id.toString() : `${Math.random()}`;
     return <CardJob job={item} updateJobSaved={updateJobSaved} />;
   };
 

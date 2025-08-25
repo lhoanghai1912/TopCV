@@ -18,3 +18,20 @@ export const getCompanyDetails = async (id: string) => {
     throw error;
   }
 };
+
+export const followCompany = async (companyId: string) => {
+  try {
+    const response = await apiClient.post(`/Company/${companyId}/follow`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getFollowedCompanies = async () => {
+  try {
+    const response = await apiClient.get(`/Company/followed-companies`);
+    return response.data;
+  } catch (error) {}
+};

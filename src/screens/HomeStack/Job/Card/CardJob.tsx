@@ -33,7 +33,7 @@ const CardJob: React.FC<CardJobProps> = ({ job, updateJobSaved }) => {
     if (!token) {
       Toast.show({
         type: 'error',
-        text1: 'Please login to save job',
+        text1: t('message.job_login'),
       });
     } else {
       const res = await patchSavedJob(jobId);

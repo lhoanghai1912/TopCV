@@ -74,10 +74,21 @@ const CompanyScreen = ({ navigation }: { navigation: any }) => {
       fetchCompanies(page + 1, false);
     }
   };
-
-  const renderCompany = ({ item }: { item: any }) => (
-    <CardCompany company={item} key={item.id || item._id || Math.random()} />
-  );
+  const updatedCompanyFollowed = (companyId: string, isFollowed: boolean) => {
+    setCompanies(prev =>
+      prev.map(item =>
+        item.id === companyId ? { ...item, isFollowing: isFollowed } : item,
+      ),
+    );
+  };
+  const renderCompany = ({ item }: { item: any }) => {
+    return (
+      <CardCompany
+        company={item}
+        updateCompanyFollowed={updatedCompanyFollowed}
+      />
+    );
+  };
 
   const renderFooter = () => {
     if (loadingMore) {
