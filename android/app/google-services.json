@@ -1,1 +1,55 @@
-{"installed":{"client_id":"159693739314-75a7ba3edr6g8eovrh4dhvpsm5eq4ihc.apps.googleusercontent.com","project_id":"foxai-cv","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs"}}
+{
+  "project_info": {
+    "project_number": "159693739314",
+    "project_id": "foxai-cv",
+    "storage_bucket": "foxai-cv.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:159693739314:android:8833cb9506e337a1a0332b",
+        "android_client_info": {
+          "package_name": "com.TopCV"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "159693739314-87pgg2iabltk37c7qu0r6sstg7g0fscs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.TopCV",
+            "certificate_hash": "6b3017d0edbfae8acb1d54344f1121d1e663ccf8"
+          }
+        },
+        {
+          "client_id": "159693739314-m09nqglnsbldt2rurbq9fkpp727jtef5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.TopCV",
+            "certificate_hash": "5528367f9b3ef005487fb856185a6d1a9d9a3388"
+          }
+        },
+        {
+          "client_id": "159693739314-mulssauulqf55ijmv7r9j1qnla6nsa08.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDD4ljZOpW8EuCkffIN9UlAOXaf2E-Zt10"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "159693739314-9qgfrbked78mtvi5puqoi9up2ofl83j3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

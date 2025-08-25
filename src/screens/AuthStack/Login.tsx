@@ -51,6 +51,17 @@ const LoginScreen = () => {
       setLoading(false);
     }
   };
+
+  const handleGoogleLogin = async () => {
+    // try {
+    //   await GoogleSignin.hasPlayServices();
+    //   const userInfo = await GoogleSignin.signIn();
+    //   // Xử lý userInfo, gửi lên server nếu cần
+    //   console.log(userInfo);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+  };
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top }]}>
@@ -149,6 +160,7 @@ const LoginScreen = () => {
               borderRadius: 50,
               marginRight: spacing.medium,
             }}
+            onPress={() => handleGoogleLogin()}
           >
             <Image source={icons.google} style={[AppStyles.icon]} />
           </TouchableOpacity>
