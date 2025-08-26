@@ -1,4 +1,4 @@
-package com.TopCV
+package com.topcv.debug
 
 import android.app.Application
 import com.facebook.react.PackageList

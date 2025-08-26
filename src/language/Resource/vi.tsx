@@ -1,6 +1,6 @@
 export default {
   message: {
-    welcome: 'Chào mừng đến với TopCV',
+    welcome: 'Chào mừng đến với topcv',
     welcome_back: 'Chào mừng trở lại',
     other_login: 'Hoặc đăng nhập bằng',
     nothave_account: 'Bạn chưa có tài khoản?',
@@ -60,7 +60,7 @@ export default {
     profile_management: 'Quản lý hồ sơ',
     contact_allow: 'Cho phép liên hệ',
     contact_by: 'Liên hệ qua',
-    contact_topCV: 'Nhắn tin qua TopCV',
+    contact_topCV: 'Nhắn tin qua topcv',
     contact_phone: 'Qua số điện thoại',
     account_setting: 'Cài đặt tài khoản',
     account_update: 'Cập nhật tài khoản',

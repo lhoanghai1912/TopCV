@@ -23,6 +23,7 @@ import { login } from '../../services/auth';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import { setToken } from '../../store/reducers/userSlice';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const LoginScreen = () => {
   const insets = useSafeAreaInsets();
@@ -53,14 +54,25 @@ const LoginScreen = () => {
   };
 
   const handleGoogleLogin = async () => {
-    // try {
-    //   await GoogleSignin.hasPlayServices();
-    //   const userInfo = await GoogleSignin.signIn();
-    //   // Xử lý userInfo, gửi lên server nếu cần
-    //   console.log(userInfo);
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      // Xử lý userInfo, gửi lên server nếu cần
+      console.log(userInfo);
+      Toast.show({
+        type: 'success',
+        text2: 'Đăng nhập Google thành công',
+        // text2: userInfo.user.name,
+      });
+      // Ví dụ: navigate(Screen_Name.BottomTab_Navigator);
+    } catch (error) {
+      console.log(error);
+      Toast.show({
+        type: 'error',
+        text2: 'Đăng nhập Google thất bại',
+        // text2: error.message,
+      });
+    }
   };
   return (
     <View style={styles.container}>

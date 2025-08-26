@@ -1,6 +1,6 @@
 export default {
   message: {
-    welcome: 'Welcome to TopCV',
+    welcome: 'Welcome to topcv',
     welcome_back: 'Welcome back',
     other_login: 'Or log in with',
     nothave_account: "Don't have an account yet?",
@@ -72,7 +72,7 @@ export default {
     profile_management: 'Profile management',
     contact_allow: 'Allow contact',
     contact_by: 'Contact via',
-    contact_topCV: 'Message via TopCV',
+    contact_topCV: 'Message via topcv',
     contact_phone: 'By phone number',
     account_setting: 'Account settings',
     account_update: 'Update account',

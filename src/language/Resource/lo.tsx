@@ -1,6 +1,6 @@
 export default {
   message: {
-    welcome: 'ຍິນດີຕ້ອນຮັບສູ່ TopCV',
+    welcome: 'ຍິນດີຕ້ອນຮັບສູ່ topcv',
     welcome_back: 'ຍິນດີຕ້ອນຮັບກັບ',
     other_login: 'ຫຼື ເຂົ້າສູ່ລະບົບດ້ວຍ',
     nothave_account: 'ຍັງບໍ່ມີບັນຊີ?',
