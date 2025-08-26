@@ -21,12 +21,13 @@ import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { login } from '../../services/auth';
 import Toast from 'react-native-toast-message';
-import { useDispatch } from 'react-redux';
-import { setToken } from '../../store/reducers/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setToken, setUserData } from '../../store/reducers/userSlice';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const LoginScreen = () => {
   const insets = useSafeAreaInsets();
+  const userData = useSelector((state: any) => state.user.userData);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const [mail, setMail] = useState('hoanghai191202@gmail.com');
@@ -54,10 +55,27 @@ const LoginScreen = () => {
   };
 
   const handleGoogleLogin = async () => {
+    console.log('closakjdfjsgjdf');
+
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      // Xử lý userInfo, gửi lên server nếu cần
+      // Lấy thông tin user từ userInfo.data.user và idToken từ userInfo.data.idToken
+      dispatch(
+        setUserData({
+          companyId: null,
+          companyName: null,
+          email: userInfo?.data?.user?.email || '',
+          fullName: userInfo?.data?.user?.name || '',
+          avatarUrl: userInfo?.data?.user?.photo || '',
+          phoneNumber: '',
+          roles: ['User'],
+        }),
+      );
+      console.log('userData set:', userInfo?.data?.user);
+      const token = userInfo?.data?.idToken || '';
+      dispatch(setToken({ token }));
+      navigate(Screen_Name.BottomTab_Navigator);
       console.log(userInfo);
       Toast.show({
         type: 'success',
@@ -66,6 +84,8 @@ const LoginScreen = () => {
       });
       // Ví dụ: navigate(Screen_Name.BottomTab_Navigator);
     } catch (error) {
+      console.log('error=========sd', error);
+
       console.log(error);
       Toast.show({
         type: 'error',
@@ -74,6 +94,7 @@ const LoginScreen = () => {
       });
     }
   };
+
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top }]}>
@@ -171,6 +192,7 @@ const LoginScreen = () => {
               borderColor: colors.Gray,
               borderRadius: 50,
               marginRight: spacing.medium,
+              backgroundColor: 'red',
             }}
             onPress={() => handleGoogleLogin()}
           >

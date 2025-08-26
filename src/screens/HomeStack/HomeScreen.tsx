@@ -38,7 +38,7 @@ const HomeScreen: React.FC = () => {
   const [noMoreData, setNoMoreData] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef<FlatList>(null);
-  const token = useSelector((state: any) => state.user.token);
+  const userData = useSelector((state: any) => state.user.userData);
   const { t } = useTranslation();
 
   const fetchData = async (currentPage: number, isRefresh: boolean = false) => {
@@ -61,6 +61,7 @@ const HomeScreen: React.FC = () => {
 
       const data = await getJob(params);
       console.log('Fetched data:', data);
+      console.log('userData:', userData);
 
       if (data.result && Array.isArray(data.result)) {
         if (data.result.length < pageSize) {
@@ -117,13 +118,6 @@ const HomeScreen: React.FC = () => {
   };
 
   const renderFooter = () => {
-    console.log(
-      '🏁 renderFooter - loadingMore:',
-      loadingMore,
-      'noMoreData:',
-      noMoreData,
-    );
-
     if (loadingMore) {
       return (
         <View

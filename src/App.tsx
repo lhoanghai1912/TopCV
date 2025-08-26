@@ -18,12 +18,11 @@ import {
 } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-
 GoogleSignin.configure({
-  webClientId: '889651278132-bubo567qp92glsmgsj5ghn8pfsnt3h1p.apps.googleusercontent.com',
+  webClientId:
+    '889651278132-bubo567qp92glsmgsj5ghn8pfsnt3h1p.apps.googleusercontent.com',
   offlineAccess: true,
 });
-
 enableScreens(); // Bật tính năng screens để sử dụng trong navigation
 function App() {
   return (

@@ -35,6 +35,7 @@ import images from '../../../assets/images';
 import { deleteUserAccount } from '../../../services/user';
 import { colors } from '../../../utils/color';
 import { getFollowedCompanies } from '../../../services/company';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const UserScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -85,8 +86,13 @@ const UserScreen: React.FC = () => {
   };
   console.log('followed', listFollowedCompanies);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setLoading(true);
+    try {
+      await GoogleSignin.signOut();
+    } catch (error) {
+      // Có thể log lỗi nếu cần
+    }
     setTimeout(() => {
       dispatch(logout());
       setListSavedJobs([]);
