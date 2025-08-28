@@ -1,3 +1,5 @@
+import CardCV from '../screens/HomeStack/CV/Card';
+
 export const Screen_Name = {
   //AuthStack
   Login_Screen: 'Login_Screen',
@@ -17,7 +19,10 @@ export const Screen_Name = {
   UpdateInfo_Screen: 'UpdateInfo_Screen',
   UpdatePassword_Screen: 'UpdatePassword_Screen',
   FollowedCompany_Screen: 'FollowedCompany_Screen',
-
+  CV_Screen: 'CV_Screen',
+  CardCV_Screen: 'CardCV_Screen',
+  CreateCV_Screen: 'CreateCV_Screen',
+  DetailCV: 'DetailCV',
   //Other
   Splash_Screen: 'Splash_Screen',
   Loading_Screen: 'Splash_Screen',

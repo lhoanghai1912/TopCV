@@ -25,3 +25,31 @@ export const createCV = async (
     throw error;
   }
 };
+
+export const getAllCV = async () => {
+  try {
+    const response = await apiClient.get('/Cv');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Hàm lấy danh sách CV có phân trang
+export const getCVList = async (page: number, pageSize: number) => {
+  try {
+    const response = await apiClient.get(`/Cv?page=${page}&pageSize=${pageSize}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCVDetail = async (cvId: string) => {
+  try {
+    const response = await apiClient.get(`/Cv/${cvId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

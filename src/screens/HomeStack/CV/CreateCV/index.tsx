@@ -11,21 +11,20 @@ import {
   TextInput,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { useTranslation } from 'react-i18next';
+import AppStyles from '../../../../components/AppStyle';
+import icons from '../../../../assets/icons';
+import { ms, spacing } from '../../../../utils/spacing';
+import { colors } from '../../../../utils/color';
+import images from '../../../../assets/images';
+import { Fonts } from '../../../../utils/fontSize';
+import AppButton from '../../../../components/AppButton';
+import { navigate } from '../../../../navigation/RootNavigator';
+import { Screen_Name } from '../../../../navigation/ScreenName';
+import { useCVData } from './useCVData';
+import { createCV } from '../../../../services/cv';
 import { useSelector } from 'react-redux';
-import { useCVData } from '../CV/CreateCV/useCVData';
-import { navigate } from '../../../navigation/RootNavigator';
-import { Screen_Name } from '../../../navigation/ScreenName';
-import AppStyles from '../../../components/AppStyle';
-import icons from '../../../assets/icons';
-import { ms, spacing } from '../../../utils/spacing';
-import images from '../../../assets/images';
-import AppButton from '../../../components/AppButton';
-import { createCV } from '../../../services/cv';
-import NavBar from '../../../components/Navbar';
-import { colors } from '../../../utils/color';
-import { Fonts } from '../../../utils/fontSize';
+import NavBar from '../../../../components/Navbar';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   navigation: any;

@@ -5,11 +5,12 @@ import icons from '../assets/icons';
 import { Screen_Name } from './ScreenName';
 import HomeScreen from '../screens/HomeStack/HomeScreen';
 import { useSelector } from 'react-redux';
-import CreateCV from '../screens/HomeStack/CreateCV';
-import CreateCVScreen from '../screens/HomeStack/CreateCV';
+import CreateCV from '../screens/HomeStack/CV/CreateCV';
+import CreateCVScreen from '../screens/HomeStack/CV/CreateCV';
 import CommentScreen from '../screens/HomeStack/Comment';
 import NotificationScreen from '../screens/HomeStack/Notification';
 import UserScreen from '../screens/HomeStack/User';
+import CVScreen from '../screens/HomeStack/CV';
 
 // Các màn hình cho các tab
 
@@ -31,7 +32,7 @@ const BottomTabNavigator = () => {
         tabBarIcon: ({ focused }) => {
           const iconMap = {
             Home_Screen: focused ? icons.home_focus : icons.home,
-            Edit_Screen: focused ? icons.document_focus : icons.document,
+            CV_Screen: focused ? icons.document_focus : icons.document,
             Comment_Screen: focused ? icons.chat_focus : icons.chat,
             Noti_Screen: focused ? icons.noti_focus : icons.noti,
             User_Screen: focused ? icons.username_focus : icons.username,
@@ -50,7 +51,7 @@ const BottomTabNavigator = () => {
       })}
     >
       <Tab.Screen name={Screen_Name.Home_Screen} component={HomeScreen} />
-      <Tab.Screen name={Screen_Name.Edit_Screen} component={CreateCVScreen} />
+      <Tab.Screen name={Screen_Name.CV_Screen} component={CVScreen} />
       <Tab.Screen name={Screen_Name.Comment_Screen} component={CommentScreen} />
       <Tab.Screen
         name={Screen_Name.Noti_Screen}

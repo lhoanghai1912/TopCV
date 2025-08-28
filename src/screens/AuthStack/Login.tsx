@@ -59,9 +59,10 @@ const LoginScreen = () => {
     console.log('closakjdfjsgjdf');
 
     try {
+      setLoading(true);
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      const idToken = userInfo.data.idToken;
+      const idToken = userInfo?.data?.idToken || '';
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
       const userCredential = await auth().signInWithCredential(
@@ -83,6 +84,8 @@ const LoginScreen = () => {
         text2: 'Đăng nhập Google thất bại',
         // text2: error.message,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
