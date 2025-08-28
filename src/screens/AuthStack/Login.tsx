@@ -19,11 +19,12 @@ import { Fonts } from '../../utils/fontSize';
 import AppButton from '../../components/AppButton';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
-import { login } from '../../services/auth';
+import { login, loginFirebase } from '../../services/auth';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToken, setUserData } from '../../store/reducers/userSlice';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
 
 const LoginScreen = () => {
   const insets = useSafeAreaInsets();
@@ -60,29 +61,19 @@ const LoginScreen = () => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      // Lấy thông tin user từ userInfo.data.user và idToken từ userInfo.data.idToken
-      dispatch(
-        setUserData({
-          companyId: null,
-          companyName: null,
-          email: userInfo?.data?.user?.email || '',
-          fullName: userInfo?.data?.user?.name || '',
-          avatarUrl: userInfo?.data?.user?.photo || '',
-          phoneNumber: '',
-          roles: ['User'],
-        }),
+      const idToken = userInfo.data.idToken;
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+      const userCredential = await auth().signInWithCredential(
+        googleCredential,
       );
-      console.log('userData set:', userInfo?.data?.user);
-      const token = userInfo?.data?.idToken || '';
-      dispatch(setToken({ token }));
+      const firebaseIdToken = await userCredential.user.getIdToken();
+      const res = await loginFirebase(firebaseIdToken);
+      console.log('firebaseLogin', res);
+
+      dispatch(setToken({ token: res.token }));
       navigate(Screen_Name.BottomTab_Navigator);
       console.log(userInfo);
-      Toast.show({
-        type: 'success',
-        text2: 'Đăng nhập Google thành công',
-        // text2: userInfo.user.name,
-      });
-      // Ví dụ: navigate(Screen_Name.BottomTab_Navigator);
     } catch (error) {
       console.log('error=========sd', error);
 
