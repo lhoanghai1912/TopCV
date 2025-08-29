@@ -18,6 +18,7 @@ import CardCV from '../screens/HomeStack/CV/Card';
 import CVScreen from '../screens/HomeStack/CV';
 import CreateCVScreen from '../screens/HomeStack/CreateCV';
 import DetailsCv from '../screens/HomeStack/CV/Details';
+import CreateCV from '../screens/HomeStack/CV/CreateCV';
 
 const Stack = createNativeStackNavigator();
 
@@ -71,10 +72,7 @@ const HomeNavigator = () => {
         component={FollowedCompanyScreen}
       />
       <Stack.Screen name={Screen_Name.CV_Screen} component={CVScreen} />
-      <Stack.Screen
-        name={Screen_Name.CreateCV_Screen}
-        component={CreateCVScreen}
-      />
+      <Stack.Screen name={Screen_Name.CreateCV_Screen} component={CreateCV} />
       <Stack.Screen name={Screen_Name.DetailCV} component={DetailsCv} />
     </Stack.Navigator>
   );

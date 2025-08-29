@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useRoute } from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import Toast from 'react-native-toast-message';
 import {
@@ -25,9 +26,11 @@ import { createCV } from '../../../../services/cv';
 import { useSelector } from 'react-redux';
 import NavBar from '../../../../components/Navbar';
 import { useTranslation } from 'react-i18next';
+import { lo } from '../../../../language/Resource';
 
 interface Props {
   navigation: any;
+  route: any;
 }
 // Helper function để format date cho hiển thị (yyyy-mm-dd -> dd/mm/yyyy)
 const formatDateForDisplay = (dateString: string) => {
@@ -61,12 +64,15 @@ const generatePhotoPath = () => {
   return `/uploads/cv/photo-card/${uuid}.jpg`;
 };
 
-const CreateCVScreen: React.FC<Props> = ({ navigation }) => {
+const CreateCV: React.FC<Props> = ({ navigation, route }) => {
   const { t } = useTranslation();
+  console.log('route', route);
 
   const { token } = useSelector((state: any) => state.user);
   const [avatarUri, setAvatarUri] = useState<string>('');
   const insets = useSafeAreaInsets();
+
+  console.log('route', route);
 
   // Sử dụng hook quản lý data CV
   const {
@@ -75,22 +81,70 @@ const CreateCVScreen: React.FC<Props> = ({ navigation }) => {
     photoCard,
     setPhotoCard,
     name,
+    setName,
     content,
-    birthday: birthday,
+    setContent,
+    birthday,
+    setBirthday,
     gender,
+    setGender,
     phone,
+    setPhone,
     email,
+    setEmail,
     website,
+    setWebsite,
     address,
+    setAddress,
+    careerGoal,
     educations,
+    setEducation,
     experience: experiences,
+    setExperience,
+    activity,
+    setActivity,
     certificate,
+    setCertificate,
+    award,
+    setAward,
     skills,
+    setSkill,
+    reference,
+    setReference,
+    hobby,
+    setHobby,
     sections,
+    setSections,
     updateSection,
     removeSection,
     getCVData,
   } = useCVData();
+
+  // Fill dữ liệu từ cv param nếu có
+  useEffect(() => {
+    console.log('DEBUG route:', route);
+    const paramsCV = route?.params?.cv;
+    console.log('DEBUG paramsCV:', paramsCV);
+    if (paramsCV) {
+      if (paramsCV.title) setTitle(paramsCV.title);
+      if (paramsCV.photoCard) setPhotoCard(paramsCV.photoCard);
+      if (paramsCV.name) setName(paramsCV.name);
+      if (paramsCV.content) setContent(paramsCV.content);
+      if (paramsCV.birthday) setBirthday(paramsCV.birthday);
+      if (paramsCV.gender) setGender(paramsCV.gender);
+      if (paramsCV.phone) setPhone(paramsCV.phone);
+      if (paramsCV.email) setEmail(paramsCV.email);
+      if (paramsCV.website) setWebsite(paramsCV.website);
+      if (paramsCV.address) setAddress(paramsCV.address);
+      if (Array.isArray(paramsCV.educations)) setEducation(paramsCV.educations);
+      if (Array.isArray(paramsCV.experiences))
+        setExperience(paramsCV.experiences);
+      if (Array.isArray(paramsCV.certificate))
+        setCertificate(paramsCV.certificate);
+      if (Array.isArray(paramsCV.skills)) setSkill(paramsCV.skills);
+      if (Array.isArray(paramsCV.sections)) setSections(paramsCV.sections);
+    }
+  }, [route]);
 
   // Hàm điều hướng đến EditCVScreen
   const goToEditCV = (sectionKey, sectionTitle, fields) => {
@@ -891,4 +945,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateCVScreen;
+export default CreateCV;

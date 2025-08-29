@@ -1,43 +1,49 @@
-import React, { useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  AppState,
-  TouchableOpacity,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { getCVDetail } from '../../../../services/cv';
 import NavBar from '../../../../components/Navbar';
 import { link } from '../../../../utils/constants';
 import images from '../../../../assets/images';
 import { ms, spacing } from '../../../../utils/spacing';
 import { ScrollView } from 'react-native-gesture-handler';
-import { colors } from '../../../../utils/color';
-import { Fonts } from '../../../../utils/fontSize';
 import icons from '../../../../assets/icons';
-import AppStyles from '../../../../components/AppStyle';
+import { Screen_Name } from '../../../../navigation/ScreenName';
+
 interface Props {
   navigation: any;
   route: any;
 }
+
+const formatDateForDisplay = (dateString: string) => {
+  if (!dateString) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  }
+  if (/^\d{4}-\d{2}-01$/.test(dateString)) {
+    const [year, month] = dateString.split('-');
+    return `${month}/${year}`;
+  }
+  return dateString;
+};
+
 const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
   const cvId = route.params?.cvId;
-  const [cv, setCv] = React.useState<any>(null);
+  const [cv, setCv] = useState<any>(null);
   useEffect(() => {
+    const fetchCVDetails = async () => {
+      try {
+        const res = await getCVDetail(cvId);
+        setCv(res.data);
+      } catch (error) {}
+    };
     fetchCVDetails();
-  }, []);
-  const fetchCVDetails = async () => {
-    try {
-      const res = await getCVDetail(cvId);
-      setCv(res.data);
-      console.log('details', res);
-    } catch (error) {}
-  };
+  }, [cvId]);
+
   if (!cv) {
     return (
       <View style={styles.container}>
-        <NavBar title={`CV Details`} onPress={() => navigation.goBack()} />
+        <NavBar title="Chi tiết CV" onPress={() => navigation.goBack()} />
         <Text>Đang tải dữ liệu...</Text>
       </View>
     );
@@ -47,38 +53,19 @@ const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
     photoCard,
     name,
     content,
-    birthday,
-    gender,
-    phone,
-    email,
-    website,
-    address,
     educations = [],
     experiences = [],
-    certificate = [],
     skills = [],
+    certificate = [],
     sections = [],
-    title,
   } = cv;
-
-  const formatDateForDisplay = (dateString: string) => {
-    if (!dateString) return '';
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-      const [year, month, day] = dateString.split('-');
-      return `${day}/${month}/${year}`;
-    }
-    if (/^\d{4}-\d{2}-01$/.test(dateString)) {
-      const [year, month] = dateString.split('-');
-      return `${month}/${year}`;
-    }
-    return dateString;
-  };
 
   return (
     <View style={styles.container}>
-      <NavBar title={`CV Details`} onPress={() => navigation.goBack()} />
-      <View style={styles.body}>
-        <ScrollView>
+      <NavBar title="Chi tiết CV" onPress={() => navigation.goBack()} />
+
+      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+        <View style={styles.body}>
           <View style={{ alignItems: 'center' }}>
             <Image
               source={
@@ -96,31 +83,22 @@ const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
             <Text style={{ fontWeight: 'bold', fontSize: 20, marginTop: 8 }}>
               {name || 'Họ và tên'}
             </Text>
-            <Text style={{ color: '#555', fontSize: Fonts.normal }}>
+            <Text style={{ color: '#555', fontSize: 16 }}>
               {content || 'Vị trí ứng tuyển'}
             </Text>
             <TouchableOpacity
-              onPress={() => {}}
-              style={{ position: 'absolute', top: 0, right: 0 }}
+              style={{ position: 'absolute', top: 0, right: 0, zIndex: 10 }}
+              onPress={() =>
+                navigation.navigate(Screen_Name.CreateCV_Screen, { cv })
+              }
             >
-              <Image source={icons.edit} style={[AppStyles.icon]} />
+              <Image source={icons.edit} style={{ width: 32, height: 32 }} />
             </TouchableOpacity>
-          </View>
-          <View style={[styles.bodyContent, { borderTopWidth: 0 }]}>
-            <Text style={styles.sectionTitle}>Thông tin cá nhân</Text>
-            <Text>
-              Ngày sinh: {birthday ? formatDateForDisplay(birthday) : ''}
-            </Text>
-            <Text>Giới tính: {gender || ''}</Text>
-            <Text>Số điện thoại: {phone || ''}</Text>
-            <Text>Email: {email || ''}</Text>
-            <Text>Website: {website || ''}</Text>
-            <Text>Địa chỉ: {address || ''}</Text>
           </View>
           <View style={styles.bodyContent}>
             <Text style={styles.sectionTitle}>Học vấn</Text>
             {Array.isArray(educations) && educations.length > 0 ? (
-              educations.map((edu, idx) => (
+              educations.map((edu: any, idx: number) => (
                 <View key={idx} style={{ marginBottom: 8 }}>
                   <Text style={{ fontWeight: 'bold' }}>
                     {edu.institutionName || 'Tên trường/học viện'}
@@ -146,7 +124,7 @@ const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
           <View style={styles.bodyContent}>
             <Text style={styles.sectionTitle}>Kinh nghiệm làm việc</Text>
             {Array.isArray(experiences) && experiences.length > 0 ? (
-              experiences.map((exp, idx) => (
+              experiences.map((exp: any, idx: number) => (
                 <View key={idx} style={{ marginBottom: 8 }}>
                   <Text style={{ fontWeight: 'bold' }}>
                     {exp.companyName || 'Tên công ty'}
@@ -169,7 +147,7 @@ const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
           <View style={styles.bodyContent}>
             <Text style={styles.sectionTitle}>Kỹ năng</Text>
             {Array.isArray(skills) && skills.length > 0 ? (
-              skills.map((skill, idx) => (
+              skills.map((skill: any, idx: number) => (
                 <Text key={idx}>
                   - {skill.skillName} ({skill.proficiencyType || ''})
                   {skill.category ? ` - ${skill.category}` : ''}
@@ -182,25 +160,27 @@ const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
           <View style={styles.bodyContent}>
             <Text style={styles.sectionTitle}>Chứng chỉ</Text>
             {Array.isArray(certificate) && certificate.length > 0 ? (
-              certificate.map((cert, idx) => <Text key={idx}>- {cert}</Text>)
+              certificate.map((cert: any, idx: number) => (
+                <Text key={idx}>- {cert}</Text>
+              ))
             ) : (
               <Text>Chưa có chứng chỉ</Text>
             )}
           </View>
           {Array.isArray(sections) && sections.length > 0 && (
-            <>
-              {sections.map((sec, idx) => (
-                <View key={idx} style={styles.bodyContent}>
+            <View style={styles.bodyContent}>
+              {sections.map((sec: any, idx: number) => (
+                <View key={idx} style={{ marginBottom: 8 }}>
                   <Text style={[styles.sectionTitle, { fontWeight: 'bold' }]}>
                     {sec.title || 'Tiêu đề'}
                   </Text>
                   <Text>{sec.content || ''}</Text>
                 </View>
               ))}
-            </>
+            </View>
           )}
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
       <View style={styles.footer}></View>
     </View>
   );
@@ -219,7 +199,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontWeight: 'bold',
-    fontSize: Fonts.large,
+    fontSize: 18,
     marginTop: spacing.medium,
     marginBottom: spacing.small,
   },
@@ -231,3 +211,4 @@ const styles = StyleSheet.create({
 });
 
 export default DetailsCv;
+// ...existing code ends here. All content after this line is removed.
