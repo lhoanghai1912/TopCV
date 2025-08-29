@@ -61,6 +61,8 @@ export default {
     createCV: 'Create CV',
     add_section: 'Add section',
     updateCV: 'Update CV',
+    pickCv: 'Pick CV created',
+    pickImage: 'Pick Image',
   },
 
   label: {

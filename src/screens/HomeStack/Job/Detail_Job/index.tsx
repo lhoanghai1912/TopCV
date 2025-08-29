@@ -33,6 +33,7 @@ import CardJob from '../Card/CardJob';
 import { Screen_Name } from '../../../../navigation/ScreenName';
 import { navigate } from '../../../../navigation/RootNavigator';
 import { useTranslation } from 'react-i18next';
+import ModalApply from '../../../../components/modal/ModalApply';
 interface Props {
   navigation: any;
   route: any;
@@ -48,6 +49,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   const [listJobsOfCompany, setListJobsOfCompany] = useState<any>([]);
   const [onSelectedCategory, setOnSelectedCategory] = useState('info');
   const [showFixedHeader, setShowFixedHeader] = useState(false);
+  const [modalApply, setModalApply] = useState(false);
   const [filteredJobs, setFilteredJobs] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const companyId = jobDetails?.company?.id;
@@ -174,11 +176,13 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const applyNow = () => {
     if (!token) {
-      // Toast.show({
-      //   type: 'error',
-      //   text2: 'Cần đăng nhập để thực hiện tính năng này',
-      //   visibilityTime: 1500,
-      // });
+      Toast.show({
+        type: 'error',
+        text2: 'Cần đăng nhập để thực hiện tính năng này',
+        visibilityTime: 1500,
+      });
+    } else {
+      setModalApply(true);
     }
   };
   return (
@@ -628,6 +632,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
           <ActivityIndicator size="large" color="#E53935" />
         </View>
       )}
+      <ModalApply visible={modalApply} onClose={() => setModalApply(false)} />
     </View>
   );
 };
