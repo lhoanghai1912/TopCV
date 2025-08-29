@@ -1,50 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { use, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  AppState,
+  TouchableOpacity,
+} from 'react-native';
 import { getCVDetail } from '../../../../services/cv';
 import NavBar from '../../../../components/Navbar';
 import { link } from '../../../../utils/constants';
 import images from '../../../../assets/images';
 import { ms, spacing } from '../../../../utils/spacing';
 import { ScrollView } from 'react-native-gesture-handler';
+import { colors } from '../../../../utils/color';
+import { Fonts } from '../../../../utils/fontSize';
 import icons from '../../../../assets/icons';
+import AppStyles from '../../../../components/AppStyle';
 import { Screen_Name } from '../../../../navigation/ScreenName';
-
+import { formatDateForDisplay } from '../../../../utils/formatDateForDisplay';
+import { useTranslation } from 'react-i18next';
 interface Props {
   navigation: any;
   route: any;
 }
-
-const formatDateForDisplay = (dateString: string) => {
-  if (!dateString) return '';
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-    const [year, month, day] = dateString.split('-');
-    return `${day}/${month}/${year}`;
-  }
-  if (/^\d{4}-\d{2}-01$/.test(dateString)) {
-    const [year, month] = dateString.split('-');
-    return `${month}/${year}`;
-  }
-  return dateString;
-};
-
 const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
+  const { t } = useTranslation();
   const cvId = route.params?.cvId;
-  const [cv, setCv] = useState<any>(null);
+  const [cv, setCv] = React.useState<any>(null);
   useEffect(() => {
-    const fetchCVDetails = async () => {
-      try {
-        const res = await getCVDetail(cvId);
-        setCv(res.data);
-      } catch (error) {}
-    };
     fetchCVDetails();
-  }, [cvId]);
-
+  }, []);
+  const fetchCVDetails = async () => {
+    try {
+      const res = await getCVDetail(cvId);
+      setCv(res.data);
+      console.log('details', res);
+    } catch (error) {}
+  };
   if (!cv) {
     return (
       <View style={styles.container}>
-        <NavBar title="Chi tiết CV" onPress={() => navigation.goBack()} />
-        <Text>Đang tải dữ liệu...</Text>
+        <NavBar title={`CV Details`} onPress={() => navigation.goBack()} />
       </View>
     );
   }
@@ -53,19 +50,25 @@ const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
     photoCard,
     name,
     content,
+    birthday,
+    gender,
+    phone,
+    email,
+    website,
+    address,
     educations = [],
     experiences = [],
+    certifications = [],
     skills = [],
-    certificate = [],
     sections = [],
+    title,
   } = cv;
 
   return (
     <View style={styles.container}>
-      <NavBar title="Chi tiết CV" onPress={() => navigation.goBack()} />
-
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-        <View style={styles.body}>
+      <NavBar title={`CV Details`} onPress={() => navigation.goBack()} />
+      <View style={styles.body}>
+        <ScrollView>
           <View style={{ alignItems: 'center' }}>
             <Image
               source={
@@ -74,113 +77,214 @@ const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
                   : images.avt_default
               }
               style={{
-                width: 100,
-                height: 100,
-                borderRadius: 50,
+                width: ms(150),
+                height: ms(150),
+                borderRadius: 100,
                 backgroundColor: '#eee',
               }}
             />
             <Text style={{ fontWeight: 'bold', fontSize: 20, marginTop: 8 }}>
-              {name || 'Họ và tên'}
+              {name}
             </Text>
-            <Text style={{ color: '#555', fontSize: 16 }}>
-              {content || 'Vị trí ứng tuyển'}
+            <Text style={{ color: '#555', fontSize: Fonts.normal }}>
+              {content}
             </Text>
             <TouchableOpacity
-              style={{ position: 'absolute', top: 0, right: 0, zIndex: 10 }}
               onPress={() =>
                 navigation.navigate(Screen_Name.CreateCV_Screen, { cv })
               }
+              style={{ position: 'absolute', top: 0, right: 0 }}
             >
-              <Image source={icons.edit} style={{ width: 32, height: 32 }} />
+              <Image source={icons.edit} style={[AppStyles.icon]} />
             </TouchableOpacity>
           </View>
+          <View style={[styles.bodyContent, { borderTopWidth: 0 }]}>
+            <Text style={styles.sectionTitle}>{t(`label.cv_info`)}</Text>
+            <Text>
+              {t('label.cv_dob')}:{' '}
+              {birthday ? formatDateForDisplay(birthday) : ''}
+            </Text>
+            <Text>
+              {t('label.cv_gender')}: {gender}
+            </Text>
+            <Text>
+              {t('label.cv_phone')}: {phone}
+            </Text>
+            <Text>
+              {t('label.cv_email')}: {email}
+            </Text>
+            <Text>
+              {t('label.cv_website')}: {website}
+            </Text>
+            <Text>
+              {t('label.cv_address')}: {address}
+            </Text>
+          </View>
           <View style={styles.bodyContent}>
-            <Text style={styles.sectionTitle}>Học vấn</Text>
+            <Text style={styles.sectionTitle}>{t('label.cv_education')}</Text>
             {Array.isArray(educations) && educations.length > 0 ? (
-              educations.map((edu: any, idx: number) => (
-                <View key={idx} style={{ marginBottom: 8 }}>
-                  <Text style={{ fontWeight: 'bold' }}>
-                    {edu.institutionName || 'Tên trường/học viện'}
-                  </Text>
-                  <Text>
-                    {edu.fieldOfStudy || 'Ngành học'} -{' '}
-                    {edu.degree || 'Bằng cấp'}
-                  </Text>
-                  <Text>
-                    {edu.startDate && edu.endDate
-                      ? `${formatDateForDisplay(
-                          edu.startDate,
-                        )} - ${formatDateForDisplay(edu.endDate)}`
-                      : ''}
-                  </Text>
-                  <Text>{edu.description || ''}</Text>
+              educations.map((edu, idx) => (
+                <View
+                  style={{ flexDirection: 'row', marginBottom: spacing.medium }}
+                  key={idx}
+                >
+                  <View style={{ width: '35%' }}>
+                    <Text
+                      style={{ fontWeight: 'bold', fontSize: Fonts.normal }}
+                    >
+                      {edu.startDate && edu.endDate
+                        ? `${formatDateForDisplay(
+                            edu.startDate,
+                          )} - ${formatDateForDisplay(edu.endDate)}`
+                        : 'Bắt đầu - Kết thúc'}
+                    </Text>
+                  </View>
+                  <View style={{ flexShrink: 1, width: '70%' }}>
+                    <Text style={{ fontSize: Fonts.normal }}>
+                      {`${t(`label.cv_institution`)}: ${edu.institutionName}`}
+                    </Text>
+                    <Text style={{ fontSize: Fonts.normal }}>
+                      {`${t(`label.cv_field_of_study`)} ${edu.fieldOfStudy}`}
+                    </Text>
+                    <Text style={{ fontSize: Fonts.normal }}>
+                      {`${t(`label.cv_degree`)}: ${edu.degree}`}
+                    </Text>
+                    <Text style={{ fontSize: Fonts.normal }}>
+                      {`${t(`label.cv_edu_description`)}: ${edu.description}`}
+                    </Text>
+                  </View>
                 </View>
               ))
             ) : (
-              <Text>Chưa có thông tin học vấn</Text>
+              <Text>{t('message.cv_no_education_info')}</Text>
             )}
           </View>
           <View style={styles.bodyContent}>
-            <Text style={styles.sectionTitle}>Kinh nghiệm làm việc</Text>
+            <Text style={styles.sectionTitle}>{t('label.cv_experience')}</Text>
             {Array.isArray(experiences) && experiences.length > 0 ? (
-              experiences.map((exp: any, idx: number) => (
-                <View key={idx} style={{ marginBottom: 8 }}>
-                  <Text style={{ fontWeight: 'bold' }}>
-                    {exp.companyName || 'Tên công ty'}
-                  </Text>
-                  <Text>
-                    {exp.jobTitle || 'Chức danh'} -{' '}
-                    {exp.startDate && exp.endDate
-                      ? `${formatDateForDisplay(
-                          exp.startDate,
-                        )} - ${formatDateForDisplay(exp.endDate)}`
-                      : ''}
-                  </Text>
-                  <Text>{exp.description || ''}</Text>
+              experiences.map((exp, idx) => (
+                <View
+                  key={idx}
+                  style={{ flexDirection: 'row', marginBottom: spacing.medium }}
+                >
+                  <View style={{ width: '35%' }}>
+                    <Text
+                      style={{ fontWeight: 'bold', fontSize: Fonts.normal }}
+                    >
+                      {exp.startDate && exp.endDate
+                        ? `${formatDateForDisplay(
+                            exp.startDate,
+                          )} - ${formatDateForDisplay(exp.endDate)}`
+                        : 'Bắt đầu - Kết thúc'}
+                    </Text>
+                  </View>
+                  <View style={{ flexShrink: 1, width: '70%' }}>
+                    <Text style={{ fontSize: Fonts.normal }}>
+                      {`${t(`label.cv_company`)}: ${exp.companyName}`}
+                    </Text>
+                    <Text style={{ fontSize: Fonts.normal }}>
+                      {`${t(`label.cv_job_title`)}: ${exp.jobTitle}`}
+                    </Text>
+                    <Text style={{ fontSize: Fonts.normal }}>
+                      {`${t(`label.cv_job_description`)}: ${exp.description}`}
+                    </Text>
+                  </View>
                 </View>
               ))
             ) : (
-              <Text>Chưa có kinh nghiệm làm việc</Text>
+              <Text>{t('message.cv_no_experience_info')}</Text>
             )}
           </View>
           <View style={styles.bodyContent}>
-            <Text style={styles.sectionTitle}>Kỹ năng</Text>
+            <Text style={styles.sectionTitle}>{t('label.cv_skills')}</Text>
             {Array.isArray(skills) && skills.length > 0 ? (
-              skills.map((skill: any, idx: number) => (
-                <Text key={idx}>
-                  - {skill.skillName} ({skill.proficiencyType || ''})
-                  {skill.category ? ` - ${skill.category}` : ''}
-                </Text>
+              skills.map((sk, idx) => (
+                <View
+                  key={idx}
+                  style={{ flexDirection: 'row', marginBottom: spacing.medium }}
+                >
+                  <View style={{ width: '35%' }}>
+                    <Text
+                      style={{ fontWeight: 'bold', fontSize: Fonts.normal }}
+                    >
+                      {`${t('label.cv_skill_name')}:\n${sk.skillName}`}
+                    </Text>
+                  </View>
+                  <View style={{ flexShrink: 1, width: '70%' }}>
+                    <Text style={{ fontSize: Fonts.normal }}>
+                      {`${t('label.cv_skill_category')}: ${sk.category}`}
+                    </Text>
+
+                    <Text style={{ fontSize: Fonts.normal }}>
+                      {`${t('label.cv_skill_proficiency')}: ${
+                        sk.proficiencyType
+                      }`}
+                    </Text>
+                  </View>
+                </View>
               ))
             ) : (
-              <Text>Chưa có kỹ năng</Text>
+              <Text>{t('message.cv_no_skills_info')}</Text>
             )}
           </View>
           <View style={styles.bodyContent}>
-            <Text style={styles.sectionTitle}>Chứng chỉ</Text>
-            {Array.isArray(certificate) && certificate.length > 0 ? (
-              certificate.map((cert: any, idx: number) => (
-                <Text key={idx}>- {cert}</Text>
+            <Text style={styles.sectionTitle}>
+              {t('label.cv_certificates')}
+            </Text>
+            {Array.isArray(certifications) && certifications.length > 0 ? (
+              certifications.map((cert, idx) => (
+                <View
+                  key={idx}
+                  style={{ flexDirection: 'row', marginBottom: spacing.medium }}
+                >
+                  <View style={{ width: '35%' }}>
+                    <Text
+                      style={{ fontWeight: 'bold', fontSize: Fonts.normal }}
+                    >
+                      {cert.issueDate
+                        ? formatDateForDisplay(cert.issueDate)
+                        : 'Ngày cấp'}
+                    </Text>
+                    <Text
+                      style={{ fontWeight: 'bold', fontSize: Fonts.normal }}
+                    >
+                      {cert.expiryDate
+                        ? formatDateForDisplay(cert.expiryDate)
+                        : 'Ngày hết hạn'}
+                    </Text>
+                  </View>
+                  <View style={{ flexShrink: 1, width: '70%' }}>
+                    <Text style={{ fontSize: Fonts.normal }}>
+                      {`${t('label.cv_certificates')}: ${cert.name}`}
+                    </Text>
+                  </View>
+                </View>
               ))
             ) : (
-              <Text>Chưa có chứng chỉ</Text>
+              <Text>{t('message.cv_no_certificates_info')}</Text>
             )}
           </View>
           {Array.isArray(sections) && sections.length > 0 && (
-            <View style={styles.bodyContent}>
-              {sections.map((sec: any, idx: number) => (
-                <View key={idx} style={{ marginBottom: 8 }}>
-                  <Text style={[styles.sectionTitle, { fontWeight: 'bold' }]}>
-                    {sec.title || 'Tiêu đề'}
+            <>
+              {sections.map((sec, idx) => (
+                <View key={idx} style={styles.bodyContent}>
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      { fontWeight: 'bold', fontSize: Fonts.large },
+                    ]}
+                  >
+                    {sec.title}
                   </Text>
-                  <Text>{sec.content || ''}</Text>
+                  <Text style={{ fontSize: Fonts.normal }}>{`${t(
+                    'label.cv_section_description',
+                  )}: ${sec.content}`}</Text>
                 </View>
               ))}
-            </View>
+            </>
           )}
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
       <View style={styles.footer}></View>
     </View>
   );
@@ -196,19 +300,17 @@ const styles = StyleSheet.create({
     padding: spacing.medium,
     borderWidth: 1,
     borderRadius: 15,
+    backgroundColor: colors.white,
   },
   sectionTitle: {
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: Fonts.large,
     marginTop: spacing.medium,
     marginBottom: spacing.small,
+    borderBottomWidth: 1,
   },
-  bodyContent: {
-    paddingBottom: spacing.medium,
-    borderTopWidth: 1,
-  },
+  bodyContent: {},
   footer: {},
 });
 
 export default DetailsCv;
-// ...existing code ends here. All content after this line is removed.

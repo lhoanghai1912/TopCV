@@ -5,6 +5,7 @@ import { spacing } from '../../../../utils/spacing';
 import { navigate } from '../../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../../navigation/ScreenName';
 import AppStyles from '../../../../components/AppStyle';
+import { link } from '../../../../utils/constants';
 type CardCVProps = {
   cv: any;
 };
@@ -19,7 +20,14 @@ const CardCV: React.FC<CardCVProps> = ({ cv }: CardCVProps) => {
         style={styles.cardCV}
       >
         <View style={styles.images}>
-          <Image source={images.avt_default} style={styles.images} />
+          <Image
+            source={
+              cv?.photoCard
+                ? { uri: `${link.url}${cv?.photoCard}` }
+                : images.avt_default
+            }
+            style={styles.images}
+          />
         </View>
         <View style={styles.cvContent}>
           <Text
@@ -54,6 +62,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: spacing.medium,
     padding: spacing.small,
+    width: '100%',
   },
   images: {
     width: 100,
@@ -64,8 +73,8 @@ const styles = StyleSheet.create({
   cvContent: {
     marginLeft: spacing.small,
     justifyContent: 'space-evenly',
-    backgroundColor: 'red',
     paddingHorizontal: spacing.small,
+    width: '70%',
   },
 });
 

@@ -25,6 +25,7 @@ import { Screen_Name } from '../../../../navigation/ScreenName';
 import { useCVData } from './useCVData';
 import { createCV } from '../../../../services/cv';
 import { updateCV } from '../../../../services/cv';
+import { formatDateForDisplay } from '../../../../utils/formatDateForDisplay';
 import { useSelector } from 'react-redux';
 import NavBar from '../../../../components/Navbar';
 import { useTranslation } from 'react-i18next';
@@ -34,23 +35,6 @@ interface Props {
   route: any;
 }
 // Helper function để format date cho hiển thị (yyyy-mm-dd -> dd/mm/yyyy)
-const formatDateForDisplay = (dateString: string) => {
-  if (!dateString) return '';
-
-  // Nếu là format yyyy-mm-dd thì convert sang dd/mm/yyyy
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-    const [year, month, day] = dateString.split('-');
-    return `${day}/${month}/${year}`;
-  }
-
-  // Nếu là format yyyy-mm-01 thì convert sang mm/yyyy
-  if (/^\d{4}-\d{2}-01$/.test(dateString)) {
-    const [year, month] = dateString.split('-');
-    return `${month}/${year}`;
-  }
-
-  return dateString; // Trả về nguyên bản nếu không match
-};
 
 // Helper function để tạo UUID giả lập cho photo path
 const generatePhotoPath = () => {
@@ -67,13 +51,9 @@ const generatePhotoPath = () => {
 
 const CreateCV: React.FC<Props> = ({ navigation, route }) => {
   const { t } = useTranslation();
-  console.log('route', route);
-
   const { token } = useSelector((state: any) => state.user);
   const [avatarUri, setAvatarUri] = useState<string>('');
   const insets = useSafeAreaInsets();
-
-  console.log('route', route);
 
   // Sử dụng hook quản lý data CV
   const {
@@ -139,14 +119,35 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
     }
   }, [route]);
 
+  // Log ra getCVData mỗi lần thay đổi thông tin
+  useEffect(() => {
+    const cvData = getCVData();
+    console.log('=== LOG getCVData (auto) ===');
+    console.log(JSON.stringify(cvData, null, 2));
+  }, [
+    title,
+    photoCard,
+    name,
+    content,
+    birthday,
+    gender,
+    phone,
+    email,
+    website,
+    address,
+    educations,
+    experiences,
+    certificate,
+    skills,
+    sections,
+  ]);
+
   // Hàm điều hướng đến EditCVScreen
   const goToEditCV = (sectionKey, sectionTitle, fields) => {
     let currentData: any = null;
     switch (sectionKey) {
       case 'userProfile':
         currentData = {
-          name,
-          content,
           birthday,
           gender,
           phone,
@@ -182,6 +183,7 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
       initialData: currentData,
       onSave: data => {
         updateSection(sectionKey, data);
+        console.log('Updated section:', sectionKey, 'with data:', data);
       },
     });
   };
@@ -202,18 +204,18 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
 
   const handleAddCustomSection = () => {
     navigate(Screen_Name.EditCV_Screen, {
-      title: 'Thêm trường tùy chỉnh',
+      title: `${t('button.add_section')}`,
       fields: [
         {
           key: 'title',
-          label: 'Tiêu đề phần',
-          placeholder: 'Nhập tiêu đề phần (VD: Dự án, Hoạt động...)',
+          label: `${t('label.cv_section_title')}`,
+          placeholder: `${t('label.cv_section_title')}`,
           keyboard: 'default',
         },
         {
           key: 'content',
-          label: 'Nội dung phần',
-          placeholder: 'Nhập nội dung cho phần này',
+          label: `${t('label.cv_section_description')}`,
+          placeholder: `${t('label.cv_section_description')}`,
           keyboard: 'default',
         },
       ],
@@ -251,23 +253,47 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
         <>
           <View style={[styles.header, { paddingTop: insets.top }]}>
             {/* Header */}
-            <View style={styles.headerTitleContainer}>
-              <TextInput
-                style={[AppStyles.title, { paddingLeft: ms(40) }]}
-                placeholder={t('label.cv_enter_title')}
-                onChangeText={text => setTitle(text)}
-                value={title}
-                autoCapitalize="none"
-              />
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={{ position: 'absolute', left: 0 }}
+              >
+                <Image source={icons.back} style={AppStyles.icon} />
+              </TouchableOpacity>
+              <View style={styles.headerTitleContainer}>
+                <TextInput
+                  style={[
+                    {
+                      paddingLeft: ms(40),
+                      fontSize: Fonts.xxlarge,
+                      color: colors.black,
+                      fontWeight: '500',
+                      textAlign: 'center',
+                    },
+                  ]}
+                  placeholder={t('label.cv_enter_title')}
+                  onChangeText={text => setTitle(text)}
+                  value={title}
+                  autoCapitalize="none"
+                />
+              </View>
+              <TouchableOpacity>
+                <Image source={icons.edit} style={AppStyles.icon} />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity>
-              <Image source={icons.edit} style={AppStyles.icon} />
-            </TouchableOpacity>
           </View>
 
           <ScrollView style={styles.content}>
             <View style={styles.contentWrap}>
               <View style={styles.headerContent}>
+                {/* Avatar */}
                 <TouchableOpacity
                   onPress={async () => {
                     const result = await launchImageLibrary({
@@ -313,12 +339,13 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                         ? { uri: avatarUri }
                         : photoCard
                         ? { uri: `${link.url}${photoCard}` }
-                        : images.avt
+                        : images.avt_default
                     }
                     style={styles.avtImage}
                   />
                 </TouchableOpacity>
-                <View style={styles.info}>
+                {/* UserName + position */}
+                <View>
                   <TouchableOpacity
                     style={styles.card}
                     onPress={() =>
@@ -333,64 +360,79 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                       ])
                     }
                   >
-                    <Text style={AppStyles.title}>{name || 'Họ và tên'}</Text>
-                    <Text style={AppStyles.text}>
+                    <Text style={[AppStyles.title, { textAlign: 'center' }]}>
+                      {name || 'Họ và tên'}
+                    </Text>
+                    <Text style={[AppStyles.text, { textAlign: 'center' }]}>
                       {content || 'Vị trí ứng tuyển'}
                     </Text>
                   </TouchableOpacity>
 
                   {/* Info */}
-                  <TouchableOpacity
-                    style={styles.userInfo}
-                    onPress={() =>
-                      handleEditField('userProfile', 'Thông tin cá nhân', [
-                        {
-                          key: 'birthday',
-                          label: 'Ngày sinh',
-                          placeholder: 'Nhập ngày sinh',
-                        },
-                        {
-                          key: 'gender',
-                          label: 'Giới tính',
-                          placeholder: 'Nhập giới tính',
-                        },
-                        {
-                          key: 'phone',
-                          label: 'Số điện thoại',
-                          placeholder: 'Nhập số điện thoại',
-                          keyboard: 'phone-pad',
-                        },
-                        {
-                          key: 'email',
-                          label: 'Email',
-                          placeholder: 'Nhập email',
-                        },
-                        {
-                          key: 'website',
-                          label: 'Website',
-                          placeholder: 'Nhập website',
-                          keyboard: 'email-address',
-                        },
-                        {
-                          key: 'address',
-                          label: 'Địa chỉ',
-                          placeholder: 'Nhập địa chỉ',
-                        },
-                      ])
-                    }
-                  >
-                    <Text>
-                      Ngày sinh:{' '}
-                      {birthday ? formatDateForDisplay(birthday) : ''}
-                    </Text>
-                    <Text>Giới tính: {gender || ''}</Text>
-                    <Text>Số điện thoại: {phone || ''}</Text>
-                    <Text>Email: {email || ''}</Text>
-                    <Text>Website: {website || ''}</Text>
-                    <Text>Địa chỉ: {address || ''}</Text>
-                  </TouchableOpacity>
                 </View>
               </View>
+              <View style={styles.title_underLine}>
+                <Text style={styles.title}>{t(`label.info`)}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.userInfo}
+                onPress={() =>
+                  handleEditField('userProfile', 'Thông tin cá nhân', [
+                    {
+                      key: 'birthday',
+                      label: 'Ngày sinh',
+                      placeholder: 'Nhập ngày sinh',
+                    },
+                    {
+                      key: 'gender',
+                      label: 'Giới tính',
+                      placeholder: 'Nhập giới tính',
+                    },
+                    {
+                      key: 'phone',
+                      label: 'Số điện thoại',
+                      placeholder: 'Nhập số điện thoại',
+                      keyboard: 'phone-pad',
+                    },
+                    {
+                      key: 'email',
+                      label: 'Email',
+                      placeholder: 'Nhập email',
+                    },
+                    {
+                      key: 'website',
+                      label: 'Website',
+                      placeholder: 'Nhập website',
+                      keyboard: 'email-address',
+                    },
+                    {
+                      key: 'address',
+                      label: 'Địa chỉ',
+                      placeholder: 'Nhập địa chỉ',
+                    },
+                  ])
+                }
+              >
+                <Text style={{ fontSize: Fonts.normal }}>
+                  {`${t('label.cv_dob')}`}:{' '}
+                  {birthday ? formatDateForDisplay(birthday) : ''}
+                </Text>
+                <Text style={{ fontSize: Fonts.normal }}>
+                  {`${t('label.cv_gender')}`}: {gender || ''}
+                </Text>
+                <Text style={{ fontSize: Fonts.normal }}>
+                  {`${t('label.cv_phone')}`}: {phone || ''}
+                </Text>
+                <Text style={{ fontSize: Fonts.normal }}>
+                  {`${t('label.cv_email')}`}: {email || ''}
+                </Text>
+                <Text style={{ fontSize: Fonts.normal }}>
+                  {`${t('label.cv_website')}`}: {website || ''}
+                </Text>
+                <Text style={{ fontSize: Fonts.normal }}>
+                  {`${t('label.cv_address')}`}: {address || ''}
+                </Text>
+              </TouchableOpacity>
               <View style={styles.bodyContent}>
                 {/* Education */}
                 <TouchableOpacity
@@ -431,17 +473,25 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                   }
                 >
                   <View style={styles.title_underLine}>
-                    <Text style={styles.title}>HỌC VẤN</Text>
+                    <Text style={styles.title}>{t(`label.cv_education`)}</Text>
                   </View>
                   {/* Education */}
                   {Array.isArray(educations) && educations.length > 0 ? (
                     educations.map((edu, idx) => (
                       <View
-                        style={{ flexDirection: 'row', marginBottom: 16 }}
+                        style={{
+                          flexDirection: 'row',
+                          marginBottom: spacing.medium,
+                        }}
                         key={idx}
                       >
                         <View style={{ width: '35%' }}>
-                          <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
+                          <Text
+                            style={{
+                              fontWeight: 'bold',
+                              fontSize: Fonts.normal,
+                            }}
+                          >
                             {edu.startDate && edu.endDate
                               ? `${formatDateForDisplay(
                                   edu.startDate,
@@ -450,32 +500,40 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                           </Text>
                         </View>
                         <View style={{ flexShrink: 1, width: '70%' }}>
-                          <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                            {edu.institutionName || 'Tên trường/học viện:'}
+                          <Text style={{ fontSize: Fonts.normal }}>
+                            {t('label.cv_institution')}:{' '}
+                            <Text style={{}}>{edu.institutionName}</Text>
                           </Text>
-                          <Text style={{ fontSize: 15 }}>
-                            {edu.fieldOfStudy || 'Ngành học'}
+                          <Text style={{ fontSize: Fonts.normal }}>
+                            {t('label.cv_field_of_study')}:{' '}
+                            <Text style={{}}>{edu.fieldOfStudy}</Text>
                           </Text>
-                          <Text style={{ fontSize: 15 }}>
-                            {edu.degree || 'Bằng cấp'}
+                          <Text style={{ fontSize: Fonts.normal }}>
+                            {t('label.cv_degree')}:{' '}
+                            <Text style={{}}>{edu.degree}</Text>
                           </Text>
-                          <Text style={{ fontSize: 15 }}>
-                            {edu.description || 'Thông tin thêm'}
+                          <Text style={{ fontSize: Fonts.normal }}>
+                            {t('label.cv_edu_description')}:{' '}
+                            <Text style={{}}>{edu.description}</Text>
                           </Text>
                         </View>
                       </View>
                     ))
                   ) : (
                     <View style={{ width: '100%' }}>
-                      <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                        Bắt đầu - Kết thúc
+                      <Text style={{ fontSize: Fonts.normal }}>
+                        {`${t('label.cv_start_date')} - ${t(
+                          'label.cv_end_date',
+                        )}`}
                       </Text>
-                      <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                        Tên trường/học viện
+                      <Text style={{ fontSize: Fonts.normal }}>
+                        {`${t('label.cv_institution')}`}
                       </Text>
-                      <Text style={{ fontSize: 15 }}>Ngành học</Text>
-                      <Text style={{ fontSize: 15 }}>
-                        Mô tả quá trình học tập hoặc thành tích của bạn
+                      <Text style={{ fontSize: Fonts.normal }}>{`${t(
+                        'label.cv_field_of_study',
+                      )}`}</Text>
+                      <Text style={{ fontSize: Fonts.normal }}>
+                        {`${t('label.cv_edu_description')}`}
                       </Text>
                     </View>
                   )}
@@ -487,72 +545,92 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                     handleEditField('experiences', 'Kinh nghiệm làm việc', [
                       {
                         key: 'jobTitle',
-                        label: 'Chức danh công việc',
-                        placeholder: 'Nhập chức danh công việc',
+                        label: `${t('label.cv_job_title')}`,
+                        placeholder: `${t('label.cv_job_title')}`,
                       },
                       {
                         key: 'companyName',
-                        label: 'Tên công ty',
-                        placeholder: 'Nhập tên công ty',
+                        label: `${t('label.cv_company')}`,
+                        placeholder: `${t('label.cv_company')}`,
                       },
                       {
                         key: 'startDate',
-                        label: 'Ngày bắt đầu',
+                        label: `${t('label.cv_start_date')}`,
                         placeholder: 'YYYY-MM-DD',
                       },
                       {
                         key: 'endDate',
-                        label: 'Ngày kết thúc',
+                        label: `${t('label.cv_end_date')}`,
                         placeholder: 'YYYY-MM-DD',
                       },
                       {
                         key: 'description',
-                        label: 'Mô tả công việc',
-                        placeholder: 'Mô tả công việc, nhiệm vụ chính',
+                        label: `${t('label.cv_job_description')}`,
+                        placeholder: `${t('label.cv_job_description')}`,
                       },
                     ])
                   }
                 >
                   <View style={styles.title_underLine}>
-                    <Text style={styles.title}>KINH NGHIỆM LÀM VIỆC</Text>
+                    <Text style={styles.title}>{t(`label.cv_experience`)}</Text>
                   </View>
                   {/* Experience */}
                   {Array.isArray(experiences) && experiences.length > 0 ? (
                     experiences.map((exp, idx) => (
-                      <View key={idx} style={{ flexDirection: 'row' }}>
+                      <View
+                        key={idx}
+                        style={{
+                          flexDirection: 'row',
+                          marginBottom: spacing.medium,
+                        }}
+                      >
                         <View style={{ width: '35%' }}>
-                          <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
+                          <Text
+                            style={{
+                              fontWeight: 'bold',
+                              fontSize: Fonts.normal,
+                            }}
+                          >
                             {exp.startDate && exp.endDate
                               ? `${formatDateForDisplay(
                                   exp.startDate,
                                 )} - ${formatDateForDisplay(exp.endDate)}`
-                              : 'Bắt đầu - Kết thúc'}
+                              : `${t('label.cv_issue_date')} - ${t(
+                                  'label.cv_expiry_date',
+                                )}`}
                           </Text>
                         </View>
                         <View style={{ flexShrink: 1, width: '70%' }}>
-                          <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                            {exp.companyName || 'Tên công ty:'}
+                          <Text style={{ fontSize: Fonts.normal }}>
+                            {t('label.cv_company')}:{' '}
+                            <Text style={{}}>{exp.companyName}</Text>
                           </Text>
-                          <Text style={{ fontSize: 15 }}>
-                            {exp.jobTitle || 'Chức danh công việc'}
+                          <Text style={{ fontSize: Fonts.normal }}>
+                            {t('label.cv_job_title')}:{' '}
+                            <Text style={{}}>{exp.jobTitle}</Text>
                           </Text>
-                          <Text style={{ fontSize: 15 }}>
-                            {exp.description || 'Mô tả công việc'}
+                          <Text style={{ fontSize: Fonts.normal }}>
+                            {t('label.cv_job_description')}:{' '}
+                            <Text style={{}}>{exp.description}</Text>
                           </Text>
                         </View>
                       </View>
                     ))
                   ) : (
                     <View style={{ width: '100%' }}>
-                      <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                        Bắt đầu - Kết thúc
+                      <Text style={{ fontSize: Fonts.normal }}>
+                        {`${t('label.cv_issue_date')} - ${t(
+                          'label.cv_expiry_date',
+                        )}`}
                       </Text>
-                      <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                        Tên công ty
+                      <Text style={{ fontSize: Fonts.normal }}>
+                        {`${t('label.cv_company')}`}
                       </Text>
-                      <Text style={{ fontSize: 15 }}>Vị trí công việc</Text>
-                      <Text style={{ fontSize: 15 }}>
-                        Mô tả kinh nghiệm làm việc hoặc thành tích của bạn
+                      <Text style={{ fontSize: Fonts.normal }}>{`${t(
+                        'label.cv_job_title',
+                      )}`}</Text>
+                      <Text style={{ fontSize: Fonts.normal }}>
+                        {`${t('label.cv_job_description')}`}
                       </Text>
                     </View>
                   )}
@@ -566,69 +644,84 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                     handleEditField('certificate', 'Chứng chỉ', [
                       {
                         key: 'name',
-                        label: 'Tên chứng chỉ',
-                        placeholder: 'Nhập tên chứng chỉ',
+                        label: `${t('label.cv_certificate_name')}`,
+                        placeholder: `${t('label.cv_certificate_name')}`,
                       },
                       {
                         key: 'issueDate',
-                        label: 'Ngày cấp',
+                        label: `${t('label.cv_issue_date')}`,
                         placeholder: 'YYYY-MM-DD',
                       },
                       {
                         key: 'expiryDate',
-                        label: 'Ngày hết hạn',
+                        label: `${t('label.cv_expiry_date')}`,
                         placeholder: 'YYYY-MM-DD (tùy chọn)',
                       },
                     ])
                   }
                 >
                   <View style={styles.title_underLine}>
-                    <Text style={styles.title}>CHỨNG CHỈ</Text>
+                    <Text style={styles.title}>
+                      {t(`label.cv_certificates`)}
+                    </Text>
                   </View>
                   {Array.isArray(certificate) ? (
                     certificate.length > 0 ? (
                       certificate.map((cert, idx) => (
                         <View
                           key={idx}
-                          style={{ flexDirection: 'row', marginBottom: 16 }}
+                          style={{
+                            flexDirection: 'row',
+                            marginBottom: spacing.medium,
+                          }}
                         >
                           <View style={{ width: '35%' }}>
-                            <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
+                            <Text
+                              style={{
+                                fontWeight: 'bold',
+                                fontSize: Fonts.normal,
+                              }}
+                            >
                               {cert.issueDate
                                 ? formatDateForDisplay(cert.issueDate)
-                                : 'Ngày cấp'}
+                                : ''}
+                            </Text>
+                            <Text style={{ fontSize: Fonts.normal }}>
+                              <Text style={{}}>
+                                {cert.expiryDate
+                                  ? formatDateForDisplay(cert.expiryDate)
+                                  : ''}
+                              </Text>
                             </Text>
                           </View>
                           <View style={{ flexShrink: 1, width: '70%' }}>
-                            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                              {cert.name || 'Tên chứng chỉ'}
-                            </Text>
-                            <Text style={{ fontSize: 15 }}>
-                              {cert.expiryDate
-                                ? formatDateForDisplay(cert.expiryDate)
-                                : 'Ngày hết hạn'}
+                            <Text style={{ fontSize: Fonts.normal }}>
+                              {t('label.cv_certificates')}:{' '}
+                              <Text style={{}}>{cert.name || ''}</Text>
                             </Text>
                           </View>
                         </View>
                       ))
                     ) : (
                       <View style={{ width: '100%' }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                          Năm
+                        <Text style={{ fontSize: Fonts.normal }}>
+                          {`${t('label.cv_certificate_name')}`}
                         </Text>
-                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                          Tên chứng chỉ
+                        <Text style={{ fontSize: Fonts.normal }}>
+                          {`${t('label.cv_issue_date')} - ${t(
+                            'label.cv_expiry_date',
+                          )}`}
                         </Text>
                       </View>
                     )
                   ) : (
                     <View style={{ width: '100%' }}>
-                      <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                        Năm
-                      </Text>
-                      <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                        Tên chứng chỉ
-                      </Text>
+                      <Text style={{ fontSize: Fonts.normal }}>{`${t(
+                        'label.cv_issue_date',
+                      )} - ${t('label.cv_expiry_date')}`}</Text>
+                      <Text style={{ fontSize: Fonts.normal }}>{`${t(
+                        'label.cv_certificate_name',
+                      )}`}</Text>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -639,59 +732,62 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                     handleEditField('skills', 'Kỹ năng', [
                       {
                         key: 'skillName',
-                        label: 'Tên kỹ năng',
-                        placeholder: 'Nhập tên kỹ năng',
+                        label: `${t('label.cv_skill_name')}`,
+                        placeholder: `${t('label.cv_skill_name')}`,
                       },
                       {
                         key: 'category',
-                        label: 'Phân loại kỹ năng',
-                        placeholder: 'Technical, Soft...',
+                        label: `${t('label.cv_skill_category')}`,
+                        placeholder: `${t('label.cv_skill_category')}`,
                       },
 
                       {
                         key: 'proficiencyType',
-                        label: 'Mức độ thành thạo',
-                        placeholder: 'Chọn mức độ',
+                        label: `${t('label.cv_skill_proficiency')}`,
+                        placeholder: `${t('label.cv_skill_proficiency')}`,
                       },
                     ])
                   }
                 >
                   <View style={styles.title_underLine}>
-                    <Text style={styles.title}>KỸ NĂNG</Text>
+                    <Text style={styles.title}>{t(`label.cv_skills`)}</Text>
                   </View>
                   {/* Skill */}
                   {Array.isArray(skills) && skills.length > 0 ? (
                     skills.map((sk, idx) => (
                       <View
                         key={idx}
-                        style={{ flexDirection: 'row', marginBottom: 16 }}
+                        style={{
+                          flexDirection: 'row',
+                          marginBottom: spacing.medium,
+                        }}
                       >
                         <View style={{ width: '35%' }}>
-                          <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                            {sk.skillName || 'Tên kỹ năng'}
+                          <Text style={{ fontSize: Fonts.normal }}>
+                            {`${t('label.cv_skill_name')}:\n${sk.skillName}`}
                           </Text>
                         </View>
                         <View style={{ flexShrink: 1, width: '70%' }}>
-                          <Text style={{ fontSize: 15 }}>
-                            {sk.category || 'Phân loại kỹ năng'}
+                          <Text style={{ fontSize: Fonts.normal }}>
+                            {t('label.cv_skill_category')}:{' '}
+                            <Text>{sk.category}</Text>
                           </Text>
-                          <Text style={{ fontSize: 15 }}>
-                            {sk.proficiencyLevel
-                              ? `Level: ${sk.proficiencyLevel}`
-                              : 'Mức độ thành thạo'}
-                          </Text>
-                          <Text style={{ fontSize: 15 }}>
-                            {sk.proficiencyType || 'Loại thành thạo'}
+
+                          <Text style={{ fontSize: Fonts.normal }}>
+                            {t('label.cv_skill_proficiency')}:{' '}
+                            <Text>{sk.proficiencyType}</Text>
                           </Text>
                         </View>
                       </View>
                     ))
                   ) : (
                     <View style={{ width: '100%' }}>
-                      <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                        Tên kỹ năng
+                      <Text style={{ fontSize: Fonts.normal }}>
+                        {`${t('label.cv_skill_name')}`}
                       </Text>
-                      <Text style={{ fontSize: 15 }}>Mô tả kỹ năng</Text>
+                      <Text style={{ fontSize: Fonts.normal }}>{`${t(
+                        'label.cv_skill_description',
+                      )}`}</Text>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -710,13 +806,15 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                           fields: [
                             {
                               key: 'title',
-                              label: 'Tiêu đề phần',
-                              placeholder: 'Nhập tiêu đề phần',
+                              label: `${t('label.cv_section_title')}`,
+                              placeholder: `${t('label.cv_section_title')}`,
                             },
                             {
                               key: 'content',
-                              label: 'Nội dung phần',
-                              placeholder: 'Nhập nội dung cho phần này',
+                              label: `${t('label.cv_section_description')}`,
+                              placeholder: `${t(
+                                'label.cv_section_description',
+                              )}`,
                             },
                           ],
                           initialData: {
@@ -757,11 +855,7 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                             alignItems: 'center',
                           }}
                         >
-                          <Text style={styles.title}>
-                            {(
-                              section.title || 'TRƯỜNG TÙY CHỈNH'
-                            ).toUpperCase()}
-                          </Text>
+                          <Text style={styles.title}>{section.title}</Text>
                           <TouchableOpacity
                             onPress={() => {
                               // Xóa section bằng sectionType
@@ -779,8 +873,10 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                         </View>
                       </View>
                       <View style={{ width: '100%' }}>
-                        <Text style={{ fontSize: 15 }}>
-                          {section.content || 'Nhấn để chỉnh sửa nội dung'}
+                        <Text style={{ fontSize: Fonts.normal }}>
+                          {`${t('label.cv_section_description')}: ${
+                            section.content
+                          }`}
                         </Text>
                       </View>
                     </TouchableOpacity>
@@ -793,13 +889,17 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                 onPress={() => handleAddCustomSection()}
               >
                 <Text style={styles.addCustomSectionText}>
-                  + Thêm trường tùy chỉnh
+                  {`${t('button.add_section')}`}
                 </Text>
               </TouchableOpacity>
             </View>
 
             <AppButton
-              title={route?.params?.cv ? 'Cập nhật CV' : 'Lưu CV'}
+              title={
+                route?.params?.cv
+                  ? `${t('button.updateCV')}`
+                  : `${t('button.createCV')}`
+              }
               onPress={async () => {
                 try {
                   const cvData = getCVData();
@@ -812,7 +912,13 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                       text2: 'Vui lòng đợi',
                       visibilityTime: 2000,
                     });
-                    const result = await updateCV(route.params.cv.id, cvData);
+                    console.log('update cv:', cvData);
+
+                    const result = await updateCV(
+                      route.params.cv.id,
+                      cvData,
+                      imageUri,
+                    );
                     Toast.show({
                       type: 'success',
                       text1: 'Cập nhật CV thành công! 🎉',
@@ -821,8 +927,7 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                       }" đã được cập nhật`,
                       visibilityTime: 3000,
                     });
-                    console.log('=== KẾT QUẢ UPDATE CV ===');
-                    console.log('API Response:', result);
+                    navigate(Screen_Name.CV_Screen, { refresh: true });
                   } else {
                     // Nếu không có dữ liệu truyền sang, gọi createCV
                     Toast.show({
@@ -885,44 +990,37 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.medium,
-    backgroundColor: colors.white,
   },
+
   headerTitleContainer: {
-    marginVertical: spacing.small,
     flexDirection: 'row',
-    alignSelf: 'center',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignSelf: 'center',
     paddingHorizontal: spacing.medium,
   },
   content: {
-    flex: 1,
-    marginVertical: spacing.medium,
     marginHorizontal: spacing.medium,
     backgroundColor: colors.white,
     paddingHorizontal: spacing.medium,
+    borderWidth: 1,
+    borderRadius: 15,
+    maxHeight: ms(800),
   },
-  contentWrap: {},
+  contentWrap: { padding: spacing.small },
   headerContent: {
-    flexDirection: 'row',
     marginBottom: spacing.large,
+    alignItems: 'center',
   },
   avtImage: {
-    width: ms(120),
-    height: ms(160),
+    width: ms(150),
+    height: ms(150),
+    borderRadius: 100,
     marginTop: spacing.small,
     resizeMode: 'cover',
   },
-  card: {},
-  info: {
-    flex: 1,
-    marginLeft: spacing.small,
-    // backgroundColor: colors.lightGray,
-  },
-  userInfo: {},
+  card: { marginTop: spacing.small },
+
+  userInfo: { marginBottom: spacing.medium },
   bodyContent: {},
   bodyContentItem: { marginBottom: spacing.medium },
   footer: {},

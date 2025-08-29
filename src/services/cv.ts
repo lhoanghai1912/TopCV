@@ -26,6 +26,30 @@ export const createCV = async (
   }
 };
 
+// Cho phép truyền thêm imageUri là tham số riêng
+export const updateCV = async (cvId: string, cvData: any, imageUri?: string) => {
+  try {
+    const formData = new FormData();
+    formData.append('jsonCvData', JSON.stringify(cvData));
+    // Nếu có ảnh, thêm vào formData
+    if (imageUri) {
+      formData.append('PhotoCardFile', {
+        uri: imageUri,
+        type: 'images/jpeg',
+        name: 'avatar.jpg',
+      } as any);
+    }
+    const response = await apiClient.put(`/Cv/${cvId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getAllCV = async () => {
   try {
     const response = await apiClient.get('/Cv');
@@ -38,7 +62,7 @@ export const getAllCV = async () => {
 // Hàm lấy danh sách CV có phân trang
 export const getCVList = async (page: number, pageSize: number) => {
   try {
-    const response = await apiClient.get(`/Cv?page=${page}&pageSize=${pageSize}`);
+    const response = await apiClient.get(`/Cv?page=${page}&pageSize=${pageSize}&OrderBy=createdAt%20desc`);
     return response.data;
   } catch (error) {
     throw error;
@@ -54,11 +78,4 @@ export const getCVDetail = async (cvId: string) => {
   }
 };
 
-export const updateCV = async (cvId: string, cvData: any) => {
-  try {
-    const response = await apiClient.put(`/Cv/${cvId}`, cvData);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
+

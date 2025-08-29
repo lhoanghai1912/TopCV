@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ActivityIndicator,
   FlatList,
-  TouchableOpacity,
 } from 'react-native';
 import NavBar from '../../../components/Navbar';
 import { getCVList } from '../../../services/cv';
 import CardCV from './Card';
-import { spacing } from '../../../utils/spacing';
+import { ms, spacing } from '../../../utils/spacing';
 import AppButton from '../../../components/AppButton';
 import { Screen_Name } from '../../../navigation/ScreenName';
+import { useTranslation } from 'react-i18next';
+import AppStyles from '../../../components/AppStyle';
 
 const PAGE_SIZE = 10;
 
 const CVScreen = ({ navigation }: { navigation: any }) => {
+  const { t } = useTranslation();
   const [listCV, setListCV] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -36,7 +38,7 @@ const CVScreen = ({ navigation }: { navigation: any }) => {
       console.log(`CV trang ${currentPage}:`, data.result);
 
       const elapsed = Date.now() - startTime;
-      const minDelay = 1000;
+      const minDelay = 500;
       if (elapsed < minDelay) {
         await new Promise(res => setTimeout(res, minDelay - elapsed));
       }
@@ -77,15 +79,34 @@ const CVScreen = ({ navigation }: { navigation: any }) => {
   return (
     <View style={styles.container}>
       <NavBar title={'CV'} onPress={() => navigation.goBack()} />
-      <View style={{ marginBottom: spacing.medium, flexDirection: 'row' }}>
-        <Text>{`Your CV: `}</Text>
+      <View
+        style={{
+          marginBottom: spacing.medium,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: spacing.medium,
+        }}
+      >
+        <Text style={AppStyles.label}>{`${
+          listCV.length > 1
+            ? `${listCV.length} ${t('label.cv_lists')}`
+            : `${listCV.length} ${t('label.cv_list')}`
+        }`}</Text>
         <AppButton
-          title="button.createCV"
+          title={t('button.createCV')}
           onPress={() => navigation.navigate(Screen_Name.CreateCV_Screen)}
         />
       </View>
       <FlatList
         data={listCV}
+        style={{
+          borderWidth: 1,
+          paddingVertical: spacing.medium,
+          marginHorizontal: spacing.medium,
+          borderRadius: 15,
+          maxHeight: ms(780),
+        }}
         keyExtractor={item => item.id.toString()}
         renderItem={renderCardCV}
         onEndReached={handleLoadMore}
@@ -94,11 +115,44 @@ const CVScreen = ({ navigation }: { navigation: any }) => {
           loading && !listCV.length ? (
             <ActivityIndicator />
           ) : loading && listCV.length ? (
-            <View style={{ alignItems: 'center', padding: 16 }}>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: spacing.medium,
+              }}
+            >
               <ActivityIndicator />
-              <Text style={{ marginTop: 8 }}>Đang tải thêm...</Text>
+              <Text
+                style={{
+                  paddingBottom: spacing.medium,
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  fontSize: spacing.medium,
+                }}
+              >
+                Đang tải thêm...
+              </Text>
             </View>
-          ) : null
+          ) : (
+            <View
+              style={{
+                justifyContent: 'center',
+                marginBottom: spacing.medium,
+              }}
+            >
+              <Text
+                style={{
+                  paddingBottom: spacing.medium,
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  fontSize: spacing.medium,
+                }}
+              >
+                No more cv
+              </Text>
+            </View>
+          )
         }
         refreshing={loading && page === 2}
         onRefresh={handleRefresh}

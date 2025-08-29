@@ -1,3 +1,5 @@
+import { createCV } from '../../services/cv';
+
 export default {
   message: {
     welcome: 'Welcome to topcv',
@@ -56,6 +58,9 @@ export default {
     apply_now: 'Apply now',
     follow: 'Follow',
     following: 'Following',
+    createCV: 'Create CV',
+    add_section: 'Add section',
+    updateCV: 'Update CV',
   },
 
   label: {
@@ -121,10 +126,38 @@ export default {
     company_followed: 'Followed companies',
     company_staff: 'Employees',
 
+    cv_list: 'Curriculum Vitae',
+    cv_lists: 'Curriculum Vitaes',
     cv_create: 'Create CV',
     cv_login: 'Log in to create CV',
     cv_template: 'CV Templates',
     cv_enter_title: 'Enter CV title',
+    cv_info: 'Information',
+    cv_dob: 'Date of Birth',
+    cv_gender: 'Gender',
+    cv_phone: 'Phone',
+    cv_email: 'Email',
+    cv_website: 'Website',
+    cv_address: 'Address',
+    cv_education: 'Education',
+    cv_experience: 'Experience',
+    cv_skills: 'Skills',
+    cv_certificates: 'Certificates',
+    cv_section_title: 'Section Title',
+    cv_institution: 'Institution Name',
+    cv_field_of_study: 'Field of Study',
+    cv_degree: 'Degree',
+    cv_edu_description: 'Description',
+    cv_company: 'Company',
+    cv_job_title: 'Job Title',
+    cv_job_description: 'Description',
+    cv_skill_name: 'Skill Name',
+    cv_skill_category: 'Skill Category',
+    cv_skill_proficiency: 'Skill Proficiency',
+    cv_section_description: 'Description',
+    cv_certificate_name: 'Certificate Name',
+    cv_issue_date: 'Issue Date',
+    cv_expiry_date: 'Expiry Date',
   },
 
   price: {
