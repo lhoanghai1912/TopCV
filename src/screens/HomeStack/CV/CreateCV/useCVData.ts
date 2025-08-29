@@ -47,7 +47,6 @@ export function useCVData() {
   // Photo Card cho CV
   const [photoCard, setPhotoCard] = useState<string>('');
   // Từng trường riêng lẻ cho userProfile
-  const [careerGoal, setCareerGoal] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [birthday, setBirthday] = useState<string>('');
@@ -86,29 +85,9 @@ export function useCVData() {
           }
         } else if (typeof data === 'string') {
           careerGoalContent = data;
-        } else if (typeof data === 'object' && data?.careerGoal) {
-          careerGoalContent = data.careerGoal;
         }
-        
-        setCareerGoal(careerGoalContent);
-        
         // Cũng cập nhật vào sections array
-        setSections(prevSections => {
-          const careerGoalSection = {
-            sectionType: 'careerGoal',
-            title: 'Mục tiêu nghề nghiệp',
-            content: careerGoalContent,
-            isVisible: true,
-          };
-          const idx = prevSections.findIndex(s => s.sectionType === 'careerGoal');
-          if (idx !== -1) {
-            const updated = [...prevSections];
-            updated[idx] = careerGoalSection;
-            return updated;
-          } else {
-            return [...prevSections, careerGoalSection];
-          }
-        });
+
         break;
       case 'educations':
         setEducation(Array.isArray(data) ? data : [data]);
@@ -151,18 +130,6 @@ export function useCVData() {
         });
         
         // Cũng cập nhật state riêng cho backward compatibility
-        if (sectionKey === 'careerGoal') {
-          setCareerGoal(sectionObj.content || '');
-        } else if (sectionKey === 'activity') {
-          setActivity(Array.isArray(data) ? data : [data]);
-        } else if (sectionKey === 'award') {
-          setAward(Array.isArray(data) ? data : [data]);
-        } else if (sectionKey === 'reference') {
-          setReference(Array.isArray(data) ? data : [data]);
-        } else if (sectionKey === 'hobby') {
-          setHobby(sectionObj.content || '');
-        }
-        break;
       case 'certificate':
         setCertificate(Array.isArray(data) ? data : [data]);
         break;
@@ -291,7 +258,7 @@ export function useCVData() {
       skills,
       sections: formatSections,
     };
-  }, [title, photoCard, name, content, birthday, gender, phone, email, website, address, careerGoal, educations, experiences, activity, certificate, award, skills, reference, hobby, sections]);
+  }, [title, photoCard, name, content, birthday, gender, phone, email, website, address, educations, experiences,  certificate, skills,sections]);
 
   const removeSection = useCallback((sectionType: string) => {
     setSections(prevSections => 
@@ -320,23 +287,14 @@ export function useCVData() {
     setWebsite,
     address,
     setAddress,
-    careerGoal,
     educations: educations,
     setEducation,
     experience: experiences,
     setExperience,
-    activity,
-    setActivity,
     certificate: certificate,
     setCertificate,
-    award,
-    setAward,
     skills: skills,
     setSkill,
-    reference,
-    setReference,
-    hobby,
-    setHobby,
     sections,
     setSections,
     updateSection,

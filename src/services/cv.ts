@@ -53,3 +53,12 @@ export const getCVDetail = async (cvId: string) => {
     throw error;
   }
 };
+
+export const updateCV = async (cvId: string, cvData: any) => {
+  try {
+    const response = await apiClient.put(`/Cv/${cvId}`, cvData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

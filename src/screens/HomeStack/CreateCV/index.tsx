@@ -26,6 +26,7 @@ import { createCV } from '../../../services/cv';
 import NavBar from '../../../components/Navbar';
 import { colors } from '../../../utils/color';
 import { Fonts } from '../../../utils/fontSize';
+import { link } from '../../../utils/constants';
 
 interface Props {
   navigation: any;
@@ -232,25 +233,13 @@ const CreateCVScreen: React.FC<Props> = ({ navigation }) => {
                       const uri = result.assets[0].uri;
                       if (typeof uri === 'string') {
                         setAvatarUri(uri);
-
-                        // Tạo đường dẫn ảnh giả lập (như sau khi upload lên API)
                         const simulatedPhotoPath = generatePhotoPath();
-                        console.log(
-                          'Đường dẫn ảnh sau khi upload:',
-                          simulatedPhotoPath,
-                        );
-
-                        // Lưu đường dẫn ảnh vào photoCard của CVData
                         setPhotoCard(simulatedPhotoPath);
-
-                        // Hiển thị toast thông báo
                         Toast.show({
                           type: 'success',
                           text2: t('message.cv_upload_photo'),
                           visibilityTime: 3000,
                         });
-
-                        // Log CVData sau khi cập nhật ảnh
                         setTimeout(() => {
                           const cvData = getCVData();
                           console.log('=== CV Data sau khi cập nhật ảnh ===');
@@ -263,7 +252,11 @@ const CreateCVScreen: React.FC<Props> = ({ navigation }) => {
                   }}
                 >
                   <Image
-                    source={avatarUri ? { uri: avatarUri } : images.avt}
+                    source={
+                      photoCard
+                        ? { uri: `${link.url}${photoCard}` }
+                        : images.avt
+                    }
                     style={styles.avtImage}
                   />
                 </TouchableOpacity>

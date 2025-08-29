@@ -17,16 +17,17 @@ import icons from '../../../../assets/icons';
 import { ms, spacing } from '../../../../utils/spacing';
 import { colors } from '../../../../utils/color';
 import images from '../../../../assets/images';
+import { link } from '../../../../utils/constants';
 import { Fonts } from '../../../../utils/fontSize';
 import AppButton from '../../../../components/AppButton';
 import { navigate } from '../../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../../navigation/ScreenName';
 import { useCVData } from './useCVData';
 import { createCV } from '../../../../services/cv';
+import { updateCV } from '../../../../services/cv';
 import { useSelector } from 'react-redux';
 import NavBar from '../../../../components/Navbar';
 import { useTranslation } from 'react-i18next';
-import { lo } from '../../../../language/Resource';
 
 interface Props {
   navigation: any;
@@ -96,23 +97,14 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
     setWebsite,
     address,
     setAddress,
-    careerGoal,
     educations,
     setEducation,
     experience: experiences,
     setExperience,
-    activity,
-    setActivity,
     certificate,
     setCertificate,
-    award,
-    setAward,
     skills,
     setSkill,
-    reference,
-    setReference,
-    hobby,
-    setHobby,
     sections,
     setSections,
     updateSection,
@@ -123,6 +115,7 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
   // Fill dữ liệu từ cv param nếu có
   useEffect(() => {
     console.log('DEBUG route:', route);
+
     const paramsCV = route?.params?.cv;
     console.log('DEBUG paramsCV:', paramsCV);
     if (paramsCV) {
@@ -251,7 +244,6 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
       },
     });
   };
-  console.log('avatar', avatarUri);
 
   return (
     <View style={[styles.container]}>
@@ -316,7 +308,13 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                   }}
                 >
                   <Image
-                    source={avatarUri ? { uri: avatarUri } : images.avt}
+                    source={
+                      avatarUri
+                        ? { uri: avatarUri }
+                        : photoCard
+                        ? { uri: `${link.url}${photoCard}` }
+                        : images.avt
+                    }
                     style={styles.avtImage}
                   />
                 </TouchableOpacity>
@@ -801,44 +799,50 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
             </View>
 
             <AppButton
-              title="Lưu CV"
+              title={route?.params?.cv ? 'Cập nhật CV' : 'Lưu CV'}
               onPress={async () => {
                 try {
-                  // Lấy tất cả data CV (đã bao gồm title và photoCard)
                   const cvData = getCVData();
-
-                  console.log('=== THÔNG TIN CV TRƯỚC KHI GỬI API ===');
-                  console.log('Tiêu đề CV:', cvData.title);
-                  console.log('Ảnh đại diện:', cvData.photoCard);
-                  console.log('Template ID:', cvData.templateId);
-                  console.log('Public Status:', cvData.isPublic);
-                  console.log('=== CV DATA HOÀN CHỈNH ===');
-                  console.log(JSON.stringify(cvData, null, 2));
-
-                  // Hiển thị loading toast
-                  Toast.show({
-                    type: 'info',
-                    text1: 'Đang tạo CV...',
-                    text2: 'Vui lòng đợi',
-                    visibilityTime: 2000,
-                  });
-
-                  // Gọi API tạo CV với ảnh
-                  const imageUri = avatarUri; // URI ảnh thực tế từ device
-                  const result = await createCV(cvData, imageUri);
-
-                  // Hiển thị Toast thông báo thành công
-                  Toast.show({
-                    type: 'success',
-                    text1: 'Tạo CV thành công! 🎉',
-                    text2: `"${
-                      cvData.title || 'CV không có tiêu đề'
-                    }" đã được tạo`,
-                    visibilityTime: 3000,
-                  });
-
-                  console.log('=== KẾT QUẢ TẠO CV ===');
-                  console.log('API Response:', result);
+                  const imageUri = avatarUri;
+                  if (route?.params?.cv && route?.params?.cv.id) {
+                    // Nếu có dữ liệu CV truyền sang, gọi updateCV
+                    Toast.show({
+                      type: 'info',
+                      text1: 'Đang cập nhật CV...',
+                      text2: 'Vui lòng đợi',
+                      visibilityTime: 2000,
+                    });
+                    const result = await updateCV(route.params.cv.id, cvData);
+                    Toast.show({
+                      type: 'success',
+                      text1: 'Cập nhật CV thành công! 🎉',
+                      text2: `"${
+                        cvData.title || 'CV không có tiêu đề'
+                      }" đã được cập nhật`,
+                      visibilityTime: 3000,
+                    });
+                    console.log('=== KẾT QUẢ UPDATE CV ===');
+                    console.log('API Response:', result);
+                  } else {
+                    // Nếu không có dữ liệu truyền sang, gọi createCV
+                    Toast.show({
+                      type: 'info',
+                      text1: 'Đang tạo CV...',
+                      text2: 'Vui lòng đợi',
+                      visibilityTime: 2000,
+                    });
+                    const result = await createCV(cvData, imageUri);
+                    Toast.show({
+                      type: 'success',
+                      text1: 'Tạo CV thành công! 🎉',
+                      text2: `"${
+                        cvData.title || 'CV không có tiêu đề'
+                      }" đã được tạo`,
+                      visibilityTime: 3000,
+                    });
+                    console.log('=== KẾT QUẢ TẠO CV ===');
+                    console.log('API Response:', result);
+                  }
                 } catch (error) {}
               }}
               customStyle={{ marginBottom: spacing.large }}
