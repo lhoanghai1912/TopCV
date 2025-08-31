@@ -52,11 +52,11 @@ const BottomTabNavigator = () => {
     >
       <Tab.Screen name={Screen_Name.Home_Screen} component={HomeScreen} />
       <Tab.Screen name={Screen_Name.CV_Screen} component={CVScreen} />
-      <Tab.Screen name={Screen_Name.Comment_Screen} component={CommentScreen} />
+      {/* <Tab.Screen name={Screen_Name.Comment_Screen} component={CommentScreen} />
       <Tab.Screen
         name={Screen_Name.Noti_Screen}
         component={NotificationScreen}
-      />
+      /> */}
       <Tab.Screen name={Screen_Name.User_Screen} component={UserScreen} />
       {/* ✅ Thêm 2 tab mới nếu có token */}
     </Tab.Navigator>

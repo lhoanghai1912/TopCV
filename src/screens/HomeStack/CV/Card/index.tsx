@@ -8,14 +8,19 @@ import AppStyles from '../../../../components/AppStyle';
 import { link } from '../../../../utils/constants';
 type CardCVProps = {
   cv: any;
+  onPress?: (cv: any) => void;
 };
-const CardCV: React.FC<CardCVProps> = ({ cv }: CardCVProps) => {
-  const cvId = cv?.id;
+const CardCV: React.FC<CardCVProps> = ({ cv, onPress }: CardCVProps) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => {
-          console.log('cvId', cvId), navigate(Screen_Name.DetailCV, { cvId });
+          if (onPress) {
+            onPress(cv);
+          } else {
+            console.log('cvId', cv.id);
+            navigate(Screen_Name.DetailCV, { cvId: cv.id });
+          }
         }}
         style={styles.cardCV}
       >

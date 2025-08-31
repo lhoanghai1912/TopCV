@@ -1,31 +1,36 @@
-import React, { useState, useEffect, use } from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { Modal, View, Text, TextInput, StyleSheet, Image } from 'react-native';
 import AppButton from '../AppButton';
 import { spacing } from '../../utils/spacing';
 import { colors } from '../../utils/color';
 import { getUserInfo } from '../../services/user';
 import { useTranslation } from 'react-i18next';
+import { Screen_Name } from '../../navigation/ScreenName';
+import { navigate } from '../../navigation/RootNavigator';
+import { applyJob } from '../../services/job';
 
 interface ModalApplyProps {
   visible: boolean;
   onClose: () => void;
+  jobDetails: any;
 }
 
-const ModalApply: React.FC<ModalApplyProps> = ({ visible, onClose }) => {
+const ModalApply: React.FC<ModalApplyProps> = ({
+  visible,
+  onClose,
+  jobDetails,
+}) => {
   const { t } = useTranslation();
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [selectedCV, setSelectedCV] = useState<any>();
 
   useEffect(() => {
     fetchUserData();
+    console.log('jobDetails', jobDetails);
   }, []);
   const fetchUserData = async () => {
     const res = await getUserInfo();
@@ -36,6 +41,37 @@ const ModalApply: React.FC<ModalApplyProps> = ({ visible, onClose }) => {
       setEmail(res.email);
       setPhoneNumber(res.phoneNumber);
     }
+  };
+  const handleUploadImage = async () => {
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      selectionLimit: 1,
+    });
+    if (result.assets && result.assets.length > 0) {
+      setSelectedImage(result.assets[0]);
+    }
+  };
+  const handleSubmit = async () => {
+    // Handle form submission
+    try {
+      console.log('Submitting form with:', {
+        fullname,
+        email,
+        phoneNumber,
+        selectedCV: selectedCV?.id,
+        jobId: jobDetails?.id,
+      });
+      const res = await applyJob({
+        JobId: jobDetails?.id,
+        FullName: fullname,
+        Email: email,
+        PhoneNumber: phoneNumber,
+        CvId: selectedCV?.id,
+        CoverLetter: '',
+        CvFile: selectedImage,
+      });
+      console.log(res);
+    } catch (error) {}
   };
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -63,18 +99,39 @@ const ModalApply: React.FC<ModalApplyProps> = ({ visible, onClose }) => {
             keyboardType="phone-pad"
           />
           <AppButton
-            title={`${t(`button.pickCv`)}`}
+            title={selectedCV?.title || `${t(`button.pickCv`)}`}
             customStyle={{ marginBottom: spacing.medium }}
-            onPress={() => {}}
+            onPress={() => {
+              navigate(Screen_Name.CV_Screen, {
+                pickMode: true,
+                onPickCV: cvSelected => {
+                  setSelectedCV(cvSelected);
+                },
+              });
+            }}
           />
           <AppButton
-            title={`${t(`button.pickImage`)}`}
+            title={
+              selectedImage
+                ? t('button.imagePicked')
+                : `${t(`button.pickImage`)}`
+            }
             customStyle={{ marginBottom: spacing.medium }}
-            onPress={() => {}}
+            onPress={handleUploadImage}
           />
+          {selectedImage && (
+            <View
+              style={{ alignItems: 'center', marginBottom: spacing.medium }}
+            >
+              <Image
+                source={{ uri: selectedImage.uri }}
+                style={{ width: 100, height: 100, borderRadius: 8 }}
+              />
+            </View>
+          )}
           <View style={styles.buttonRow}>
             <AppButton title="Hủy" onPress={onClose} />
-            <AppButton title="Xác nhận" onPress={() => {}} />
+            <AppButton title="Xác nhận" onPress={() => handleSubmit()} />
           </View>
         </View>
       </View>

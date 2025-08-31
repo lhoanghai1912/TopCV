@@ -1,5 +1,6 @@
 import { JobSearchParams } from '../type/type';
 import apiClient from './apiClient';
+import { buildApplyJobFormData, ApplyJobParams } from '../utils/formDataUtils';
 
 export const getJob = async (params: JobSearchParams) => {
   try {
@@ -55,3 +56,22 @@ export const getSavedJobs = async () => {
     return response.data;
   } catch (error) {}
 };
+
+// ...existing code...
+
+export const applyJob = async (params: ApplyJobParams) => {
+  try {
+    const formData = buildApplyJobFormData(params);
+    const response = await apiClient.post('/Application/apply', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+// ...existing code...

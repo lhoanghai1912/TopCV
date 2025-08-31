@@ -1,5 +1,3 @@
-import { createCV } from '../../services/cv';
-
 export default {
   message: {
     welcome: 'Welcome to topcv',
@@ -42,7 +40,9 @@ export default {
     valid_password_special:
       'Password must contain at least 1 special character',
     valid_password_match: 'Password and confirm password match',
+
     cv_upload_photo: 'Upload photo',
+    cv_login: 'Log in to create CV',
   },
 
   button: {

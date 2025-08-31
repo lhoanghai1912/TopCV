@@ -14,19 +14,22 @@ import AppButton from '../../../components/AppButton';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import { useTranslation } from 'react-i18next';
 import AppStyles from '../../../components/AppStyle';
+import { useSelector } from 'react-redux';
 
 const PAGE_SIZE = 10;
 
-const CVScreen = ({ navigation }: { navigation: any }) => {
+const CVScreen = ({ navigation, route }: { navigation: any; route: any }) => {
   const { t } = useTranslation();
   const [listCV, setListCV] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-
+  const { token } = useSelector((state: any) => state.user);
   useEffect(() => {
-    fetchListCV();
-  }, []);
+    if (token) {
+      fetchListCV();
+    }
+  }, [token]);
 
   const fetchListCV = async (refresh = false) => {
     if (loading) return;
@@ -72,92 +75,119 @@ const CVScreen = ({ navigation }: { navigation: any }) => {
     fetchListCV(true);
   };
 
+  const pickMode = route?.params?.pickMode;
+  const onPickCV = route?.params?.onPickCV;
   const renderCardCV = ({ item }: { item: any }) => {
-    return <CardCV cv={item} />;
+    return (
+      <CardCV
+        cv={item}
+        onPress={
+          pickMode && typeof onPickCV === 'function'
+            ? (cvId: string) => {
+                onPickCV(cvId);
+                navigation.goBack();
+              }
+            : undefined
+        }
+      />
+    );
   };
 
   return (
-    <View style={styles.container}>
-      <NavBar title={'CV'} onPress={() => navigation.goBack()} />
-      <View
-        style={{
-          marginBottom: spacing.medium,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: spacing.medium,
-        }}
-      >
-        <Text style={AppStyles.label}>{`${
-          listCV.length > 1
-            ? `${listCV.length} ${t('label.cv_lists')}`
-            : `${listCV.length} ${t('label.cv_list')}`
-        }`}</Text>
-        <AppButton
-          title={t('button.createCV')}
-          onPress={() => navigation.navigate(Screen_Name.CreateCV_Screen)}
-        />
-      </View>
-      <FlatList
-        data={listCV}
-        style={{
-          borderWidth: 1,
-          paddingVertical: spacing.medium,
-          marginHorizontal: spacing.medium,
-          borderRadius: 15,
-          maxHeight: ms(780),
-        }}
-        keyExtractor={item => item.id.toString()}
-        renderItem={renderCardCV}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.2}
-        ListFooterComponent={
-          loading && !listCV.length ? (
-            <ActivityIndicator />
-          ) : loading && listCV.length ? (
-            <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: spacing.medium,
-              }}
-            >
-              <ActivityIndicator />
-              <Text
-                style={{
-                  paddingBottom: spacing.medium,
-                  justifyContent: 'center',
-                  textAlign: 'center',
-                  fontSize: spacing.medium,
-                }}
-              >
-                Đang tải thêm...
-              </Text>
-            </View>
-          ) : (
-            <View
-              style={{
-                justifyContent: 'center',
-                marginBottom: spacing.medium,
-              }}
-            >
-              <Text
-                style={{
-                  paddingBottom: spacing.medium,
-                  justifyContent: 'center',
-                  textAlign: 'center',
-                  fontSize: spacing.medium,
-                }}
-              >
-                No more cv
-              </Text>
-            </View>
-          )
-        }
-        refreshing={loading && page === 2}
-        onRefresh={handleRefresh}
-      />
-    </View>
+    <>
+      {token ? (
+        <View style={styles.container}>
+          <NavBar title={'CV'} onPress={() => navigation.goBack()} />
+          <View
+            style={{
+              marginBottom: spacing.medium,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: spacing.medium,
+            }}
+          >
+            <Text style={AppStyles.label}>{`${
+              listCV.length > 1
+                ? `${listCV.length} ${t('label.cv_lists')}`
+                : `${listCV.length} ${t('label.cv_list')}`
+            }`}</Text>
+            <AppButton
+              title={t('button.createCV')}
+              onPress={() => navigation.navigate(Screen_Name.CreateCV_Screen)}
+            />
+          </View>
+          <FlatList
+            data={listCV}
+            style={{
+              borderWidth: 1,
+              paddingVertical: spacing.medium,
+              marginHorizontal: spacing.medium,
+              borderRadius: 15,
+              maxHeight: ms(780),
+            }}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderCardCV}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.2}
+            ListFooterComponent={
+              loading && !listCV.length ? (
+                <ActivityIndicator />
+              ) : loading && listCV.length ? (
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: spacing.medium,
+                  }}
+                >
+                  <ActivityIndicator />
+                  <Text
+                    style={{
+                      paddingBottom: spacing.medium,
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      fontSize: spacing.medium,
+                    }}
+                  >
+                    Đang tải thêm...
+                  </Text>
+                </View>
+              ) : (
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    marginBottom: spacing.medium,
+                  }}
+                >
+                  <Text
+                    style={{
+                      paddingBottom: spacing.medium,
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      fontSize: spacing.medium,
+                    }}
+                  >
+                    No more cv
+                  </Text>
+                </View>
+              )
+            }
+            refreshing={loading && page === 2}
+            onRefresh={handleRefresh}
+          />
+        </View>
+      ) : (
+        <View
+          style={[
+            styles.container,
+            { justifyContent: 'center', alignItems: 'center' },
+          ]}
+        >
+          <Text style={AppStyles.title}>{t('message.cv_login')}</Text>
+        </View>
+      )}
+    </>
   );
 };
 

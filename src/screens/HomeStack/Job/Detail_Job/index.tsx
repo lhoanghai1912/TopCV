@@ -632,7 +632,11 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
           <ActivityIndicator size="large" color="#E53935" />
         </View>
       )}
-      <ModalApply visible={modalApply} onClose={() => setModalApply(false)} />
+      <ModalApply
+        visible={modalApply}
+        onClose={() => setModalApply(false)}
+        jobDetails={jobDetails}
+      />
     </View>
   );
 };

@@ -2,8 +2,6 @@ import React, { use, useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ViewStyle } from 'react-native';
 import AppStyles from '../../../../components/AppStyle';
 import icons from '../../../../assets/icons';
-import images from '../../../../assets/images';
-import { colors } from '../../../../utils/color';
 import { link } from '../../../../utils/constants';
 import { useTranslation } from 'react-i18next';
 import { navigate } from '../../../../navigation/RootNavigator';
