@@ -27,7 +27,7 @@ import { enterOtp, register } from '../../services/auth';
 const RegisterScreen = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const [mail, setMail] = useState('hoanghai191202@gmail.com');
+  const [mail, setMail] = useState('');
   const [modalEnterOtp, setModalEnterOtp] = useState(false);
   const [resetOtp, setResetOtp] = useState('');
   const [Loading, setLoading] = useState(false);

@@ -31,8 +31,8 @@ const LoginScreen = () => {
   const userData = useSelector((state: any) => state.user.userData);
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const [mail, setMail] = useState('hoanghai191202@gmail.com');
-  const [password, setPassword] = useState('123456Ab@');
+  const [mail, setMail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const handleLogin = async () => {
     try {
@@ -176,6 +176,12 @@ const LoginScreen = () => {
               borderRadius: 50,
               marginRight: spacing.medium,
             }}
+            onPress={() =>
+              Toast.show({
+                type: 'info',
+                text2: `${t('message.comming_soon')}`,
+              })
+            }
           >
             <Image source={icons.facebook} style={[AppStyles.icon]} />
           </TouchableOpacity>
@@ -186,7 +192,6 @@ const LoginScreen = () => {
               borderColor: colors.Gray,
               borderRadius: 50,
               marginRight: spacing.medium,
-              backgroundColor: 'red',
             }}
             onPress={() => handleGoogleLogin()}
           >
@@ -199,6 +204,12 @@ const LoginScreen = () => {
               borderColor: colors.Gray,
               borderRadius: 50,
             }}
+            onPress={() =>
+              Toast.show({
+                type: 'info',
+                text2: `${t('message.comming_soon')}`,
+              })
+            }
           >
             <Image source={icons.apple} style={[AppStyles.icon]} />
           </TouchableOpacity>

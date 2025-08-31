@@ -12,6 +12,7 @@ export default {
     login: 'Log in here ↓',
     account_delete_confirm: 'Are you sure you want to delete your account?',
     update_success: 'Updated successfully',
+    comming_soon: 'Feature coming soon!',
 
     job_find: 'Find a job',
     job_empty: 'No jobs',
