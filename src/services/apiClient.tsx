@@ -61,11 +61,18 @@ apiClient.interceptors.response.use(
         value || data?.message || data?.error || JSON.stringify(data);
       console.log('📥 Response status:', status);
       console.log('📦 Response data:', data);
-
-      Toast.show({
-        type: 'error',
-        text2: message,
-      });
+      // if (status === 401) {
+      //   console.log('📡 401 URL:', error.response.config?.url);
+      //   Toast.show({
+      //     type: 'error',
+      //     text2: `401: ${error.response.config?.url}`,
+      //   });
+      // } else {
+      //   Toast.show({
+      //     type: 'error',
+      //     text2: message,
+      //   });
+      // }
     } else if (error.request) {
       console.log('📡 No response received:', error.request);
       Toast.show({

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Modal, View, Text, TextInput, StyleSheet, Image } from 'react-native';
 import AppButton from '../AppButton';
@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { navigate } from '../../navigation/RootNavigator';
 import { applyJob } from '../../services/job';
+import { useSelector } from 'react-redux';
 
 interface ModalApplyProps {
   visible: boolean;
@@ -22,6 +23,7 @@ const ModalApply: React.FC<ModalApplyProps> = ({
   jobDetails,
 }) => {
   const { t } = useTranslation();
+  const { token } = useSelector((state: any) => state.user);
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -33,13 +35,15 @@ const ModalApply: React.FC<ModalApplyProps> = ({
     console.log('jobDetails', jobDetails);
   }, []);
   const fetchUserData = async () => {
-    const res = await getUserInfo();
-    console.log('userInfo', res);
+    if (token) {
+      const res = await getUserInfo();
+      console.log('userInfo', res);
 
-    if (res) {
-      setFullname(res.fullName);
-      setEmail(res.email);
-      setPhoneNumber(res.phoneNumber);
+      if (res) {
+        setFullname(res.fullName);
+        setEmail(res.email);
+        setPhoneNumber(res.phoneNumber);
+      }
     }
   };
   const handleUploadImage = async () => {

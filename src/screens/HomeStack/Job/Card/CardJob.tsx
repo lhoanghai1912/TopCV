@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { navigate } from '../../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../../navigation/ScreenName';
 import { formatPriceToTy } from '../../../../components/formatPrice';
-import { s, spacing } from '../../../../utils/spacing';
+import { spacing } from '../../../../utils/spacing';
 import styles from './styles';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';

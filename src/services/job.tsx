@@ -26,6 +26,8 @@ export const getJobDetails = async (id: string) => {
     return response.data;
   } catch (error) {
     console.log(error);
+    console.log('getjobDetails');
+
     throw error;
   }
 };
@@ -35,7 +37,7 @@ export const getJobofCompany = async (id: string) => {
     const response = await apiClient.get(`Job/GetByCompany/${id}`);
     return response.data;
   } catch (error) {
-    console.log(error);
+    console.log('abc', error);
     throw error;
   }
 };

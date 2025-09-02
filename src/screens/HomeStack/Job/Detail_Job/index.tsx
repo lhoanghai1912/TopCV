@@ -41,7 +41,6 @@ interface Props {
 
 const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   const { t } = useTranslation();
-
   const insets = useSafeAreaInsets();
   console.log('job id: ', route.params.job.id);
   const { token } = useSelector((state: any) => state.user);
@@ -126,22 +125,24 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleSaveJob = async () => {
-    try {
-      const res = await patchSavedJob(jobId);
-      console.log(res);
+    if (token) {
+      try {
+        const res = await patchSavedJob(jobId);
+        console.log(res);
 
-      Toast.show({
-        type: 'success',
-        text1: 'Thông báo',
-        text2: `${
-          res.isSaved === true
-            ? t('message.job_saved_success')
-            : t('message.job_unsaved_success')
-        } `,
-        visibilityTime: 1500,
-      });
-      setIsSaved(!isSaved);
-    } catch (error) {}
+        Toast.show({
+          type: 'success',
+          text1: 'Thông báo',
+          text2: `${
+            res.isSaved === true
+              ? t('message.job_saved_success')
+              : t('message.job_unsaved_success')
+          } `,
+          visibilityTime: 1500,
+        });
+        setIsSaved(!isSaved);
+      } catch (error) {}
+    }
   };
 
   const scrollToMain = () => {
@@ -642,4 +643,3 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
 };
 
 export default DetailJobScreen;
-// ch
