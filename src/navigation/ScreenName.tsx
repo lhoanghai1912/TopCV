@@ -22,7 +22,9 @@ export const Screen_Name = {
   CV_Screen: 'CV_Screen',
   CardCV_Screen: 'CardCV_Screen',
   CreateCV_Screen: 'CreateCV_Screen',
-  DetailCV: 'DetailCV',
+  DetailCV_Screen: 'DetailCV_Screen',
+  AppliedJob_Screen: 'AppliedJob_Screen',
+  CV_Review_Screen: 'CV_Review_Screen',
   //Other
   Splash_Screen: 'Splash_Screen',
   Loading_Screen: 'Splash_Screen',

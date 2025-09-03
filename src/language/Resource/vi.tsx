@@ -10,9 +10,11 @@ export default {
     loadingMore: 'Đang tải thêm...',
     noMoreJob: 'Không còn việc làm',
     login: 'Đăng nhập tại đây ↓',
+    login_save: 'Đăng nhập để lưu việc làm',
     account_delete_confirm: 'Bạn có chắc muốn xóa tài khoản?',
     update_success: 'Cập nhật thành công',
     comming_soon: 'Tính năng sắp ra mắt!',
+    apply_success: 'Đã nộp đơn thành công!',
 
     job_find: 'Tìm việc',
     job_empty: 'Không có việc làm',
@@ -62,6 +64,7 @@ export default {
     updateCV: 'Cập nhật CV',
     pickCv: 'Chọn CV đã tạo',
     pickImage: 'Chọn ảnh',
+    cv_review: 'Xem lại CV',
   },
 
   label: {
@@ -105,6 +108,7 @@ export default {
     job_status: 'Trạng thái tìm việc',
     job_management: 'Quản lý việc làm',
     job_saved: 'Việc làm đã lưu',
+    job_applied: 'Việc làm đã ứng tuyển',
     job_of_company: 'Việc làm của công ty',
     job: 'Việc làm',
     jobs: 'Các việc làm',

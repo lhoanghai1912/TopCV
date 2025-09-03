@@ -42,8 +42,10 @@ import share from './share.png';
 import job from './job.png';
 import company from './company.png';
 import checked from './checked.png';
+import clock from './clock.png';
 
 export default {
+  clock,
   checked,
   job,
   company,

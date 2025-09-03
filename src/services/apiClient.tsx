@@ -37,16 +37,32 @@ apiClient.interceptors.response.use(
       console.log('📥 Non-200 status:', status);
       console.log('📦 Response data:', data);
 
-      Toast.show({
-        type: 'error',
-        text2: message,
-      });
+      // Hiển thị Toast riêng nếu đã ứng tuyển job này rồi
+      if (message === 'Bạn đã ứng tuyển job này rồi') {
+        Toast.show({
+          type: 'error',
+          text2: message,
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text2: message,
+        });
+      }
 
       // Tạo error object để reject
       const error = new Error(message);
       (error as any).response = response;
       (error as any).status = status;
       return Promise.reject(error);
+    }
+
+    // Nếu response trả về message "Bạn đã ứng tuyển job này rồi" mà status vẫn là 200
+    if (response.data?.message === 'Bạn đã ứng tuyển job này rồi') {
+      Toast.show({
+        type: 'error',
+        text2: response.data.message,
+      });
     }
 
     return response;
@@ -61,18 +77,26 @@ apiClient.interceptors.response.use(
         value || data?.message || data?.error || JSON.stringify(data);
       console.log('📥 Response status:', status);
       console.log('📦 Response data:', data);
-      // if (status === 401) {
-      //   console.log('📡 401 URL:', error.response.config?.url);
-      //   Toast.show({
-      //     type: 'error',
-      //     text2: `401: ${error.response.config?.url}`,
-      //   });
-      // } else {
-      //   Toast.show({
-      //     type: 'error',
-      //     text2: message,
-      //   });
-      // }
+      console.log('📦 Response data1:', error);
+      if (status === 401) {
+        // Nếu có trường value (ví dụ lỗi đăng nhập), ưu tiên hiển thị value
+        if (value) {
+          Toast.show({
+            type: 'error',
+            text2: value,
+          });
+        } else {
+          Toast.show({
+            type: 'error',
+            text2: `401: ${error.response.config?.url}`,
+          });
+        }
+      } else {
+        Toast.show({
+          type: 'error',
+          text2: message,
+        });
+      }
     } else if (error.request) {
       console.log('📡 No response received:', error.request);
       Toast.show({

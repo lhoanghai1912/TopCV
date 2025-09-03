@@ -11,14 +11,13 @@ import DetailJobScreen from '../screens/HomeStack/Job/Detail_Job';
 import SavedJobScreen from '../screens/HomeStack/Job/Saved_Job';
 import EditCVScreen from '../screens/HomeStack/CV/CreateCV/editCV';
 import UpdateInfoScreen from '../screens/HomeStack/User/UpdateInfo';
-import { updatePassword } from '../services/auth';
 import UpdatePasswordScreen from '../screens/HomeStack/User/ChangePassword';
 import FollowedCompanyScreen from '../screens/HomeStack/Company/Followed_Company';
-import CardCV from '../screens/HomeStack/CV/Card';
 import CVScreen from '../screens/HomeStack/CV';
-import CreateCVScreen from '../screens/HomeStack/CreateCV';
 import DetailsCv from '../screens/HomeStack/CV/Details';
 import CreateCV from '../screens/HomeStack/CV/CreateCV';
+import AppliedScreen from '../screens/HomeStack/Applied';
+import CVReviewScreen from '../screens/HomeStack/CV/Review';
 
 const Stack = createNativeStackNavigator();
 
@@ -73,7 +72,15 @@ const HomeNavigator = () => {
       />
       <Stack.Screen name={Screen_Name.CV_Screen} component={CVScreen} />
       <Stack.Screen name={Screen_Name.CreateCV_Screen} component={CreateCV} />
-      <Stack.Screen name={Screen_Name.DetailCV} component={DetailsCv} />
+      <Stack.Screen name={Screen_Name.DetailCV_Screen} component={DetailsCv} />
+      <Stack.Screen
+        name={Screen_Name.AppliedJob_Screen}
+        component={AppliedScreen}
+      />
+      <Stack.Screen
+        name={Screen_Name.CV_Review_Screen}
+        component={CVReviewScreen}
+      />
     </Stack.Navigator>
   );
 };

@@ -10,9 +10,11 @@ export default {
     loadingMore: 'ກຳລັງໂຫຼດ...',
     noMoreJob: 'ບໍ່ມີວຽກເພີ່ມເຕີມ',
     login: 'ເຂົ້າສູ່ລະບົບ ↓',
+    login_save: 'ເຂົ້າສູ່ວຽກທີ່ບັນທຶກ',
     account_delete_confirm: 'ທ່ານແນ່ໃຈບໍ່ວ່າຈະລຶບບັນຊີ?',
     update_success: 'ອັບເດດສຳເລັດ',
     comming_soon: 'ຟິຈໍເຄິ່ງກຳລັງມາໃຫ້ເບິ່ງ!',
+    apply_success: 'ສະໝັກສຳເລັດ',
 
     job_find: 'ຊອກຫາວຽກ',
     job_empty: 'ບໍ່ມີວຽກ',
@@ -62,6 +64,7 @@ export default {
     updateCV: 'ອັບເດດ CV',
     pickCv: 'ເລືອກ CV',
     pickImage: 'ເລືອກຮູບ',
+    cv_review: 'ທົບທວນ CV',
   },
 
   label: {
@@ -105,6 +108,7 @@ export default {
     job_status: 'ສະຖານະການຊອກຫາວຽກ',
     job_management: 'ການຈັດການວຽກ',
     job_saved: 'ວຽກທີ່ບັນທຶກ',
+    job_applied: 'ວຽກທີ່ໄດ້ສະໝັກ',
     job_of_company: 'ວຽກຂອງບໍລິສັດ',
     job: 'ວຽກ',
     jobs: 'ວຽກ',

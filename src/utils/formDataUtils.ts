@@ -18,15 +18,26 @@ export const buildApplyJobFormData = (params: ApplyJobParams) => {
   formData.append('FullName', params.FullName);
   formData.append('Email', params.Email);
   formData.append('PhoneNumber', params.PhoneNumber);
-  formData.append('CvId', params.CvId.toString());
   formData.append('CoverLetter', params.CoverLetter);
-  if (params.CvFile) {
-    // React Native FormData hỗ trợ object với uri, type, name
-    formData.append('CvFile', {
-      uri: params.CvFile.uri,
-      type: params.CvFile.type,
-      name: params.CvFile.name,
-    } as any);
+
+  // CvId không bắt buộc
+  if (params.CvId) {
+    formData.append('CvId', params.CvId.toString());
   }
+
+  // CvFile không bắt buộc, nếu có phải là PDF
+  if (params.CvFile) {
+    const isPdf = params.CvFile.type === 'application/pdf' || params.CvFile.name?.toLowerCase().endsWith('.pdf');
+    if (isPdf) {
+      formData.append('CvFile', {
+        uri: params.CvFile.uri,
+        type: params.CvFile.type,
+        name: params.CvFile.name,
+      } as any);
+    } else {
+      throw new Error('CV file must be a PDF');
+    }
+  }
+
   return formData;
 };

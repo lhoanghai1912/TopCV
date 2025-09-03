@@ -76,4 +76,18 @@ export const applyJob = async (params: ApplyJobParams) => {
   }
 };
 
+export const getAppliedJobs = async (page?: number, pageSize?: number) => {
+  try {
+    const response = await apiClient.get(
+      page && pageSize
+        ? `/Application/user/applications?page=${page}&pageSize=${pageSize}&OrderBy=appliedAt%20desc`
+        : `/Application/user/applications?OrderBy=appliedAt%20desc`,
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 // ...existing code...

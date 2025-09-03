@@ -42,7 +42,7 @@ interface Props {
 const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  console.log('job id: ', route.params.job.id);
+
   const { token } = useSelector((state: any) => state.user);
   const [jobDetails, setJobDetails] = useState<any>([]);
   const [listJobsOfCompany, setListJobsOfCompany] = useState<any>([]);
@@ -52,7 +52,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   const [filteredJobs, setFilteredJobs] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const companyId = jobDetails?.company?.id;
-  const jobId = route.params?.job?.id;
+  const jobId = route.params?.job?.id || route.params?.applied?.jobId;
 
   const scrollRef = React.useRef<ScrollView>(null);
   const [mainTop, setMainTop] = useState(0);
@@ -90,7 +90,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   ];
   useEffect(() => {
     fetchJobDetails();
-  }, [route.params.job.id]);
+  }, [jobId]);
 
   useEffect(() => {
     if (companyId) {
@@ -153,14 +153,6 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
       animated: true,
     });
   };
-  console.log(
-    'fixedHeaderH',
-    fixedHeaderH,
-    'MainTop',
-    mainTop,
-    'mainContent',
-    mainContent,
-  );
 
   const setTab = (key: 'info' | 'company') => {
     setOnSelectedCategory(key);

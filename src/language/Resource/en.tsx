@@ -10,9 +10,11 @@ export default {
     loadingMore: 'Loading more...',
     noMoreJob: 'No more jobs',
     login: 'Log in here ↓',
+    login_save: 'Log in to save jobs',
     account_delete_confirm: 'Are you sure you want to delete your account?',
     update_success: 'Updated successfully',
     comming_soon: 'Feature coming soon!',
+    apply_success: 'Applied successfully',
 
     job_find: 'Find a job',
     job_empty: 'No jobs',
@@ -22,6 +24,12 @@ export default {
     jobs_saved: 'Jobs saved',
     job_saved_success: 'Job saved successfully',
     job_unsaved_success: 'Job unsaved successfully',
+
+    job_applied_none: 'No jobs yet applied',
+    job_applied: 'Job applied',
+    jobs_applied: 'Jobs applied',
+    job_applied_success: 'Job applied successfully',
+    job_unapplied_success: 'Job unapplied successfully',
 
     company_find: 'Find a company',
     company_login: 'Log in to save company',
@@ -64,6 +72,7 @@ export default {
     updateCV: 'Update CV',
     pickCv: 'Pick CV created',
     pickImage: 'Pick Image',
+    cv_review: 'Review CV',
   },
 
   label: {
@@ -107,6 +116,7 @@ export default {
     job_status: 'Job search status',
     job_management: 'Job management',
     job_saved: 'Saved jobs',
+    job_applied: 'Applied jobs',
     job_of_company: `Company's jobs`,
     job: 'Job',
     jobs: 'Jobs',

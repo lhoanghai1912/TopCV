@@ -6,6 +6,7 @@ import {
   Image,
   AppState,
   TouchableOpacity,
+  ViewStyle,
 } from 'react-native';
 import { getCVDetail } from '../../../../services/cv';
 import NavBar from '../../../../components/Navbar';
@@ -23,14 +24,24 @@ import { useTranslation } from 'react-i18next';
 interface Props {
   navigation: any;
   route: any;
+  hideNavBar?: boolean;
+  customStyle?: ViewStyle;
 }
-const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
+
+const DetailsCv: React.FC<Props> = ({
+  route,
+  navigation,
+  hideNavBar,
+  customStyle,
+}) => {
   const { t } = useTranslation();
-  const cvId = route.params?.cvId;
+  const cvId = route.params?.cv?.cvId;
   const [cv, setCv] = React.useState<any>(null);
   useEffect(() => {
-    fetchCVDetails();
-  }, []);
+    if (cvId) {
+      fetchCVDetails();
+    }
+  }, [cvId]);
   const fetchCVDetails = async () => {
     try {
       const res = await getCVDetail(cvId);
@@ -41,7 +52,9 @@ const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
   if (!cv) {
     return (
       <View style={styles.container}>
-        <NavBar title={`CV Details`} onPress={() => navigation.goBack()} />
+        {!hideNavBar && (
+          <NavBar title={`CV Details`} onPress={() => navigation.goBack()} />
+        )}
       </View>
     );
   }
@@ -65,8 +78,10 @@ const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
   } = cv;
 
   return (
-    <View style={styles.container}>
-      <NavBar title={`CV Details`} onPress={() => navigation.goBack()} />
+    <View style={[styles.container, customStyle]}>
+      {!hideNavBar && (
+        <NavBar title={`CV Details`} onPress={() => navigation.goBack()} />
+      )}
       <View style={styles.body}>
         <ScrollView>
           <View style={{ alignItems: 'center' }}>
@@ -93,7 +108,12 @@ const DetailsCv: React.FC<Props> = ({ route, navigation }) => {
               onPress={() =>
                 navigation.navigate(Screen_Name.CreateCV_Screen, { cv })
               }
-              style={{ position: 'absolute', top: 0, right: 0 }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                display: hideNavBar ? 'none' : 'flex',
+              }}
             >
               <Image source={icons.edit} style={[AppStyles.icon]} />
             </TouchableOpacity>

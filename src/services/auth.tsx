@@ -4,11 +4,15 @@ import Toast from 'react-native-toast-message';
 import apiClient from './apiClient';
 
 export const login = async (contact: string, password: string) => {
-  const res = await apiClient.post('/Account/login-with-password', {
-    contact,
-    password,
-  });
-  return res.data;
+  try {
+    const res = await apiClient.post('/Account/login-with-password', {
+      contact,
+      password,
+    });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const loginFirebase = async (idToken: string) => {

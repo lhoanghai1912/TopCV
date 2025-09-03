@@ -194,6 +194,7 @@ const CVScreen = ({ navigation, route }: { navigation: any; route: any }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginBottom: spacing.medium,
   },
 });
 

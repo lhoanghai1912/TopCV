@@ -24,7 +24,7 @@ With Metro running, open a new terminal window/pane from the root of your React 
 
 ### Android
 
-```sh
+````sh
 # Using npm
 npm run android
 
@@ -32,9 +32,7 @@ npm run android
 
 ```sh
 bundle install
-```
-
-
+````
 
 ```sh
 # Using npm
@@ -72,3 +70,4 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+```

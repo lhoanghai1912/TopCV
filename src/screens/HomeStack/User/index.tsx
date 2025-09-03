@@ -29,7 +29,7 @@ import icons from '../../../assets/icons';
 import { getUserProfile } from '../../../services/auth';
 import { useFocusEffect } from '@react-navigation/native';
 import { link } from '../../../utils/constants';
-import { getSavedJobs } from '../../../services/job';
+import { getAppliedJobs, getSavedJobs } from '../../../services/job';
 import Toast from 'react-native-toast-message';
 import images from '../../../assets/images';
 import { deleteUserAccount } from '../../../services/user';
@@ -49,6 +49,7 @@ const UserScreen: React.FC = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [listSavedJobs, setListSavedJobs] = useState<any>(null);
   const [listFollowedCompanies, setListFollowedCompanies] = useState<any>(null);
+  const [listAppliedJobs, setListAppliedJobs] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   useFocusEffect(
@@ -58,6 +59,7 @@ const UserScreen: React.FC = () => {
       fetchUserProfile();
       getListSavedJobs();
       getListFollowedCompanies();
+      getListAppliedJobs();
     }, [token]),
   );
 
@@ -82,6 +84,14 @@ const UserScreen: React.FC = () => {
       const res = await getFollowedCompanies();
       console.log('followed', res);
       setListFollowedCompanies(res);
+    } catch (error) {}
+  };
+  const getListAppliedJobs = async () => {
+    if (!token) return;
+    try {
+      const res = await getAppliedJobs();
+      console.log('applied', res);
+      setListAppliedJobs(res);
     } catch (error) {}
   };
   console.log('followed', listFollowedCompanies);
@@ -485,6 +495,37 @@ const UserScreen: React.FC = () => {
                     >
                       {listFollowedCompanies?.companies?.length
                         ? `${listFollowedCompanies.companies.length}`
+                        : '0'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{
+                    width: '48%',
+                    backgroundColor: '#F5F5F5',
+                    borderRadius: 8,
+                    padding: 12,
+                    marginBottom: spacing.small,
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      token
+                        ? navigate(Screen_Name.AppliedJob_Screen)
+                        : Toast.show({
+                            type: 'error',
+                            text1: t('message.login_save'),
+                          });
+                    }}
+                  >
+                    <Text style={{ color: '#1A7FEE' }}>
+                      {t('label.job_applied')}
+                    </Text>
+                    <Text
+                      style={{ fontWeight: 'bold', fontSize: Fonts.normal }}
+                    >
+                      {listAppliedJobs?.total
+                        ? `${listAppliedJobs.total}`
                         : '0'}
                     </Text>
                   </TouchableOpacity>

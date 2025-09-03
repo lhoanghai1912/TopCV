@@ -78,4 +78,11 @@ export const getCVDetail = async (cvId: string) => {
   }
 };
 
-
+export const getApplicationDetail = async (applicationId: string) => {
+  try {
+    const response = await apiClient.get(`/Application/user/applications/${applicationId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

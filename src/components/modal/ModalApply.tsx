@@ -1,6 +1,14 @@
 import React, { useState, useEffect, use } from 'react';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { Modal, View, Text, TextInput, StyleSheet, Image } from 'react-native';
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import AppButton from '../AppButton';
 import { spacing } from '../../utils/spacing';
 import { colors } from '../../utils/color';
@@ -10,6 +18,8 @@ import { Screen_Name } from '../../navigation/ScreenName';
 import { navigate } from '../../navigation/RootNavigator';
 import { applyJob } from '../../services/job';
 import { useSelector } from 'react-redux';
+import { setLoading } from '../../store/reducers/loadingSlice';
+import Toast from 'react-native-toast-message';
 
 interface ModalApplyProps {
   visible: boolean;
@@ -29,7 +39,7 @@ const ModalApply: React.FC<ModalApplyProps> = ({
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedImage, setSelectedImage] = useState<any>(null);
   const [selectedCV, setSelectedCV] = useState<any>();
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     fetchUserData();
     console.log('jobDetails', jobDetails);
@@ -65,17 +75,37 @@ const ModalApply: React.FC<ModalApplyProps> = ({
         selectedCV: selectedCV?.id,
         jobId: jobDetails?.id,
       });
-      const res = await applyJob({
-        JobId: jobDetails?.id,
-        FullName: fullname,
-        Email: email,
-        PhoneNumber: phoneNumber,
-        CvId: selectedCV?.id,
-        CoverLetter: '',
-        CvFile: selectedImage,
-      });
+      setLoading(true);
+      const start = Date.now();
+      let res;
+      try {
+        res = await applyJob({
+          JobId: jobDetails?.id,
+          FullName: fullname,
+          Email: email,
+          PhoneNumber: phoneNumber,
+          CvId: selectedCV?.id,
+          CoverLetter: '',
+          CvFile: selectedImage,
+        });
+      } finally {
+        const elapsed = Date.now() - start;
+        if (elapsed < 500) {
+          await new Promise(resolve => setTimeout(resolve, 500 - elapsed));
+        }
+      }
       console.log(res);
-    } catch (error) {}
+      if (res.success)
+        Toast.show({
+          type: 'success',
+          text2: `${t('message.apply_success')}`,
+        });
+      onClose();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -139,6 +169,19 @@ const ModalApply: React.FC<ModalApplyProps> = ({
           </View>
         </View>
       </View>
+      {loading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10,
+          }}
+        >
+          <ActivityIndicator size="large" color="#E53935" />
+        </View>
+      )}
     </Modal>
   );
 };
