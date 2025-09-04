@@ -18,7 +18,6 @@ import { Screen_Name } from '../../navigation/ScreenName';
 import { navigate } from '../../navigation/RootNavigator';
 import { applyJob } from '../../services/job';
 import { useSelector } from 'react-redux';
-import { setLoading } from '../../store/reducers/loadingSlice';
 import Toast from 'react-native-toast-message';
 
 interface ModalApplyProps {
