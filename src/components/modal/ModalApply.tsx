@@ -1,23 +1,28 @@
-import React, { useState, useEffect, use } from 'react';
-import { launchImageLibrary } from 'react-native-image-picker';
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Modal,
   View,
-  Text,
   TextInput,
   StyleSheet,
-  Image,
+  TouchableOpacity,
   ActivityIndicator,
+  Text,
 } from 'react-native';
-import AppButton from '../AppButton';
+import Pdf from 'react-native-pdf';
+import { useSelector } from 'react-redux';
+import { getUserInfo } from '../../services/user';
+import Toast from 'react-native-toast-message';
+import { applyJob } from '../../services/job';
 import { spacing } from '../../utils/spacing';
 import { colors } from '../../utils/color';
-import { getUserInfo } from '../../services/user';
-import { useTranslation } from 'react-i18next';
+import AppButton from '../AppButton';
+import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { navigate } from '../../navigation/RootNavigator';
 import { applyJob } from '../../services/job';
 import { useSelector } from 'react-redux';
+import { setLoading } from '../../store/reducers/loadingSlice';
 import Toast from 'react-native-toast-message';
 
 interface ModalApplyProps {
@@ -36,9 +41,10 @@ const ModalApply: React.FC<ModalApplyProps> = ({
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [selectedImage, setSelectedImage] = useState<any>(null);
   const [selectedCV, setSelectedCV] = useState<any>();
   const [loading, setLoading] = useState(false);
+  const [applyType, setApplyType] = useState<'cv' | 'upload'>('cv');
+  const [pdfUri, setPdfUri] = useState<string | null>(null);
   useEffect(() => {
     fetchUserData();
     console.log('jobDetails', jobDetails);
@@ -55,25 +61,32 @@ const ModalApply: React.FC<ModalApplyProps> = ({
       }
     }
   };
-  const handleUploadImage = async () => {
-    const result = await launchImageLibrary({
-      mediaType: 'photo',
-      selectionLimit: 1,
-    });
-    if (result.assets && result.assets.length > 0) {
-      setSelectedImage(result.assets[0]);
+  const handlePickPdf = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.pdf],
+        allowMultiSelection: false,
+      });
+      if (res && res.length > 0) {
+        setPdfUri(res[0].uri);
+      }
+    } catch (err) {
+      if (!DocumentPicker.isCancel(err)) {
+        Toast.show({ type: 'error', text2: 'Không thể chọn file PDF!' });
+      }
     }
   };
   const handleSubmit = async () => {
-    // Handle form submission
+    // Chỉ cho chọn 1 hình thức: CV có sẵn hoặc upload file PDF
+    if (applyType === 'cv' && !selectedCV) {
+      Toast.show({ type: 'error', text2: 'Vui lòng chọn CV có sẵn!' });
+      return;
+    }
+    if (applyType === 'upload' && !pdfUri) {
+      Toast.show({ type: 'error', text2: 'Vui lòng chọn file PDF!' });
+      return;
+    }
     try {
-      console.log('Submitting form with:', {
-        fullname,
-        email,
-        phoneNumber,
-        selectedCV: selectedCV?.id,
-        jobId: jobDetails?.id,
-      });
       setLoading(true);
       const start = Date.now();
       let res;
@@ -83,9 +96,12 @@ const ModalApply: React.FC<ModalApplyProps> = ({
           FullName: fullname,
           Email: email,
           PhoneNumber: phoneNumber,
-          CvId: selectedCV?.id,
+          CvId: applyType === 'cv' ? selectedCV?.id : undefined,
           CoverLetter: '',
-          CvFile: selectedImage,
+          CvFile:
+            applyType === 'upload' && pdfUri
+              ? { uri: pdfUri, type: 'application/pdf', name: 'file.pdf' }
+              : undefined,
         });
       } finally {
         const elapsed = Date.now() - start;
@@ -110,56 +126,130 @@ const ModalApply: React.FC<ModalApplyProps> = ({
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.overlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.title}>Apply for Job</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name"
-            value={fullname}
-            onChangeText={setFullname}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Phone Number"
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            keyboardType="phone-pad"
-          />
-          <AppButton
-            title={selectedCV?.title || `${t(`button.pickCv`)}`}
-            customStyle={{ marginBottom: spacing.medium }}
-            onPress={() => {
-              navigate(Screen_Name.CV_Screen, {
-                pickMode: true,
-                onPickCV: cvSelected => {
-                  setSelectedCV(cvSelected);
-                },
-              });
-            }}
-          />
-          <AppButton
-            title={
-              selectedImage
-                ? t('button.imagePicked')
-                : `${t(`button.pickImage`)}`
-            }
-            customStyle={{ marginBottom: spacing.medium }}
-            onPress={handleUploadImage}
-          />
-          {selectedImage && (
-            <View
-              style={{ alignItems: 'center', marginBottom: spacing.medium }}
+          <View>
+            <Text style={AppStyles.label}>{t('label.fullname')}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Full Name"
+              value={fullname}
+              onChangeText={setFullname}
+            />
+          </View>
+          <View>
+            <Text style={AppStyles.label}>{t('label.email')}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+            />
+          </View>
+          <View>
+            <Text style={AppStyles.label}>{t('label.phone')}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              keyboardType="phone-pad"
+            />
+          </View>
+          {/* Radio chọn hình thức apply */}
+          <View style={{ flexDirection: 'row', marginBottom: spacing.medium }}>
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginRight: 16,
+              }}
+              onPress={() => setApplyType('cv')}
             >
-              <Image
-                source={{ uri: selectedImage.uri }}
-                style={{ width: 100, height: 100, borderRadius: 8 }}
-              />
+              <View
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  borderWidth: 2,
+                  borderColor: colors.primary,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 6,
+                }}
+              >
+                {applyType === 'cv' && (
+                  <View
+                    style={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: 6,
+                      backgroundColor: colors.primary,
+                    }}
+                  />
+                )}
+              </View>
+              <Text>{t('button.pickCv')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{ flexDirection: 'row', alignItems: 'center' }}
+              onPress={() => setApplyType('upload')}
+            >
+              <View
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  borderWidth: 2,
+                  borderColor: colors.primary,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 6,
+                }}
+              >
+                {applyType === 'upload' && (
+                  <View
+                    style={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: 6,
+                      backgroundColor: colors.primary,
+                    }}
+                  />
+                )}
+              </View>
+              <Text>{t('button.pickFile') || 'Chọn file PDF'}</Text>
+            </TouchableOpacity>
+          </View>
+          {/* Chọn CV có sẵn */}
+          {applyType === 'cv' && (
+            <AppButton
+              title={selectedCV?.title || `${t(`button.pickCv`)}`}
+              customStyle={{ marginBottom: spacing.medium }}
+              onPress={() => {
+                navigate(Screen_Name.CV_Screen, {
+                  pickMode: true,
+                  onPickCV: cvSelected => {
+                    setSelectedCV(cvSelected);
+                  },
+                });
+              }}
+            />
+          )}
+          {/* Upload file PDF */}
+          {applyType === 'upload' && (
+            <AppButton
+              title={
+                pdfUri
+                  ? 'Đã chọn file PDF'
+                  : `${t('button.pickFile') || 'Chọn file PDF'}`
+              }
+              customStyle={{ marginBottom: spacing.medium }}
+              onPress={handlePickPdf}
+            />
+          )}
+          {applyType === 'upload' && pdfUri && (
+            <View style={{ height: 300, marginBottom: spacing.medium }}>
+              <Pdf source={{ uri: pdfUri }} style={{ flex: 1 }} />
             </View>
           )}
           <View style={styles.buttonRow}>
@@ -213,18 +303,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.medium,
     fontSize: 16,
     backgroundColor: colors.background,
-  },
-  cvButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    padding: spacing.medium,
-    alignItems: 'center',
-    marginBottom: spacing.medium,
-  },
-  cvButtonText: {
-    color: colors.white,
-    fontWeight: 'bold',
-    fontSize: 16,
   },
   buttonRow: {
     flexDirection: 'row',
