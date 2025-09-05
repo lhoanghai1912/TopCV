@@ -35,7 +35,7 @@ const DetailsCv: React.FC<Props> = ({
   customStyle,
 }) => {
   const { t } = useTranslation();
-  const cvId = route.params?.cv?.cvId;
+  const cvId = route.params?.cv?.cvId || route.params?.cv?.id;
   const [cv, setCv] = React.useState<any>(null);
   useEffect(() => {
     if (cvId) {
