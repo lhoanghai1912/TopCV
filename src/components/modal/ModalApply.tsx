@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { launchImageLibrary } from 'react-native-image-picker';
 import {
   Modal,
@@ -14,14 +14,14 @@ import AppButton from '../AppButton';
 import { spacing } from '../../utils/spacing';
 import { colors } from '../../utils/color';
 import { getUserInfo } from '../../services/user';
-import { useTranslation } from 'react-i18next';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { navigate } from '../../navigation/RootNavigator';
 import { applyJob } from '../../services/job';
 import { useSelector } from 'react-redux';
-import { setLoading } from '../../store/reducers/loadingSlice';
 import Toast from 'react-native-toast-message';
 import AppStyles from '../AppStyle';
+import { useTranslation } from 'react-i18next';
+import { pick, keepLocalCopy } from '@react-native-documents/picker';
 
 interface ModalApplyProps {
   visible: boolean;
@@ -36,13 +36,33 @@ const ModalApply: React.FC<ModalApplyProps> = ({
 }) => {
   const { t } = useTranslation();
   const { token } = useSelector((state: any) => state.user);
+
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedImage, setSelectedImage] = useState<any>(null);
   const [selectedCV, setSelectedCV] = useState<any>();
-  const [selectedType, setSelectedType] = useState<'cv' | 'image'>('cv');
+  const [selectedType, setSelectedType] = useState<'cv' | 'image' | 'pdf'>(
+    'cv',
+  );
+  const [selectedPDF, setSelectedPDF] = useState<any>();
   const [loading, setLoading] = useState(false);
+  console.log('Selected PDF:', selectedPDF);
+
+  const handleUploadPDF = async () => {
+    try {
+      const result = await pick({
+        type: 'application/pdf',
+        multiple: false,
+      });
+      if (result && result.length > 0) {
+        setSelectedPDF(result[0]);
+      }
+    } catch (err) {
+      console.warn('PDF pick error:', err);
+    }
+  };
+
   useEffect(() => {
     fetchUserData();
     console.log('jobDetails', jobDetails);
@@ -77,6 +97,7 @@ const ModalApply: React.FC<ModalApplyProps> = ({
       selectedImage,
       jobId: jobDetails?.id,
       selectedType,
+      selectedPDF,
     });
     setLoading(true);
     const start = Date.now();
@@ -102,6 +123,16 @@ const ModalApply: React.FC<ModalApplyProps> = ({
             CvId: undefined,
             CoverLetter: '',
             CvFile: selectedImage,
+          };
+        } else if (selectedType === 'pdf') {
+          payload = {
+            JobId: jobDetails?.id,
+            FullName: fullname,
+            Email: email,
+            PhoneNumber: phoneNumber,
+            CvId: undefined,
+            CoverLetter: '',
+            CvFile: selectedPDF,
           };
         }
         res = await applyJob(payload);
@@ -150,6 +181,7 @@ const ModalApply: React.FC<ModalApplyProps> = ({
             keyboardType="phone-pad"
           />
           <View style={{ marginBottom: spacing.medium }}>
+            {/* Radio chọn CV */}
             <TouchableOpacity
               onPress={() => setSelectedType('cv')}
               style={{
@@ -192,6 +224,7 @@ const ModalApply: React.FC<ModalApplyProps> = ({
                 disabled={selectedType !== 'cv'}
               />
             </TouchableOpacity>
+            {/* Radio chọn Ảnh */}
             <TouchableOpacity
               onPress={() => setSelectedType('image')}
               style={{
@@ -231,6 +264,50 @@ const ModalApply: React.FC<ModalApplyProps> = ({
                   }
                 }}
                 disabled={selectedType !== 'image'}
+              />
+            </TouchableOpacity>
+            {/* Radio chọn PDF */}
+            <TouchableOpacity
+              onPress={() => setSelectedType('pdf')}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: spacing.small,
+              }}
+            >
+              <Text
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  borderWidth: 2,
+                  borderColor: colors.primary,
+                  backgroundColor:
+                    selectedType === 'pdf' ? colors.primary : colors.white,
+                }}
+              />
+              <Text
+                style={[AppStyles.text, { marginHorizontal: spacing.small }]}
+              >
+                Chọn file PDF
+              </Text>
+              <AppButton
+                title={
+                  selectedPDF
+                    ? selectedPDF.name.length > 20
+                      ? selectedPDF.name.slice(0, 20) + '...'
+                      : selectedPDF.name
+                    : 'Chọn file PDF'
+                }
+                customStyle={{
+                  opacity: selectedType === 'pdf' ? 1 : 0.5,
+                }}
+                onPress={() => {
+                  if (selectedType === 'pdf') {
+                    handleUploadPDF();
+                  }
+                }}
+                disabled={selectedType !== 'pdf'}
               />
             </TouchableOpacity>
           </View>
