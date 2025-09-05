@@ -6,9 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import NavBar from '../../../../components/Navbar';
 import { useTranslation } from 'react-i18next';
 import { getApplicationDetail, getCVDetail } from '../../../../services/cv';
-import { lo } from '../../../../language/Resource';
 import { ms, spacing } from '../../../../utils/spacing';
-import Pdf from 'react-native-pdf';
+import PDF from 'react-native-pdf';
 const CVReviewScreen = ({ route, navigation }) => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -20,13 +19,13 @@ const CVReviewScreen = ({ route, navigation }) => {
   }, [applicationId]);
   const fetchApplicationDetails = async () => {
     console.log('applicationId', applicationId);
-
     try {
       const res = await getApplicationDetail(applicationId);
-      console.log('rés', res);
-
+      console.log('Kết quả getApplicationDetail:', res);
       setCv(res.data);
-    } catch (e) {}
+    } catch (e) {
+      console.log('Lỗi khi gọi getApplicationDetail:', e);
+    }
   };
 
   useEffect(() => {
@@ -39,22 +38,26 @@ const CVReviewScreen = ({ route, navigation }) => {
     try {
       const res = await getCVDetail(cv.cvId);
       setCvDetails(res.data);
-    } catch (e) {}
+      console.log('Giá trị filePath của CV:', res.data?.filePath);
+    } catch (e) {
+      console.log('Lỗi khi gọi getCVDetail:', e);
+    }
   };
+  console.log('cvdataaaaaaa', cv);
 
-  const openPdf = (pdfUrl: string) => {
-    return (
-      <Pdf
-        source={{ uri: pdfUrl, cache: true }}
-        style={{
-          flex: 1,
-          margin: 16,
-          borderRadius: 12,
-          backgroundColor: '#fff',
-        }}
-      />
-    );
-  };
+  // const openPDF = (pdfUrl: string) => {
+  //   return (
+  //     <PDF
+  //       source={{ uri: pdfUrl, cache: true }}
+  //       style={{
+  //         flex: 1,
+  //         margin: 16,
+  //         borderRadius: 12,
+  //         backgroundColor: '#fff',
+  //       }}
+  //     />
+  //   );
+  // };
   return (
     <View style={[styles.container]}>
       <NavBar
@@ -77,22 +80,22 @@ const CVReviewScreen = ({ route, navigation }) => {
       </View>
       {/* Thêm màn chi tiết CV ngay dưới email */}
       {cvDetails?.filePath ? (
-        // <Pdf
-        //   // source={{ uri: `${cvDetails?.filePath}`, cache: true }}
-        //   source={{
-        //     uri: `http://samples.leanpub.com/thereactnativebook-sample.pdf`,
-        //     cache: true,
-        //   }}
-        //   style={{
-        //     backgroundColor: 'red',
-        //     flex: 1,
-        //     marginHorizontal: spacing.medium,
-        //     marginBottom: insets.bottom,
-        //     borderRadius: ms(15),
-        //   }}
-        // />
-        openPdf('http://samples.leanpub.com/thereactnativebook-sample.pdf')
+        <PDF
+          // source={{ uri: `${cvDetails?.filePath}`, cache: true }}
+          source={{
+            uri: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+            cache: true,
+          }}
+          style={{
+            backgroundColor: 'red',
+            flex: 1,
+            marginHorizontal: spacing.medium,
+            marginBottom: insets.bottom,
+            borderRadius: ms(15),
+          }}
+        />
       ) : (
+        // openPdf('http://samples.leanpub.com/thereactnativebook-sample.pdf')
         <DetailsCv
           route={{ params: { cv } }}
           navigation={navigation}
