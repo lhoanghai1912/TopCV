@@ -4,12 +4,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface UserState {
   userData: any;
+  userId: string | null;
   token: string | null;
   verificationToken: string | null;
 }
 
 const initialState: UserState = {
   userData: null,
+  userId: null,
   token: null,
   verificationToken: null,
 };
@@ -23,6 +25,9 @@ const userSlice = createSlice({
     },
     setToken(state, action: PayloadAction<{ token: string }>) {
       state.token = action.payload.token;
+    },
+    setUserId(state, action: PayloadAction<{ userId: string }>) {
+      state.userId = action.payload.userId;
     },
     setVerificationToken(
       state,
@@ -46,6 +51,7 @@ const userSlice = createSlice({
 export const {
   setUserData,
   setToken,
+  setUserId,
   logout,
   updatePassword,
   setVerificationToken,

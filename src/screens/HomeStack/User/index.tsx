@@ -40,7 +40,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 const UserScreen: React.FC = () => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const token = useSelector((state: any) => state.user.token);
+  const { token, userId } = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   const [showFixedHeader, setShowFixedHeader] = useState(false);
@@ -51,7 +51,6 @@ const UserScreen: React.FC = () => {
   const [listFollowedCompanies, setListFollowedCompanies] = useState<any>(null);
   const [listAppliedJobs, setListAppliedJobs] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-
   useFocusEffect(
     React.useCallback(() => {
       if (!token) return;
@@ -60,6 +59,7 @@ const UserScreen: React.FC = () => {
       getListSavedJobs();
       getListFollowedCompanies();
       getListAppliedJobs();
+      console.log('userId', userId);
     }, [token]),
   );
 

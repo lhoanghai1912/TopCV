@@ -24,15 +24,17 @@ import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
 import CardJob from './Job/Card/CardJob';
 import { colors } from '../../utils/color';
+import AppInput from '../../components/AppInput';
+import { TextInput } from 'react-native-gesture-handler';
 
 const HomeScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const [listJob, setListJob] = useState<jobList[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [oderBy, setOderBy] = useState<string | undefined>();
+  const [oderBy, setOderBy] = useState<string | undefined>('createdAt desc');
   const [filter, setFilter] = useState<string | undefined>();
-  const [search, setSearch] = useState<string | undefined>();
+  const [search, setSearch] = useState<string | undefined>('');
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [noMoreData, setNoMoreData] = useState(false);
@@ -59,7 +61,9 @@ const HomeScreen: React.FC = () => {
         Search: search,
       };
 
+      console.log('Fetching data with params:', params);
       const data = await getJob(params);
+
       console.log('Fetched data:', data);
       console.log('userData:', userData);
 
@@ -90,7 +94,7 @@ const HomeScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData(1, true);
-    }, []),
+    }, [search, filter, oderBy]),
   );
 
   const onRefresh = () => {
@@ -98,6 +102,7 @@ const HomeScreen: React.FC = () => {
     setPage(1);
     setNoMoreData(false);
     fetchData(1, true).finally(() => setRefreshing(false));
+    setSearch('');
   };
 
   const loadMoreData = () => {
@@ -179,7 +184,17 @@ const HomeScreen: React.FC = () => {
             source={icons.search}
             style={[AppStyles.icon, { marginRight: spacing.small }]}
           />
-          <Text style={AppStyles.text}>{t('message.job_find')}</Text>
+          <TextInput
+            style={[
+              AppStyles.text,
+              {
+                width: '90%',
+              },
+            ]}
+            placeholder={t('message.job_find')}
+            value={search}
+            onChangeText={setSearch}
+          />
         </TouchableOpacity>
       </LinearGradient>
       <View style={styles.category}>

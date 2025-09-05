@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
+import { Platform } from 'react-native';
 import images from '../../assets/images';
 import { ms, spacing } from '../../utils/spacing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,7 +23,11 @@ import { Screen_Name } from '../../navigation/ScreenName';
 import { login, loginFirebase } from '../../services/auth';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
-import { setToken, setUserData } from '../../store/reducers/userSlice';
+import {
+  setToken,
+  setUserData,
+  setUserId,
+} from '../../store/reducers/userSlice';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 
@@ -67,9 +72,13 @@ const LoginScreen = () => {
         googleCredential,
       );
       const firebaseIdToken = await userCredential.user.getIdToken();
+      console.log('firebaseIdToken', firebaseIdToken);
       const res = await loginFirebase(firebaseIdToken);
 
       dispatch(setToken({ token: res.token }));
+      dispatch(setUserId({ userId: res.id }));
+      console.log('token', res.token);
+
       navigate(Screen_Name.BottomTab_Navigator);
       console.log(userInfo);
     } catch (error) {
@@ -78,6 +87,48 @@ const LoginScreen = () => {
     }
   };
 
+  const handleFacebookLogin = async () => {
+    try {
+      // const result = await LoginManager.logInWithPermissions([
+      //   'public_profile',
+      //   'email',
+      // ]);
+      // console.log('result', result);
+
+      // if (result.isCancelled) return;
+
+      // const data = await AccessToken.getCurrentAccessToken();
+      // console.log('data', data);
+      // if (!data) return;
+
+      // const facebookCredential = auth.FacebookAuthProvider.credential(
+      //   data.accessToken,
+      // );
+      // console.log('facebookCredential', facebookCredential);
+
+      // const userCredential = await auth().signInWithCredential(
+      //   facebookCredential,
+      // );
+      // console.log('facebook userCredential', userCredential);
+
+      // const firebaseIdToken = await userCredential.user.getIdToken();
+
+      // const res = await loginFirebase(firebaseIdToken);
+      // console.log('facebook loginFirebase res', res);
+
+      // dispatch(setToken({ token: res.token }));
+      // navigate(Screen_Name.BottomTab_Navigator);
+      Toast.show({
+        type: 'info',
+        text2: `${t('message.comming_soon')}`,
+      });
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text2: 'Facebook login failed',
+      });
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top }]}>
@@ -157,6 +208,7 @@ const LoginScreen = () => {
           <View style={[AppStyles.line, { width: '35%', flex: 1 }]} />
         </View>
         <View style={styles.iconGroup}>
+          {/* Facebook button: luôn hiển thị trên Android/iOS */}
           <TouchableOpacity
             style={{
               padding: spacing.small,
@@ -166,14 +218,16 @@ const LoginScreen = () => {
               marginRight: spacing.medium,
             }}
             onPress={() =>
-              Toast.show({
-                type: 'info',
-                text2: `${t('message.comming_soon')}`,
-              })
+              // Toast.show({
+              //   type: 'info',
+              //   text2: `${t('message.comming_soon')}`,
+              // })
+              handleFacebookLogin()
             }
           >
             <Image source={icons.facebook} style={[AppStyles.icon]} />
           </TouchableOpacity>
+          {/* Google button: luôn hiển thị trên Android/iOS */}
           <TouchableOpacity
             style={{
               padding: spacing.small,
@@ -186,22 +240,25 @@ const LoginScreen = () => {
           >
             <Image source={icons.google} style={[AppStyles.icon]} />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              padding: spacing.small,
-              borderWidth: 1,
-              borderColor: colors.Gray,
-              borderRadius: 50,
-            }}
-            onPress={() =>
-              Toast.show({
-                type: 'info',
-                text2: `${t('message.comming_soon')}`,
-              })
-            }
-          >
-            <Image source={icons.apple} style={[AppStyles.icon]} />
-          </TouchableOpacity>
+          {/* Apple button: chỉ hiển thị trên iOS */}
+          {Platform.OS === 'ios' && (
+            <TouchableOpacity
+              style={{
+                padding: spacing.small,
+                borderWidth: 1,
+                borderColor: colors.Gray,
+                borderRadius: 50,
+              }}
+              onPress={() =>
+                Toast.show({
+                  type: 'info',
+                  text2: `${t('message.comming_soon')}`,
+                })
+              }
+            >
+              <Image source={icons.apple} style={[AppStyles.icon]} />
+            </TouchableOpacity>
+          )}
         </View>
         <View style={styles.notHave_account}>
           <Text style={AppStyles.text}>{t('message.nothave_account')}</Text>
