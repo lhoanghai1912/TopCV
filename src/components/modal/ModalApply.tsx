@@ -21,6 +21,7 @@ import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
 import AppStyles from '../AppStyle';
 import { useTranslation } from 'react-i18next';
+import { pick, keepLocalCopy } from '@react-native-documents/picker';
 
 interface ModalApplyProps {
   visible: boolean;
@@ -35,6 +36,7 @@ const ModalApply: React.FC<ModalApplyProps> = ({
 }) => {
   const { t } = useTranslation();
   const { token } = useSelector((state: any) => state.user);
+
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -45,8 +47,21 @@ const ModalApply: React.FC<ModalApplyProps> = ({
   );
   const [selectedPDF, setSelectedPDF] = useState<any>();
   const [loading, setLoading] = useState(false);
+  console.log('Selected PDF:', selectedPDF);
 
-  const handleUploadPDF = async () => {};
+  const handleUploadPDF = async () => {
+    try {
+      const result = await pick({
+        type: 'application/pdf',
+        multiple: false,
+      });
+      if (result && result.length > 0) {
+        setSelectedPDF(result[0]);
+      }
+    } catch (err) {
+      console.warn('PDF pick error:', err);
+    }
+  };
 
   useEffect(() => {
     fetchUserData();
@@ -82,6 +97,7 @@ const ModalApply: React.FC<ModalApplyProps> = ({
       selectedImage,
       jobId: jobDetails?.id,
       selectedType,
+      selectedPDF,
     });
     setLoading(true);
     const start = Date.now();
@@ -276,7 +292,13 @@ const ModalApply: React.FC<ModalApplyProps> = ({
                 Chọn file PDF
               </Text>
               <AppButton
-                title={selectedPDF ? selectedPDF.name : 'Chọn file PDF'}
+                title={
+                  selectedPDF
+                    ? selectedPDF.name.length > 20
+                      ? selectedPDF.name.slice(0, 20) + '...'
+                      : selectedPDF.name
+                    : 'Chọn file PDF'
+                }
                 customStyle={{
                   opacity: selectedType === 'pdf' ? 1 : 0.5,
                 }}

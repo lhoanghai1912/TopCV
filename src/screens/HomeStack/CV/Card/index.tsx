@@ -19,7 +19,7 @@ const CardCV: React.FC<CardCVProps> = ({ cv, onPress }: CardCVProps) => {
             onPress(cv);
           } else {
             console.log('cvId', cv.id);
-            navigate(Screen_Name.DetailCV_Screen, { cvId: cv.id });
+            navigate(Screen_Name.DetailCV_Screen, { cv });
           }
         }}
         style={styles.cardCV}
