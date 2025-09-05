@@ -55,37 +55,24 @@ const LoginScreen = () => {
   };
 
   const handleGoogleLogin = async () => {
-    console.log('closakjdfjsgjdf');
-
     try {
       setLoading(true);
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      console.log('userInfo', userInfo);
 
       const idToken = userInfo?.data?.idToken || '';
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      console.log('googleCredential', googleCredential);
 
       const userCredential = await auth().signInWithCredential(
         googleCredential,
       );
-      console.log('userCredential', userCredential);
       const firebaseIdToken = await userCredential.user.getIdToken();
-      console.log('firebaseIdToken', firebaseIdToken);
       const res = await loginFirebase(firebaseIdToken);
-      console.log('firebaseLogin', res);
 
       dispatch(setToken({ token: res.token }));
       navigate(Screen_Name.BottomTab_Navigator);
       console.log(userInfo);
     } catch (error) {
-      console.log(error);
-      Toast.show({
-        type: 'error',
-        text2: 'Đăng nhập Google thất bại',
-        // text2: error.message,
-      });
     } finally {
       setLoading(false);
     }
