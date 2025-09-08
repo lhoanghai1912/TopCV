@@ -243,9 +243,9 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
             <NavBar
               onPress={() => navigation.goBack()}
               icon1={icons.more}
+              iconStyle={{ borderColor: 'transparent' }}
               customStyle={{
                 paddingHorizontal: spacing.medium,
-                marginTop: spacing.medium,
               }}
             />
 

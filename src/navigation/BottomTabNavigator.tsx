@@ -5,9 +5,6 @@ import icons from '../assets/icons';
 import { Screen_Name } from './ScreenName';
 import HomeScreen from '../screens/HomeStack/HomeScreen';
 import { useSelector } from 'react-redux';
-import CreateCV from '../screens/HomeStack/CV/CreateCV';
-import CreateCVScreen from '../screens/HomeStack/CV/CreateCV';
-import CommentScreen from '../screens/HomeStack/Comment';
 import NotificationScreen from '../screens/HomeStack/Notification';
 import UserScreen from '../screens/HomeStack/User';
 import CVScreen from '../screens/HomeStack/CV';
@@ -52,11 +49,11 @@ const BottomTabNavigator = () => {
     >
       <Tab.Screen name={Screen_Name.Home_Screen} component={HomeScreen} />
       <Tab.Screen name={Screen_Name.CV_Screen} component={CVScreen} />
-      {/* <Tab.Screen name={Screen_Name.Comment_Screen} component={CommentScreen} />
+      {/* <Tab.Screen name={Screen_Name.Comment_Screen} component={CommentScreen} /> */}
       <Tab.Screen
         name={Screen_Name.Noti_Screen}
         component={NotificationScreen}
-      /> */}
+      />
       <Tab.Screen name={Screen_Name.User_Screen} component={UserScreen} />
       {/* ✅ Thêm 2 tab mới nếu có token */}
     </Tab.Navigator>

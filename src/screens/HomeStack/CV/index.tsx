@@ -24,6 +24,7 @@ const CVScreen = ({ navigation, route }: { navigation: any; route: any }) => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [totalCount, setTotalCount] = useState(0); // Thêm state cho tổng số bản ghi
   const { token } = useSelector((state: any) => state.user);
   useEffect(() => {
     if (token) {
@@ -39,6 +40,10 @@ const CVScreen = ({ navigation, route }: { navigation: any; route: any }) => {
       const currentPage = refresh ? 1 : page;
       const data = await getCVList(currentPage, PAGE_SIZE);
       console.log(`CV trang ${currentPage}:`, data.result);
+
+      if (data && data.total !== undefined) {
+        setTotalCount(data.total);
+      }
 
       const elapsed = Date.now() - startTime;
       const minDelay = 500;
@@ -108,9 +113,9 @@ const CVScreen = ({ navigation, route }: { navigation: any; route: any }) => {
             }}
           >
             <Text style={AppStyles.label}>{`${
-              listCV.length > 1
-                ? `${listCV.length} ${t('label.cv_lists')}`
-                : `${listCV.length} ${t('label.cv_list')}`
+              totalCount > 1
+                ? `${totalCount} ${t('label.cv_lists')}`
+                : `${totalCount} ${t('label.cv_list')}`
             }`}</Text>
             <AppButton
               title={t('button.createCV')}
