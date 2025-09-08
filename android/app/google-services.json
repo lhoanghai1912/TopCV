@@ -7,27 +7,31 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:889651278132:android:e1ccc0eded8dddecd47561",
+        "mobilesdk_app_id": "1:889651278132:android:a3f83fd1fa0fa816d47561",
         "android_client_info": {
-          "package_name": "com.topcv"
+          "package_name": "com.foxcv"
         }
       },
       "oauth_client": [
         {
-          "client_id": "889651278132-3i09tf4mm0h6e176qa6gje9eg5qce3kr.apps.googleusercontent.com",
+          "client_id": "889651278132-8ha437bqspm3o6mfoaecmvcfns2vhthj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.topcv",
+            "package_name": "com.foxcv",
             "certificate_hash": "5528367f9b3ef005487fb856185a6d1a9d9a3388"
           }
         },
         {
-          "client_id": "889651278132-tt8s8qd0flhqov9sfs9g7nejhr3mb9fn.apps.googleusercontent.com",
+          "client_id": "889651278132-lnh03ajf4a1u7n0kj0ppiqb6jlqn90fa.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.topcv",
+            "package_name": "com.foxcv",
             "certificate_hash": "6b3017d0edbfae8acb1d54344f1121d1e663ccf8"
           }
+        },
+        {
+          "client_id": "889651278132-9gqdqpcgvhrnlvehmuuhgcf2ilnb3uhf.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
@@ -37,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889651278132-9gqdqpcgvhrnlvehmuuhgcf2ilnb3uhf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
