@@ -44,6 +44,8 @@ export default {
 
     cv_upload_photo: 'Tải ảnh lên',
     cv_login: 'Đăng nhập để tạo CV',
+
+    noti_login: 'Đang nhập để xem thông báo',
   },
 
   button: {

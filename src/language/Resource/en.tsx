@@ -52,6 +52,8 @@ export default {
 
     cv_upload_photo: 'Upload photo',
     cv_login: 'Log in to create CV',
+
+    noti_login: 'Log in to see notifications',
   },
 
   button: {

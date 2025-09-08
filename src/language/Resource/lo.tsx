@@ -44,6 +44,8 @@ export default {
 
     cv_upload_photo: 'ອັບໂຫຼດຮູບ',
     cv_login: 'ເຂົ້າສູ່ລະບົບເພື່ອສ້າງ CV',
+
+    noti_login: 'ເຂົ້າສູ່ລະບົບເພື່ອເບິ່ງແຈ້ງເຕືອນ',
   },
 
   button: {

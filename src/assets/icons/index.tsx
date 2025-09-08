@@ -43,8 +43,10 @@ import job from './job.png';
 import company from './company.png';
 import checked from './checked.png';
 import clock from './clock.png';
+import mark from './mark.png';
 
 export default {
+  mark,
   clock,
   checked,
   job,

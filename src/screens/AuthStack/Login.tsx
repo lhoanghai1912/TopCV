@@ -43,7 +43,9 @@ const LoginScreen = () => {
     try {
       setLoading(true);
       const res = await login(mail, password);
-
+      console.log('login res', res);
+      dispatch(setUserId({ userId: res.id }));
+      dispatch(setUserData({ userData: res.profile }));
       dispatch(setToken({ token: res.token }));
 
       navigate(Screen_Name.BottomTab_Navigator);
