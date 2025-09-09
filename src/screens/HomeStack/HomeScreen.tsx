@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import styles from './styles';
 import { getJob } from '../../services/job';
-import { jobList, JobSearchParams } from '../../type/type';
+import { jobList, SearchParams } from '../../type/type';
 import { useFocusEffect } from '@react-navigation/native';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
@@ -26,12 +26,12 @@ import CardJob from './Job/Card/CardJob';
 import { colors } from '../../utils/color';
 import AppInput from '../../components/AppInput';
 import { TextInput } from 'react-native-gesture-handler';
+const pageSize = 10;
 
 const HomeScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const [listJob, setListJob] = useState<jobList[]>([]);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
   const [oderBy, setOderBy] = useState<string | undefined>('createdAt desc');
   const [filter, setFilter] = useState<string | undefined>();
   const [search, setSearch] = useState<string | undefined>('');
@@ -53,7 +53,7 @@ const HomeScreen: React.FC = () => {
     }
 
     try {
-      const params: JobSearchParams = {
+      const params: SearchParams = {
         Page: currentPage.toString(),
         PageSize: pageSize.toString(),
         OderBy: oderBy,
@@ -68,12 +68,15 @@ const HomeScreen: React.FC = () => {
       console.log('userData:', userData);
 
       if (data.result && Array.isArray(data.result)) {
-        if (data.result.length < pageSize) {
+        // Kiểm tra nếu không có data hoặc data ít hơn pageSize
+        if (data.result.length === 0 || data.result.length < pageSize) {
           setNoMoreData(true);
         }
 
         setListJob(prevState => {
           if (isRefresh || currentPage === 1) {
+            // Reset noMoreData khi refresh hoặc load page đầu
+            setNoMoreData(data.result.length < pageSize);
             return data.result;
           } else {
             // Loại bỏ job trùng id
@@ -93,6 +96,8 @@ const HomeScreen: React.FC = () => {
 
   useFocusEffect(
     useCallback(() => {
+      setPage(1);
+      setNoMoreData(false);
       fetchData(1, true);
     }, [search, filter, oderBy]),
   );
@@ -107,11 +112,13 @@ const HomeScreen: React.FC = () => {
 
   const loadMoreData = () => {
     if (!loadingMore && !noMoreData && !isLoading) {
+      console.log('Home Load more triggered, current page:', page);
       const nextPage = page + 1;
       setPage(nextPage);
       fetchData(nextPage, false);
     }
   };
+
   const updateJobSaved = (jobId: string, isSaved: boolean) => {
     setListJob(prev =>
       prev.map(job => (job.id === jobId ? { ...job, isSaved } : job)),
@@ -253,7 +260,7 @@ const HomeScreen: React.FC = () => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           onEndReached={loadMoreData}
-          onEndReachedThreshold={0.3}
+          onEndReachedThreshold={0.2}
           ListFooterComponent={renderFooter}
           showsVerticalScrollIndicator={false}
         />

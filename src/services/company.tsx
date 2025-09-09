@@ -1,8 +1,15 @@
+import { SearchParams } from '../type/type';
 import apiClient from './apiClient';
 
-export const getCompany = async (params?: any) => {
+export const getCompany = async (params: SearchParams) => {
   try {
-    const response = await apiClient.get(`/Company/GetAll`, { params });
+    const filteredParams = Object.fromEntries(
+      Object.entries(params).filter(
+        ([key, value]) => value !== undefined && value !== null,
+      ),
+    );
+    const queryString = new URLSearchParams(filteredParams as any).toString();
+    const response = await apiClient.get(`/Company/GetAll?${queryString}`);
     return response.data;
   } catch (error) {
     console.log(error);

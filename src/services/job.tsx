@@ -1,8 +1,8 @@
-import { JobSearchParams } from '../type/type';
+import { SearchParams } from '../type/type';
 import apiClient from './apiClient';
 import { buildApplyJobFormData, ApplyJobParams } from '../utils/formDataUtils';
 
-export const getJob = async (params: JobSearchParams) => {
+export const getJob = async (params: SearchParams) => {
   try {
     const filteredParams = Object.fromEntries(
       Object.entries(params).filter(

@@ -1,4 +1,4 @@
-export type JobSearchParams = {
+export type SearchParams = {
   Page?: string; // Trang hiện tại
   PageSize?: string; // Số item mỗi trang
   OderBy?: string; // Sắp xếp theo

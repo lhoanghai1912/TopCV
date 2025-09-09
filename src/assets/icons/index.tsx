@@ -44,8 +44,10 @@ import company from './company.png';
 import checked from './checked.png';
 import clock from './clock.png';
 import mark from './mark.png';
+import left_arrow from './left_arrow.png';
 
 export default {
+  left_arrow,
   mark,
   clock,
   checked,

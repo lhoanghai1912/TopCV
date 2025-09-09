@@ -45,7 +45,10 @@ const NavBar = ({
       {/* Left icon */}
       <View style={styles.leftIconWrap}>
         <TouchableOpacity onPress={onPress} style={styles.iconButton}>
-          <Image source={icons.back} style={[AppStyles.icon, iconStyle]} />
+          <Image
+            source={icons.left_arrow}
+            style={[AppStyles.icon, iconStyle]}
+          />
         </TouchableOpacity>
       </View>
 
@@ -80,11 +83,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.small,
     position: 'relative',
   },
-  leftIconWrap: {
-    width: 40,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
+
   titleWrap: {
     flex: 1,
     alignItems: 'center',
@@ -101,6 +100,11 @@ const styles = StyleSheet.create({
     minWidth: 40,
     alignItems: 'center',
     justifyContent: 'flex-end',
+  },
+  leftIconWrap: {
+    width: 40,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   iconButton: {
     paddingHorizontal: 4,

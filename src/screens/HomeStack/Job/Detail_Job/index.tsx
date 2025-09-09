@@ -147,9 +147,8 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const scrollToMain = () => {
     // Scroll đến vị trí fixedHeaderH (đầu header mới)
-    showFixedHeader;
     scrollRef.current?.scrollTo({
-      y: mainContent - fixedHeaderH + 50,
+      y: ms(mainTop - 115),
       animated: true,
     });
   };
@@ -231,8 +230,11 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
         ref={scrollRef}
         scrollEventThrottle={16}
         onScroll={event => {
-          const scrollY = event.nativeEvent.contentOffset.y;
-          setShowFixedHeader(scrollY > ms(mainContent - fixedHeaderH + 30));
+          const y = event.nativeEvent.contentOffset.y;
+          console.log('y', y);
+          console.log('mainTop - 80', mainTop - 80);
+
+          setShowFixedHeader(y > ms(mainTop - 120));
         }}
       >
         <View style={{ flex: 1 }}>
@@ -243,7 +245,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
             <NavBar
               onPress={() => navigation.goBack()}
               icon1={icons.more}
-              iconStyle={{ borderColor: 'transparent' }}
+              iconStyle={{}}
               customStyle={{
                 paddingHorizontal: spacing.medium,
               }}
@@ -317,7 +319,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
                 />
                 <View style={[styles.jobOverview, { alignItems: 'center' }]}>
                   <Image source={icons.exep} style={[AppStyles.icon]} />
-                  <Text style={AppStyles.text}>{t('label.exep')}</Text>
+                  <Text style={AppStyles.text}>{t('label.experience')}</Text>
                   <Text style={AppStyles.text}>
                     {`${jobDetails.experienceYear} ${
                       jobDetails.experienceYear > 1 ? 'years' : 'year'
@@ -327,7 +329,15 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
               </View>
             </View>
           </LinearGradient>
-          <View style={styles.body}>
+          <View
+            style={styles.body}
+            onLayout={e => {
+              // Gán mainTop là vị trí y của viewCategory khi không có fixedHeader
+              if (!showFixedHeader) {
+                setMainTop(e.nativeEvent.layout.y);
+              }
+            }}
+          >
             <View style={styles.category}>
               <TouchableOpacity
                 onPress={() => setTab('info')}

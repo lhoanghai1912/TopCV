@@ -12,9 +12,11 @@ export default {
     login: 'Log in here ↓',
     login_save: 'Log in to save jobs',
     account_delete_confirm: 'Are you sure you want to delete your account?',
-    update_success: 'Updated successfully',
+    update_success: 'Updated successfully 🎉',
+    create_success: 'Created successfully 🎉',
     comming_soon: 'Feature coming soon!',
-    apply_success: 'Applied successfully',
+    apply_success: 'Applied successfully 🎉',
+    save_success: 'Saved successfully 🎉',
 
     job_find: 'Find a job',
     job_empty: 'No jobs',
@@ -52,8 +54,16 @@ export default {
 
     cv_upload_photo: 'Upload photo',
     cv_login: 'Log in to create CV',
+    cv_no_more: 'No more CVs',
+    cv_empty: 'No CVs yet',
+    cv_no_education_info: 'No education information yet',
+    cv_no_experience_info: 'No experience information yet',
+    cv_no_skills_info: 'No skills information yet',
+    cv_no_certificates_info: 'No certificates information yet',
 
     noti_login: 'Log in to see notifications',
+    noti_no_more: 'No more notifications',
+    noti_empty: 'No notifications yet',
   },
 
   button: {
@@ -75,6 +85,8 @@ export default {
     pickCv: 'Pick CV created',
     pickImage: 'Pick Image',
     cv_review: 'Review CV',
+    add_item: 'Add item',
+    save: 'Save',
   },
 
   label: {
@@ -83,10 +95,11 @@ export default {
     confirm_password: 'Confirm password',
     mail: 'Email',
     fullname: 'Full name',
+    position: 'Position',
     phone: 'Phone number',
-    exep: 'Experience',
+    experience: 'Experience',
     not_update: 'Not updated',
-    position: 'Location',
+    location: 'Location',
     location_desire: 'Desired location',
     profile_management: 'Profile management',
     contact_allow: 'Allow contact',
@@ -114,6 +127,9 @@ export default {
     address: 'Address',
     overview: 'Overview',
     requirement_skill: 'Required skills demand',
+    male: 'Male',
+    female: 'Female',
+    other: 'Other',
 
     job_status: 'Job search status',
     job_management: 'Job management',
@@ -129,7 +145,6 @@ export default {
     job_level: 'Level',
 
     salary: 'Salary',
-    location: 'Location',
 
     company: 'Company',
     company_address: 'Company address',
@@ -169,10 +184,18 @@ export default {
     cv_skill_name: 'Skill Name',
     cv_skill_category: 'Skill Category',
     cv_skill_proficiency: 'Skill Proficiency',
+    cv_skill_description: 'Skill Description',
     cv_section_description: 'Description',
     cv_certificate_name: 'Certificate Name',
     cv_issue_date: 'Issue Date',
     cv_expiry_date: 'Expiry Date',
+    cv_start_date: 'Start Date',
+    cv_end_date: 'End Date',
+    cv_skill_beginner: 'Beginner',
+    cv_skill_basic: 'Basic',
+    cv_skill_intermediate: 'Intermediate',
+    cv_skill_advanced: 'Advanced',
+    cv_skill_expert: 'Expert',
   },
 
   price: {

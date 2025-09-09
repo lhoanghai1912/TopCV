@@ -8,7 +8,6 @@ export default {
     guest: 'Dùng với tư cách khách',
     enter_otp: 'Vui lòng nhập OTP',
     loadingMore: 'Đang tải thêm...',
-    noMoreJob: 'Không còn việc làm',
     login: 'Đăng nhập tại đây ↓',
     login_save: 'Đăng nhập để lưu việc làm',
     account_delete_confirm: 'Bạn có chắc muốn xóa tài khoản?',
@@ -24,6 +23,7 @@ export default {
     jobs_saved: 'Các việc làm đã lưu',
     job_saved_success: 'Lưu việc làm thành công',
     job_unsaved_success: 'Bỏ lưu việc làm thành công',
+    noMoreJob: 'Không còn việc làm',
 
     company_find: 'Tìm công ty',
     company_login: 'Đăng nhập để lưu công ty',
@@ -44,8 +44,12 @@ export default {
 
     cv_upload_photo: 'Tải ảnh lên',
     cv_login: 'Đăng nhập để tạo CV',
+    cv_no_more: 'Không còn CV nào',
+    cv_empty: 'Chưa có CV nào',
 
-    noti_login: 'Đang nhập để xem thông báo',
+    noti_login: 'Đăng nhập để xem thông báo',
+    noti_no_more: 'Không còn thông báo nào',
+    noti_empty: 'Chưa có thông báo nào',
   },
 
   button: {

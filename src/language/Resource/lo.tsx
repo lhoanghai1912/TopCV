@@ -44,8 +44,12 @@ export default {
 
     cv_upload_photo: 'ອັບໂຫຼດຮູບ',
     cv_login: 'ເຂົ້າສູ່ລະບົບເພື່ອສ້າງ CV',
+    cv_no_more: 'ບໍ່ມີ CV ເພີ່ມເຕີມ',
+    cv_empty: 'ບໍ່ມີ CV ໃດໆ',
 
     noti_login: 'ເຂົ້າສູ່ລະບົບເພື່ອເບິ່ງແຈ້ງເຕືອນ',
+    noti_no_more: 'ບໍ່ມີແຈ້ງເຕືອນເພີ່ມເຕີມ',
+    noti_empty: 'ບໍ່ມີແຈ້ງເຕືອນໃດໆ',
   },
 
   button: {

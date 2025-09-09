@@ -40,14 +40,14 @@ const CardCV: React.FC<CardCVProps> = ({ cv, onPress }: CardCVProps) => {
             ellipsizeMode="tail"
             style={[AppStyles.label]}
           >
-            {cv?.name}
+            {cv?.title}
           </Text>
           <Text
             numberOfLines={1}
             ellipsizeMode="tail"
             style={[AppStyles.label]}
           >
-            {cv?.title}
+            {cv?.content}
           </Text>
         </View>
       </TouchableOpacity>

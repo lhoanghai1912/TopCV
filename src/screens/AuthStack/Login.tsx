@@ -33,11 +33,10 @@ import auth from '@react-native-firebase/auth';
 
 const LoginScreen = () => {
   const insets = useSafeAreaInsets();
-  const userData = useSelector((state: any) => state.user.userData);
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const [mail, setMail] = useState('hoanghai191202@gmail.com');
-  const [password, setPassword] = useState('123456Ab@');
+  const [mail, setMail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const handleLogin = async () => {
     try {

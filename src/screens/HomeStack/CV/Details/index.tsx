@@ -80,7 +80,11 @@ const DetailsCv: React.FC<Props> = ({
   return (
     <View style={[styles.container, customStyle]}>
       {!hideNavBar && (
-        <NavBar title={`CV Details`} onPress={() => navigation.goBack()} />
+        <NavBar
+          title={`CV Details`}
+          onPress={() => navigation.goBack()}
+          customStyle={{ paddingHorizontal: spacing.medium }}
+        />
       )}
       <View style={styles.body}>
         <ScrollView>

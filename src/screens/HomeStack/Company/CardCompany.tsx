@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     // height: ms(200),
     borderRadius: 15,
     borderColor: colors.Gray,
-    borderWidth: 0.5,
+    borderWidth: 1,
     padding: spacing.medium,
     marginHorizontal: spacing.medium,
   },

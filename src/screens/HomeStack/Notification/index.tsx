@@ -188,7 +188,7 @@ const NotificationScreen = ({ navigation }: { navigation: any }) => {
               color: '#666',
             }}
           >
-            Loading more...
+            {t('message.loadingMore')}
           </Text>
         </View>
       );
@@ -209,7 +209,7 @@ const NotificationScreen = ({ navigation }: { navigation: any }) => {
               color: '#666',
             }}
           >
-            No more notifications
+            {t('message.noti_no_more')}
           </Text>
         </View>
       );
@@ -220,7 +220,7 @@ const NotificationScreen = ({ navigation }: { navigation: any }) => {
 
   const renderEmptyComponent = () => (
     <View style={styles.emptyContainer}>
-      <Text style={AppStyles.title}>{t('message.no_notifications')}</Text>
+      <Text style={AppStyles.title}>{t('message.noti_empty')}</Text>
     </View>
   );
 

@@ -9,6 +9,7 @@ import {
   TextStyle,
   Image,
   TouchableOpacity,
+  ImageStyle,
 } from 'react-native';
 import AppStyles from './AppStyle';
 import { Fonts } from '../utils/fontSize';
@@ -22,6 +23,7 @@ interface AppInputProps extends TextInputProps {
   label?: string;
   error?: string;
   style?: StyleProp<TextStyle>;
+  clearStyle?: ImageStyle;
 }
 
 const AppInput: React.FC<AppInputProps> = ({
@@ -34,6 +36,7 @@ const AppInput: React.FC<AppInputProps> = ({
   style,
   label,
   error,
+  clearStyle,
   editable = true,
   ...props
 }) => {
@@ -103,6 +106,7 @@ const AppInput: React.FC<AppInputProps> = ({
                     source={icons.clear}
                     style={[
                       AppStyles.icon,
+                      clearStyle,
                       { display: value ? 'flex' : 'none' },
                     ]}
                   />

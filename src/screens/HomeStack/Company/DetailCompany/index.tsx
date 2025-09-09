@@ -37,7 +37,6 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
   const scrollRef = React.useRef<ScrollView>(null);
   const [mainTop, setMainTop] = useState(0);
   const [fixedHeaderH, setFixedHeaderH] = useState(0);
-  const [mainContent, setMainContent] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {

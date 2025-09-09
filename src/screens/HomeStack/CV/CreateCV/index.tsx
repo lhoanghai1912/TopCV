@@ -259,6 +259,7 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
+                paddingHorizontal: spacing.medium,
               }}
             >
               <TouchableOpacity
@@ -350,21 +351,25 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                     style={styles.card}
                     onPress={() =>
                       handleEditField('card', 'Card', [
-                        { key: 'name', label: 'Tên', placeholder: 'Nhập tên' },
+                        {
+                          key: 'name',
+                          label: `${t('label.fullname')}`,
+                          placeholder: `${t('label.fullname')}`,
+                        },
                         {
                           key: 'content',
-                          label: 'Vị trí ứng tuyển',
-                          placeholder: 'Nhập vị trí ứng tuyển',
+                          label: `${t('label.position')}`,
+                          placeholder: `${t('label.position')}`,
                           keyboard: 'default',
                         },
                       ])
                     }
                   >
                     <Text style={[AppStyles.title, { textAlign: 'center' }]}>
-                      {name || 'Họ và tên'}
+                      {name || `${t('label.fullname')}`}
                     </Text>
                     <Text style={[AppStyles.text, { textAlign: 'center' }]}>
-                      {content || 'Vị trí ứng tuyển'}
+                      {content || `${t('label.position')}`}
                     </Text>
                   </TouchableOpacity>
 
@@ -380,35 +385,35 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                   handleEditField('userProfile', 'Thông tin cá nhân', [
                     {
                       key: 'birthday',
-                      label: 'Ngày sinh',
-                      placeholder: 'Nhập ngày sinh',
+                      label: `${t('label.cv_dob')}`,
+                      placeholder: `${t('label.cv_dob')}`,
                     },
                     {
                       key: 'gender',
-                      label: 'Giới tính',
-                      placeholder: 'Nhập giới tính',
+                      label: `${t('label.cv_gender')}`,
+                      placeholder: `${t('label.cv_gender')}`,
                     },
                     {
                       key: 'phone',
-                      label: 'Số điện thoại',
-                      placeholder: 'Nhập số điện thoại',
+                      label: `${t('label.cv_phone')}`,
+                      placeholder: `${t('label.cv_phone')}`,
                       keyboard: 'phone-pad',
                     },
                     {
                       key: 'email',
-                      label: 'Email',
-                      placeholder: 'Nhập email',
+                      label: `${t('label.cv_email')}`,
+                      placeholder: `${t('label.cv_email')}`,
                     },
                     {
                       key: 'website',
-                      label: 'Website',
-                      placeholder: 'Nhập website',
+                      label: `${t('label.cv_website')}`,
+                      placeholder: `${t('label.cv_website')}`,
                       keyboard: 'email-address',
                     },
                     {
                       key: 'address',
-                      label: 'Địa chỉ',
-                      placeholder: 'Nhập địa chỉ',
+                      label: `${t('label.cv_address')}`,
+                      placeholder: `${t('label.cv_address')}`,
                     },
                   ])
                 }
@@ -438,38 +443,42 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                 <TouchableOpacity
                   style={styles.bodyContentItem}
                   onPress={() =>
-                    handleEditField('educations', 'Học vấn', [
-                      {
-                        key: 'institutionName',
-                        label: 'Tên trường/học viện',
-                        placeholder: 'Nhập tên trường/học viện',
-                      },
-                      {
-                        key: 'degree',
-                        label: 'Bằng cấp',
-                        placeholder: 'Nhập bằng cấp',
-                      },
-                      {
-                        key: 'fieldOfStudy',
-                        label: 'Ngành học',
-                        placeholder: 'Nhập ngành học',
-                      },
-                      {
-                        key: 'startDate',
-                        label: 'Thời gian bắt đầu',
-                        placeholder: 'YYYY-MM-DD',
-                      },
-                      {
-                        key: 'endDate',
-                        label: 'Thời gian kết thúc',
-                        placeholder: 'YYYY-MM-DD',
-                      },
-                      {
-                        key: 'description',
-                        label: 'Thông tin thêm',
-                        placeholder: 'Thành tích, điểm số...',
-                      },
-                    ])
+                    handleEditField(
+                      'educations',
+                      `${t('label.cv_education')}`,
+                      [
+                        {
+                          key: 'institutionName',
+                          label: `${t('label.cv_institution')}`,
+                          placeholder: `${t('label.cv_institution')}`,
+                        },
+                        {
+                          key: 'degree',
+                          label: `${t('label.cv_degree')}`,
+                          placeholder: `${t('label.cv_degree')}`,
+                        },
+                        {
+                          key: 'fieldOfStudy',
+                          label: `${t('label.cv_field_of_study')}`,
+                          placeholder: `${t('label.cv_field_of_study')}`,
+                        },
+                        {
+                          key: 'startDate',
+                          label: `${t('label.cv_start_date')}`,
+                          placeholder: `${t('label.cv_start_date')}`,
+                        },
+                        {
+                          key: 'endDate',
+                          label: `${t('label.cv_end_date')}`,
+                          placeholder: `${t('label.cv_end_date')}`,
+                        },
+                        {
+                          key: 'description',
+                          label: `${t('label.cv_edu_description')}`,
+                          placeholder: `${t('label.cv_edu_description')}`,
+                        },
+                      ],
+                    )
                   }
                 >
                   <View style={styles.title_underLine}>
@@ -496,7 +505,9 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                               ? `${formatDateForDisplay(
                                   edu.startDate,
                                 )} - ${formatDateForDisplay(edu.endDate)}`
-                              : 'Bắt đầu - Kết thúc'}
+                              : `${t('label.cv_start_date')} - ${t(
+                                  'label.cv_end_date',
+                                )}`}
                           </Text>
                         </View>
                         <View style={{ flexShrink: 1, width: '70%' }}>
@@ -542,33 +553,37 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                 <TouchableOpacity
                   style={styles.bodyContentItem}
                   onPress={() =>
-                    handleEditField('experiences', 'Kinh nghiệm làm việc', [
-                      {
-                        key: 'jobTitle',
-                        label: `${t('label.cv_job_title')}`,
-                        placeholder: `${t('label.cv_job_title')}`,
-                      },
-                      {
-                        key: 'companyName',
-                        label: `${t('label.cv_company')}`,
-                        placeholder: `${t('label.cv_company')}`,
-                      },
-                      {
-                        key: 'startDate',
-                        label: `${t('label.cv_start_date')}`,
-                        placeholder: 'YYYY-MM-DD',
-                      },
-                      {
-                        key: 'endDate',
-                        label: `${t('label.cv_end_date')}`,
-                        placeholder: 'YYYY-MM-DD',
-                      },
-                      {
-                        key: 'description',
-                        label: `${t('label.cv_job_description')}`,
-                        placeholder: `${t('label.cv_job_description')}`,
-                      },
-                    ])
+                    handleEditField(
+                      'experiences',
+                      `${t('label.cv_experience')}`,
+                      [
+                        {
+                          key: 'jobTitle',
+                          label: `${t('label.cv_job_title')}`,
+                          placeholder: `${t('label.cv_job_title')}`,
+                        },
+                        {
+                          key: 'companyName',
+                          label: `${t('label.cv_company')}`,
+                          placeholder: `${t('label.cv_company')}`,
+                        },
+                        {
+                          key: 'startDate',
+                          label: `${t('label.cv_start_date')}`,
+                          placeholder: 'YYYY-MM-DD',
+                        },
+                        {
+                          key: 'endDate',
+                          label: `${t('label.cv_end_date')}`,
+                          placeholder: 'YYYY-MM-DD',
+                        },
+                        {
+                          key: 'description',
+                          label: `${t('label.cv_job_description')}`,
+                          placeholder: `${t('label.cv_job_description')}`,
+                        },
+                      ],
+                    )
                   }
                 >
                   <View style={styles.title_underLine}>
@@ -641,23 +656,27 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                 <TouchableOpacity
                   style={styles.bodyContentItem}
                   onPress={() =>
-                    handleEditField('certificate', 'Chứng chỉ', [
-                      {
-                        key: 'name',
-                        label: `${t('label.cv_certificate_name')}`,
-                        placeholder: `${t('label.cv_certificate_name')}`,
-                      },
-                      {
-                        key: 'issueDate',
-                        label: `${t('label.cv_issue_date')}`,
-                        placeholder: 'YYYY-MM-DD',
-                      },
-                      {
-                        key: 'expiryDate',
-                        label: `${t('label.cv_expiry_date')}`,
-                        placeholder: 'YYYY-MM-DD (tùy chọn)',
-                      },
-                    ])
+                    handleEditField(
+                      'certificate',
+                      `${t('label.cv_certificates')}`,
+                      [
+                        {
+                          key: 'name',
+                          label: `${t('label.cv_certificate_name')}`,
+                          placeholder: `${t('label.cv_certificate_name')}`,
+                        },
+                        {
+                          key: 'issueDate',
+                          label: `${t('label.cv_issue_date')}`,
+                          placeholder: 'YYYY-MM-DD',
+                        },
+                        {
+                          key: 'expiryDate',
+                          label: `${t('label.cv_expiry_date')}`,
+                          placeholder: 'YYYY-MM-DD ',
+                        },
+                      ],
+                    )
                   }
                 >
                   <View style={styles.title_underLine}>
@@ -729,7 +748,7 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                 <TouchableOpacity
                   style={styles.bodyContentItem}
                   onPress={() =>
-                    handleEditField('skills', 'Kỹ năng', [
+                    handleEditField('skills', `${t('label.cv_skills')}`, [
                       {
                         key: 'skillName',
                         label: `${t('label.cv_skill_name')}`,
@@ -906,13 +925,6 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                   const imageUri = avatarUri;
                   if (route?.params?.cv && route?.params?.cv.id) {
                     // Nếu có dữ liệu CV truyền sang, gọi updateCV
-                    Toast.show({
-                      type: 'info',
-                      text1: 'Đang cập nhật CV...',
-                      text2: 'Vui lòng đợi',
-                      visibilityTime: 2000,
-                    });
-                    console.log('update cv:', cvData);
 
                     const result = await updateCV(
                       route.params.cv.id,
@@ -921,28 +933,18 @@ const CreateCV: React.FC<Props> = ({ navigation, route }) => {
                     );
                     Toast.show({
                       type: 'success',
-                      text1: 'Cập nhật CV thành công! 🎉',
-                      text2: `"${
-                        cvData.title || 'CV không có tiêu đề'
-                      }" đã được cập nhật`,
+                      text2: `${t('message.update_success')} `,
+
                       visibilityTime: 3000,
                     });
                     navigate(Screen_Name.CV_Screen, { refresh: true });
                   } else {
                     // Nếu không có dữ liệu truyền sang, gọi createCV
-                    Toast.show({
-                      type: 'info',
-                      text1: 'Đang tạo CV...',
-                      text2: 'Vui lòng đợi',
-                      visibilityTime: 2000,
-                    });
+
                     const result = await createCV(cvData, imageUri);
                     Toast.show({
                       type: 'success',
-                      text1: 'Tạo CV thành công! 🎉',
-                      text2: `"${
-                        cvData.title || 'CV không có tiêu đề'
-                      }" đã được tạo`,
+                      text2: t('message.create_success'),
                       visibilityTime: 3000,
                     });
                     console.log('=== KẾT QUẢ TẠO CV ===');
@@ -990,6 +992,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
+    paddingHorizontal: spacing.medium,
   },
 
   headerTitleContainer: {

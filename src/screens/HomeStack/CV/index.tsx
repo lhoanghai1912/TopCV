@@ -98,11 +98,20 @@ const CVScreen = ({ navigation, route }: { navigation: any; route: any }) => {
     );
   };
 
+  const renderEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={AppStyles.title}>{t('message.cv_empty')}</Text>
+    </View>
+  );
   return (
     <>
       {token ? (
         <View style={styles.container}>
-          <NavBar title={'CV'} onPress={() => navigation.goBack()} />
+          <NavBar
+            title={'CV'}
+            onPress={() => navigation.goBack()}
+            customStyle={{ paddingHorizontal: spacing.medium }}
+          />
           <View
             style={{
               marginBottom: spacing.medium,
@@ -155,7 +164,7 @@ const CVScreen = ({ navigation, route }: { navigation: any; route: any }) => {
                       fontSize: spacing.medium,
                     }}
                   >
-                    Đang tải thêm...
+                    {t('message.loadingMore')}
                   </Text>
                 </View>
               ) : (
@@ -173,11 +182,12 @@ const CVScreen = ({ navigation, route }: { navigation: any; route: any }) => {
                       fontSize: spacing.medium,
                     }}
                   >
-                    No more cv
+                    {t('message.cv_no_more')}
                   </Text>
                 </View>
               )
             }
+            ListEmptyComponent={renderEmptyComponent}
             refreshing={loading && page === 2}
             onRefresh={handleRefresh}
           />
@@ -200,6 +210,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginBottom: spacing.medium,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 100,
   },
 });
 
