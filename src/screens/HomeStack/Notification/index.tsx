@@ -37,79 +37,103 @@ const NotificationScreen = ({ navigation }: { navigation: any }) => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const pageSize = 20;
-  console.log('userId', userId);
-
-  const loadNotifications = useCallback(
-    async (pageNum: number, isRefresh = false) => {
-      if (pageNum === 1) {
-        setLoading(true);
-      } else {
-        setLoadingMore(true);
-      }
-
-      try {
-        const response = await getUserNotifications({
-          userId,
-          page: pageNum,
-          pageSize,
-        });
-        console.log('noti', response);
-        if (isRefresh || pageNum === 1) {
-          setNotifications(response.items || []);
-        } else {
-          setNotifications(prev => [...prev, ...(response.items || [])]);
-        }
-
-        // Check if there are more items to load
-        if (!response.items || response.items.length < pageSize) {
-          setHasMore(false);
-        } else {
-          setHasMore(true);
-        }
-      } catch (error) {
-        console.error('Error loading notifications:', error);
-      } finally {
-        setLoading(false);
-        setLoadingMore(false);
-        setRefreshing(false);
-      }
-    },
-    [userId],
-  );
+  const pageSize = 10;
 
   useEffect(() => {
     if (token && userId) {
-      loadNotifications(1);
+      fetchNotifications(true); // Initial load
     }
-  }, [token, userId, loadNotifications]);
+  }, [token, userId]);
+
+  const fetchNotifications = async (isRefresh = false) => {
+    // Prevent multiple simultaneous calls
+    if (isRefresh && loading) return;
+    if (!isRefresh && (loading || loadingMore)) return;
+
+    // Set appropriate loading state
+    if (isRefresh) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
+    const startTime = Date.now();
+
+    try {
+      const currentPage = isRefresh ? 1 : page;
+      console.log('Loading notifications for page', currentPage);
+
+      const response = await getUserNotifications({
+        userId,
+        page: currentPage,
+        pageSize,
+      });
+
+      console.log('noti response:', response);
+      const elapsed = Date.now() - startTime;
+      const minDelay = 500;
+      if (elapsed < minDelay) {
+        await new Promise(res => setTimeout(res, minDelay - elapsed));
+      }
+      if (response && response.items && response.items.length > 0) {
+        if (isRefresh) {
+          setNotifications(response.items);
+          setPage(2); // Set next page
+          setHasMore(response.items.length === pageSize);
+        } else {
+          setNotifications(prev => [...prev, ...response.items]);
+          setPage(prev => prev + 1);
+          setHasMore(response.items.length === pageSize);
+        }
+      } else {
+        if (isRefresh) setNotifications([]);
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error('Error loading notifications:', error);
+      setHasMore(false);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
 
   const handleLoadMore = () => {
-    if (!loadingMore && hasMore) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      loadNotifications(nextPage);
+    if (!loading && !loadingMore && hasMore) {
+      console.log('Load more triggered, current page:', page);
+      fetchNotifications(false);
     }
   };
 
   const handleRefresh = () => {
-    setRefreshing(true);
     setPage(1);
     setHasMore(true);
-    loadNotifications(1, true);
+    fetchNotifications(true);
   };
 
-  const handlePressItem = (item: Notification) => {
+  const handlePressItem = async (item: Notification) => {
     // Handle notification item press
     console.log('Notification pressed', item);
-    const res = markNotificationAsRead(item.id);
+    try {
+      await markNotificationAsRead(item.id);
+      // Update local state to mark as read
+      setNotifications(prev =>
+        prev.map(n => (n.id === item.id ? { ...n, isRead: true } : n)),
+      );
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
   };
 
   const handleMarkAllAsRead = async () => {
     console.log('Mark all as read');
-    const res = await markAllNotificationsAsRead(userId);
+    try {
+      await markAllNotificationsAsRead(userId);
+      // Update local state to mark all as read
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+    }
   };
 
   const renderNotificationItem = ({ item }: { item: Notification }) => (
@@ -146,12 +170,52 @@ const NotificationScreen = ({ navigation }: { navigation: any }) => {
   );
 
   const renderFooter = () => {
-    if (!loadingMore) return null;
-    return (
-      <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" />
-      </View>
-    );
+    if (loadingMore) {
+      return (
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: spacing.medium,
+          }}
+        >
+          <ActivityIndicator />
+          <Text
+            style={{
+              marginTop: spacing.small,
+              textAlign: 'center',
+              fontSize: 14,
+              color: '#666',
+            }}
+          >
+            Loading more...
+          </Text>
+        </View>
+      );
+    }
+
+    if (!hasMore && notifications.length > 0) {
+      return (
+        <View
+          style={{
+            alignItems: 'center',
+            paddingVertical: spacing.medium,
+          }}
+        >
+          <Text
+            style={{
+              textAlign: 'center',
+              fontSize: 14,
+              color: '#666',
+            }}
+          >
+            No more notifications
+          </Text>
+        </View>
+      );
+    }
+
+    return null;
   };
 
   const renderEmptyComponent = () => (
@@ -182,7 +246,7 @@ const NotificationScreen = ({ navigation }: { navigation: any }) => {
               renderItem={renderNotificationItem}
               onEndReached={handleLoadMore}
               onEndReachedThreshold={0.1}
-              refreshing={refreshing}
+              refreshing={false}
               onRefresh={handleRefresh}
               ListFooterComponent={renderFooter}
               ListEmptyComponent={renderEmptyComponent}
