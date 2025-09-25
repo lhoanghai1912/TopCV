@@ -10,7 +10,6 @@ export const getJob = async (params: SearchParams) => {
       ),
     );
     const queryString = new URLSearchParams(filteredParams as any).toString();
-    console.log(`Job?${queryString}`);
 
     const response = await apiClient.get(`/Job/GetAll?${queryString}`);
     return response.data;

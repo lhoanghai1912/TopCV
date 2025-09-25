@@ -63,26 +63,27 @@ const LoginScreen = () => {
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
+      console.log('abciawd');
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-
+      console.log('userInfo', userInfo);
       const idToken = userInfo?.data?.idToken || '';
+      console.log('idToken', idToken);
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
+      console.log('googleCredential', googleCredential);
       const userCredential = await auth().signInWithCredential(
         googleCredential,
       );
       const firebaseIdToken = await userCredential.user.getIdToken();
       console.log('firebaseIdToken', firebaseIdToken);
       const res = await loginFirebase(firebaseIdToken);
-
       dispatch(setToken({ token: res.token }));
       dispatch(setUserId({ userId: res.id }));
       console.log('token', res.token);
-
       navigate(Screen_Name.BottomTab_Navigator);
       console.log(userInfo);
     } catch (error) {
+      console.log('Google login error', error);
     } finally {
       setLoading(false);
     }

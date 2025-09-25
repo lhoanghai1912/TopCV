@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import { create_password } from '../../services/auth';
-import { setToken } from '../../store/reducers/userSlice';
+import { setToken, setUserData } from '../../store/reducers/userSlice';
 import images from '../../assets/images';
 import { spacing } from '../../utils/spacing';
 import AppInput from '../../components/AppInput';
@@ -63,7 +63,8 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation, route }) => {
         );
         console.log('output', res);
 
-        dispatch(setToken({ token: res.user.token }));
+        dispatch(setToken({ token: res.accessToken }));
+        dispatch(setUserData({ token: res.user }));
 
         Toast.show({
           type: 'success',

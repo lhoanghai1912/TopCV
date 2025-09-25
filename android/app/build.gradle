@@ -86,21 +86,23 @@ android {
         versionName "1.0.6"
     }
     signingConfigs {
-    release {
-        storeFile file('my-release-key.keystore')
-        storePassword 'fox.ai'
-        keyAlias 'your-key-alias'
-        keyPassword 'fox.ai'
+        release {
+            if (System.getenv("FOXC_RELEASE_STORE_FILE")) {
+                storeFile file(System.getenv("FOXC_RELEASE_STORE_FILE"))
+                storePassword System.getenv("FOXC_RELEASE_STORE_PASSWORD")
+                keyAlias System.getenv("FOXC_RELEASE_KEY_ALIAS")
+                keyPassword System.getenv("FOXC_RELEASE_KEY_PASSWORD")
+            }
+        }
     }
-}
-buildTypes {
-    release {
-        signingConfig signingConfigs.release
-        minifyEnabled false
-        shrinkResources false
-        proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
-}
 }
 
 dependencies {

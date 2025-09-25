@@ -34,7 +34,7 @@ const HomeScreen: React.FC = () => {
   const [page, setPage] = useState(1);
   const [oderBy, setOderBy] = useState<string | undefined>('createdAt desc');
   const [filter, setFilter] = useState<string | undefined>();
-  const [search, setSearch] = useState<string | undefined>('');
+  const [search, setSearch] = useState<string>(''); // tránh undefined gây re-render không cần
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [noMoreData, setNoMoreData] = useState(false);
@@ -42,81 +42,107 @@ const HomeScreen: React.FC = () => {
   const flatListRef = useRef<FlatList>(null);
   const userData = useSelector((state: any) => state.user.userData);
   const { t } = useTranslation();
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const loadingRef = useRef(false); // chặn gọi lặp
+  const didMountRef = useRef(false); // tránh debounce gọi ngay sau focus
 
-  const fetchData = async (currentPage: number, isRefresh: boolean = false) => {
-    if (loadingMore && !isRefresh) return;
+  const fetchData = useCallback(
+    async (
+      currentPage: number,
+      currentSearch: string,
+      isRefresh: boolean = false,
+    ) => {
+      if (loadingRef.current) return;
+      loadingRef.current = true;
 
-    if (isRefresh) {
-      setIsLoading(true);
-    } else {
-      setLoadingMore(true);
-    }
-
-    try {
-      const params: SearchParams = {
-        Page: currentPage.toString(),
-        PageSize: pageSize.toString(),
-        OderBy: oderBy,
-        Filter: filter,
-        Search: search,
-      };
-
-      console.log('Fetching data with params:', params);
-      const data = await getJob(params);
-
-      console.log('Fetched data:', data);
-      console.log('userData:', userData);
-
-      if (data.result && Array.isArray(data.result)) {
-        // Kiểm tra nếu không có data hoặc data ít hơn pageSize
-        if (data.result.length === 0 || data.result.length < pageSize) {
-          setNoMoreData(true);
-        }
-
-        setListJob(prevState => {
-          if (isRefresh || currentPage === 1) {
-            // Reset noMoreData khi refresh hoặc load page đầu
-            setNoMoreData(data.result.length < pageSize);
-            return data.result;
-          } else {
-            // Loại bỏ job trùng id
-            const existingIds = new Set(prevState.map(job => job.id));
-            const newJobs = data.result.filter(job => !existingIds.has(job.id));
-            return [...prevState, ...newJobs];
-          }
-        });
+      if (isRefresh) {
+        setIsLoading(true);
+        setLoadingMore(false);
+      } else {
+        setLoadingMore(true);
       }
-    } catch (error) {
-      console.error('Error fetching jobs:', error);
-    } finally {
-      setIsLoading(false);
-      setLoadingMore(false);
-    }
-  };
+
+      try {
+        const params: SearchParams = {
+          Page: currentPage.toString(),
+          PageSize: pageSize.toString(),
+          OderBy: oderBy,
+          Filter: filter,
+          Search: currentSearch || undefined,
+        };
+        console.log('Fetch params:', params);
+        const data = await getJob(params);
+
+        if (data.result && Array.isArray(data.result)) {
+          if (data.result.length < pageSize) setNoMoreData(true);
+          setListJob(prev => {
+            if (isRefresh || currentPage === 1) {
+              setNoMoreData(data.result.length < pageSize);
+              return data.result;
+            }
+            const ids = new Set(prev.map(j => j.id));
+            const merged = data.result.filter(j => !ids.has(j.id));
+            return [...prev, ...merged];
+          });
+        }
+      } catch (e) {
+        console.error('Fetch error:', e);
+      } finally {
+        loadingRef.current = false;
+        setIsLoading(false);
+        setLoadingMore(false);
+      }
+    },
+    [oderBy, filter], // loại isLoading / loadingMore để không re-create
+  );
 
   useFocusEffect(
     useCallback(() => {
       setPage(1);
       setNoMoreData(false);
-      fetchData(1, true);
-    }, [search, filter, oderBy]),
+      fetchData(1, search, true);
+    }, [fetchData]), // không phụ thuộc search để tránh spam
   );
+
+  useEffect(() => {
+    // Bỏ lượt đầu (đã fetch trong focus)
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      console.log('[Search debounce]', search);
+      setPage(1);
+      setNoMoreData(false);
+      fetchData(1, search, true);
+    }, 1000);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [search, fetchData]);
+
+  const onSubmitSearch = () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    console.log('[Search submit]', search);
+    setPage(1);
+    setNoMoreData(false);
+    fetchData(1, search, true);
+  };
 
   const onRefresh = () => {
     setRefreshing(true);
     setPage(1);
-    setNoMoreData(false);
-    fetchData(1, true).finally(() => setRefreshing(false));
     setSearch('');
+    setNoMoreData(false);
+    fetchData(1, search, true).finally(() => setRefreshing(false));
   };
 
   const loadMoreData = () => {
-    if (!loadingMore && !noMoreData && !isLoading) {
-      console.log('Home Load more triggered, current page:', page);
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchData(nextPage, false);
-    }
+    if (loadingRef.current || loadingMore || noMoreData || isLoading) return;
+    const next = page + 1;
+    setPage(next);
+    fetchData(next, search, false);
   };
 
   const updateJobSaved = (jobId: string, isSaved: boolean) => {
@@ -183,7 +209,10 @@ const HomeScreen: React.FC = () => {
         colors={['#095286', '#f5f5f5']}
         style={[
           styles.header,
-          { paddingTop: insets.top, height: ms(50 + insets.top) },
+          {
+            //  height: ms(insets.top)
+            paddingTop: insets.top + spacing.small,
+          },
         ]}
       >
         <TouchableOpacity onPress={() => {}} style={styles.search}>
@@ -201,6 +230,8 @@ const HomeScreen: React.FC = () => {
             placeholder={t('message.job_find')}
             value={search}
             onChangeText={setSearch}
+            onSubmitEditing={onSubmitSearch}
+            returnKeyType="search"
           />
         </TouchableOpacity>
       </LinearGradient>
