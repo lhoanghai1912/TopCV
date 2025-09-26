@@ -1,5 +1,3 @@
-import { logout } from '../store/reducers/userSlice';
-
 export const MESSAGES = {
   loginSuccess: 'Login successful!',
   loginFailed: 'Login failed. Please try again.',

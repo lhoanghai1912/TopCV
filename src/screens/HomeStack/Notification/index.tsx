@@ -20,6 +20,7 @@ import {
   markNotificationAsRead,
 } from '../../../services/noti';
 import images from '../../../assets/images';
+import Toast from 'react-native-toast-message';
 
 interface Notification {
   id: number;
@@ -39,6 +40,7 @@ const NotificationScreen = ({ navigation }: { navigation: any }) => {
   const [hasMore, setHasMore] = useState(true);
 
   const pageSize = 10;
+  console.log('userId:', userId);
 
   useEffect(() => {
     if (token && userId) {
@@ -128,6 +130,11 @@ const NotificationScreen = ({ navigation }: { navigation: any }) => {
   const handleMarkAllAsRead = async () => {
     console.log('Mark all as read');
     try {
+      if (notifications.length === 0)
+        Toast.show({
+          type: 'info',
+          text2: t('message.noti_empty'),
+        });
       await markAllNotificationsAsRead(userId);
       // Update local state to mark all as read
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));

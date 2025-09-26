@@ -36,6 +36,8 @@ import { deleteUserAccount } from '../../../services/user';
 import { colors } from '../../../utils/color';
 import { getFollowedCompanies } from '../../../services/company';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { LoginManager } from 'react-native-fbsdk-next';
+import auth from '@react-native-firebase/auth';
 
 const UserScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -51,6 +53,8 @@ const UserScreen: React.FC = () => {
   const [listFollowedCompanies, setListFollowedCompanies] = useState<any>(null);
   const [listAppliedJobs, setListAppliedJobs] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const userData = useSelector((state: any) => state.user.userData);
+
   useFocusEffect(
     React.useCallback(() => {
       if (!token) return;
@@ -60,6 +64,7 @@ const UserScreen: React.FC = () => {
       getListFollowedCompanies();
       getListAppliedJobs();
       console.log('userId', userId);
+      console.log('userData', userData);
     }, [token]),
   );
 
@@ -100,6 +105,8 @@ const UserScreen: React.FC = () => {
     setLoading(true);
     try {
       await GoogleSignin.signOut();
+      await LoginManager.logOut();
+      await auth().signOut();
     } catch (error) {
       // Có thể log lỗi nếu cần
     }
@@ -141,7 +148,9 @@ const UserScreen: React.FC = () => {
             source={
               userProfile?.avatarUrl
                 ? { uri: `${link.url}${userProfile?.avatarUrl}` }
-                : images.avt
+                : userData?.avatarUrl
+                ? { uri: userData?.avatarUrl }
+                : images.avt_default
             }
             style={{
               width: ms(50),
@@ -204,7 +213,9 @@ const UserScreen: React.FC = () => {
                           source={
                             userProfile?.avatarUrl
                               ? { uri: `${link.url}${userProfile?.avatarUrl}` }
-                              : images.avt
+                              : userData?.avatarUrl
+                              ? { uri: userData?.avatarUrl }
+                              : images.avt_default
                           }
                           style={{
                             width: ms(80),
@@ -224,8 +235,19 @@ const UserScreen: React.FC = () => {
                         >
                           {userProfile?.fullName}
                         </Text>
-                        <Text style={{ color: '#888', fontSize: Fonts.normal }}>
-                          {`${t(`label.phone`)}: ${userProfile?.phoneNumber}`}
+                        <Text
+                          style={{
+                            display:
+                              userProfile?.phoneNumber || userData?.phoneNumber
+                                ? 'flex'
+                                : 'none',
+                            color: '#888',
+                            fontSize: Fonts.normal,
+                          }}
+                        >
+                          {`${t(`label.phone`)}: ${
+                            userProfile?.phoneNumber || userData?.phoneNumber
+                          }`}
                         </Text>
                       </View>
                     </>
@@ -233,15 +255,26 @@ const UserScreen: React.FC = () => {
                     <>
                       <View
                         style={{
-                          width: ms(80),
-                          height: ms(80),
-                          borderRadius: ms(50),
-                          backgroundColor: '#E5E5E5',
                           justifyContent: 'center',
                           alignItems: 'center',
                           marginRight: spacing.medium,
                         }}
-                      ></View>
+                      >
+                        <Image
+                          source={
+                            userProfile?.avatarUrl
+                              ? { uri: `${link.url}${userProfile?.avatarUrl}` }
+                              : userData?.avatarUrl
+                              ? { uri: userData?.avatarUrl }
+                              : images.avt_default
+                          }
+                          style={{
+                            width: ms(80),
+                            height: ms(80),
+                            borderRadius: ms(50),
+                          }}
+                        />
+                      </View>
                       <View
                         style={{
                           flex: 1,

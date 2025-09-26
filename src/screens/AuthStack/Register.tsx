@@ -23,6 +23,7 @@ import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
 import ModalEnterOtp from '../../components/modal/ModalEnterOtp';
 import { enterOtp, register } from '../../services/auth';
+import LoginScreen from './Login';
 
 const RegisterScreen = () => {
   const insets = useSafeAreaInsets();
@@ -47,7 +48,7 @@ const RegisterScreen = () => {
   };
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top }]}>
+      <View style={[styles.header, { paddingTop: ms(insets.top + 80) }]}>
         <Image
           source={images.company_logo}
           style={{
@@ -57,15 +58,6 @@ const RegisterScreen = () => {
             marginBottom: spacing.small,
           }}
         />
-        <Image
-          source={images.top_cv}
-          style={{
-            resizeMode: 'contain',
-            width: ms(150),
-            height: ms(70),
-          }}
-        />
-        <Text style={AppStyles.text}>{t('message.welcome')}</Text>
       </View>
 
       <View style={styles.body}>
@@ -100,7 +92,7 @@ const RegisterScreen = () => {
           textStyle={{ fontSize: Fonts.large }}
           customStyle={{ marginBottom: spacing.medium }}
         />
-        <View
+        {/* <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -148,7 +140,7 @@ const RegisterScreen = () => {
           >
             <Image source={icons.apple} style={[AppStyles.icon]} />
           </TouchableOpacity>
-        </View>
+        </View> */}
         <View style={styles.notHave_account}>
           <Text style={AppStyles.text}>{t('message.have_account')}</Text>
           <TouchableOpacity

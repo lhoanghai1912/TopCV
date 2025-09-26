@@ -95,6 +95,7 @@ export default {
     confirm_password: 'Confirm password',
     mail: 'Email',
     fullname: 'Full name',
+    exep: 'Experience',
     position: 'Position',
     phone: 'Phone number',
     experience: 'Experience',

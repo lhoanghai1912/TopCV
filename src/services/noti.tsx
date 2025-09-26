@@ -42,6 +42,8 @@ export const markNotificationAsRead = async (notificationId: number) => {
 
 export const markAllNotificationsAsRead = async (userId: number) => {
   try {
+    console.log(`/Notification/user/${userId}/mark-all-read`);
+
     const response = await apiClient.put(
       `/Notification/user/${userId}/mark-all-read`,
     );

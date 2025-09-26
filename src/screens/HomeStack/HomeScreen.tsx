@@ -45,7 +45,7 @@ const HomeScreen: React.FC = () => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const loadingRef = useRef(false); // chặn gọi lặp
   const didMountRef = useRef(false); // tránh debounce gọi ngay sau focus
-
+  const onEndReachedCalledDuringMomentum = useRef(false);
   const fetchData = useCallback(
     async (
       currentPage: number,
@@ -70,6 +70,8 @@ const HomeScreen: React.FC = () => {
           Filter: filter,
           Search: currentSearch || undefined,
         };
+        console.log('userData', userData);
+
         console.log('Fetch params:', params);
         const data = await getJob(params);
 
@@ -139,6 +141,7 @@ const HomeScreen: React.FC = () => {
   };
 
   const loadMoreData = () => {
+    // if (page === 1) return; // 👈 chặn lần gọi đầu tiên
     if (loadingRef.current || loadingMore || noMoreData || isLoading) return;
     const next = page + 1;
     setPage(next);
@@ -290,7 +293,15 @@ const HomeScreen: React.FC = () => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          onEndReached={loadMoreData}
+          onEndReached={() => {
+            if (!onEndReachedCalledDuringMomentum.current) {
+              loadMoreData();
+              onEndReachedCalledDuringMomentum.current = true;
+            }
+          }}
+          onMomentumScrollBegin={() => {
+            onEndReachedCalledDuringMomentum.current = false;
+          }}
           onEndReachedThreshold={0.2}
           ListFooterComponent={renderFooter}
           showsVerticalScrollIndicator={false}

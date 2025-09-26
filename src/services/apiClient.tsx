@@ -23,7 +23,7 @@ apiClient.interceptors.request.use(config => {
 apiClient.interceptors.response.use(
   response => {
     // Kiểm tra status code - nếu khác 200 thì vào error
-    if (response.status !== 200) {
+    if (response.status >= 400) {
       const status = response.status;
       const data = response.data;
       const value = data?.value;

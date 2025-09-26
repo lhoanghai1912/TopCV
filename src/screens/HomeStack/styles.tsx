@@ -26,10 +26,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: spacing.medium,
-    paddingHorizontal: spacing.medium,
+    paddingHorizontal: spacing.small,
   },
   body: {
     marginBottom: spacing.medium,
+    backgroundColor: colors.white,
   },
   text: {
     fontSize: Fonts.normal,
