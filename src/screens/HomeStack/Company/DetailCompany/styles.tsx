@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   fixedHeader: {
-    paddingTop: spacing.medium,
+    // paddingTop: spacing.medium,
     position: 'absolute',
     top: 0,
     left: 0,

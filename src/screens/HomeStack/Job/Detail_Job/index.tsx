@@ -148,7 +148,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
   const scrollToMain = () => {
     // Scroll đến vị trí fixedHeaderH (đầu header mới)
     scrollRef.current?.scrollTo({
-      y: ms(mainTop - 115),
+      y: ms(mainTop - 80),
       animated: true,
     });
   };
@@ -231,10 +231,7 @@ const DetailJobScreen: React.FC<Props> = ({ route, navigation }) => {
         scrollEventThrottle={16}
         onScroll={event => {
           const y = event.nativeEvent.contentOffset.y;
-          console.log('y', y);
-          console.log('mainTop - 80', mainTop - 80);
-
-          setShowFixedHeader(y > ms(mainTop - 120));
+          setShowFixedHeader(y > ms(mainTop - 80));
         }}
       >
         <View style={{ flex: 1 }}>

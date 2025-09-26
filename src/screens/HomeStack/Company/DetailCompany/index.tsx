@@ -56,7 +56,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const scrollToMain = () => {
     scrollRef.current?.scrollTo({
-      y: ms(mainTop + fixedHeaderH + 25),
+      y: ms(mainTop + fixedHeaderH + 70),
       animated: true,
     });
   };
@@ -151,7 +151,7 @@ const DetailsCompanyScreen: React.FC<Props> = ({ route, navigation }) => {
         onScroll={e => {
           const y = e.nativeEvent.contentOffset.y;
           // chỉnh ngưỡng tuỳ banner/cover của bạn
-          setShowFixedHeader(y > ms(mainTop + fixedHeaderH + 10));
+          setShowFixedHeader(y > ms(mainTop + fixedHeaderH + 68));
         }}
       >
         <View style={styles.container}>

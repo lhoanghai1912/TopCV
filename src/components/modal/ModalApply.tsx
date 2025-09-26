@@ -47,7 +47,6 @@ const ModalApply: React.FC<ModalApplyProps> = ({
   );
   const [selectedPDF, setSelectedPDF] = useState<any>();
   const [loading, setLoading] = useState(false);
-  console.log('Selected PDF:', selectedPDF);
 
   const handleUploadPDF = async () => {
     try {

@@ -29,7 +29,12 @@ import {
   setUserId,
 } from '../../store/reducers/userSlice';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import auth from '@react-native-firebase/auth';
+import auth, {
+  FacebookAuthProvider,
+  getAuth,
+  signInWithCredential,
+} from '@react-native-firebase/auth';
+import { AccessToken, LoginManager, Profile } from 'react-native-fbsdk-next';
 
 const LoginScreen = () => {
   const insets = useSafeAreaInsets();
@@ -90,45 +95,176 @@ const LoginScreen = () => {
   };
 
   const handleFacebookLogin = async () => {
+    // try {
+    //   LoginManager.setLoginBehavior('web_only'); // mở WebView trong app, tránh chuyển qua Chrome
+    //   const behavior = await (LoginManager as any).getLoginBehavior?.();
+    //   console.log('[FB] behavior =', behavior);
+
+    //   const result = await LoginManager.logInWithPermissions([
+    //     'public_profile',
+    //     'email',
+    //   ]);
+    //   console.log('result', result);
+
+    //   if (result.isCancelled) {
+    //     Toast.show({
+    //       type: 'info',
+    //       text2: `${result}`,
+    //     });
+    //     return;
+    //   }
+
+    //   const data = await AccessToken.getCurrentAccessToken();
+    //   console.log('data', data);
+    //   if (!data) return;
+
+    //   const facebookCredential = auth.FacebookAuthProvider.credential(
+    //     data.accessToken,
+    //   );
+    //   console.log('facebookCredential', facebookCredential);
+
+    //   const userCredential = await auth().signInWithCredential(
+    //     facebookCredential,
+    //   );
+    //   console.log('facebook userCredential', userCredential);
+
+    //   const firebaseIdToken = await userCredential.user.getIdToken();
+
+    //   const res = await loginFirebase(firebaseIdToken);
+    //   console.log('facebook loginFirebase res', res);
+
+    //   dispatch(setToken({ token: res.token }));
+    //   navigate(Screen_Name.BottomTab_Navigator);
+    //   Toast.show({
+    //     type: 'info',
+    //     text2: `${t('message.comming_soon')}`,
+    //   });
+    // } catch (error) {
+    //   Toast.show({
+    //     type: 'error',
+    //     text2: 'Facebook login failed',
+    //   });
+    // }
+
+    // try {
+    //   // Xin quyền
+    //   const result = await LoginManager.logInWithPermissions([
+    //     'public_profile',
+    //     'email',
+    //   ]);
+    //   if (result.isCancelled) return; // user huỷ
+
+    //   // Lấy access token hiện tại
+    //   const data = await AccessToken.getCurrentAccessToken();
+    //   if (!data) {
+    //     console.log('Không lấy được access token');
+    //     return;
+    //   }
+    //   const token = data.accessToken.toString();
+
+    //   // (Tuỳ chọn) Lấy profile nhanh từ SDK
+    //   const profile = await Profile.getCurrentProfile();
+    //   console.log('Local profile:', profile);
+
+    //   // Gọi Graph API để lấy thông tin chắc chắn (email/ảnh)
+    //   const me = await fetch(
+    //     `https://graph.facebook.com/me?fields=id,name,email,picture.type(large)&access_token=${token}`,
+    //   ).then(r => r.json());
+    //   const facebookCredential = auth.FacebookAuthProvider.credential(
+    //     data.accessToken,
+    //   );
+    //   const userCredential = await auth().signInWithCredential(
+    //     facebookCredential,
+    //   );
+    //   console.log('User signed in with Facebook!', userCredential.user);
+    //   console.log('FB User:', me);
+    //   // TODO: gửi token lên server để xác thực
+    //   const firebaseIdToken = await userCredential.user.getIdToken();
+    //   const res = await loginFirebase(firebaseIdToken);
+    //   console.log('Facebook loginFirebase res', res);
+    //   dispatch(setToken({ token: res.token }));
+    //   navigate(Screen_Name.BottomTab_Navigator);
+    // } catch (e: any) {
+    //   console.log('Đăng nhập lỗi', e?.message ?? 'Unknown');
+    // }
+
+    // try {
+    //   LoginManager.setLoginBehavior('web_only');
+
+    //   const result = await LoginManager.logInWithPermissions([
+    //     'public_profile',
+    //     'email',
+    //   ]);
+    //   console.log('[FB] result =', result);
+    //   if (result.isCancelled) return console.log('[FB] Login cancelled');
+
+    //   const data = await AccessToken.getCurrentAccessToken();
+    //   if (!data?.accessToken) throw new Error('FB access token is null');
+
+    //   const token = data.accessToken.toString();
+
+    //   // Graph
+    //   const me = await fetch(
+    //     `https://graph.facebook.com/me?fields=id,name,email,picture.type(large)&access_token=${token}`,
+    //   ).then(r => r.json());
+    //   console.log('[Graph] me =', me);
+
+    //   // Firebase
+    //   const cred = auth.FacebookAuthProvider.credential(token);
+    //   const userCredential = await auth().signInWithCredential(cred);
+    //   console.log('[Firebase] uid =', userCredential.user.uid);
+
+    //   const firebaseIdToken = await userCredential.user.getIdToken(true);
+    //   const res = await loginFirebase(firebaseIdToken);
+    //   console.log('[API] loginFirebase =', res);
+
+    //   dispatch(setToken({ token: res.token }));
+    //   navigate(Screen_Name.BottomTab_Navigator);
+    // } catch (e: any) {
+    //   const err = { name: e?.name, code: e?.code, message: e?.message };
+    //   console.log('[FB LOGIN] ERROR =>', err, e?.stack);
+    //   // Alert.alert('Login lỗi', `${err.code ?? err.name ?? ''}\n${err.message ?? ''}`);
+    // }
+
+    // Attempt login with permissions
     try {
-      // const result = await LoginManager.logInWithPermissions([
-      //   'public_profile',
-      //   'email',
-      // ]);
-      // console.log('result', result);
+      LoginManager.setLoginBehavior('web_only');
 
-      // if (result.isCancelled) return;
+      const result = await LoginManager.logInWithPermissions([
+        'public_profile',
+        'email',
+      ]);
+      if (result.isCancelled) return;
 
-      // const data = await AccessToken.getCurrentAccessToken();
-      // console.log('data', data);
-      // if (!data) return;
+      const data = await AccessToken.getCurrentAccessToken();
+      if (!data) {
+        console.log('[FB-LOGIN] Không lấy được access token');
+        return;
+      }
+      const token = data.accessToken.toString();
 
-      // const facebookCredential = auth.FacebookAuthProvider.credential(
-      //   data.accessToken,
-      // );
-      // console.log('facebookCredential', facebookCredential);
+      // Test nhanh: token dùng được với Graph API?
+      const me = await fetch(
+        `https://graph.facebook.com/me?fields=id,name,email,picture.type(large)&access_token=${token}`,
+      ).then(r => r.json());
+      console.log('[FB-LOGIN] Graph /me =', me);
 
-      // const userCredential = await auth().signInWithCredential(
-      //   facebookCredential,
-      // );
-      // console.log('facebook userCredential', userCredential);
+      // Firebase
+      const facebookCredential = auth.FacebookAuthProvider.credential(token);
+      const userCredential = await auth().signInWithCredential(
+        facebookCredential,
+      );
+      console.log('[FB-LOGIN] Firebase user =', userCredential.user.uid);
 
-      // const firebaseIdToken = await userCredential.user.getIdToken();
+      const firebaseIdToken = await userCredential.user.getIdToken();
+      const res = await loginFirebase(firebaseIdToken);
+      console.log('[FB-LOGIN] backend res =', res);
 
-      // const res = await loginFirebase(firebaseIdToken);
-      // console.log('facebook loginFirebase res', res);
-
-      // dispatch(setToken({ token: res.token }));
-      // navigate(Screen_Name.BottomTab_Navigator);
-      Toast.show({
-        type: 'info',
-        text2: `${t('message.comming_soon')}`,
-      });
-    } catch (error) {
-      Toast.show({
-        type: 'error',
-        text2: 'Facebook login failed',
-      });
+      dispatch(setToken({ token: res.token }));
+      navigate(Screen_Name.BottomTab_Navigator);
+    } catch (e: any) {
+      console.log('[FB-LOGIN] error code:', e?.code);
+      console.log('[FB-LOGIN] error message:', e?.message);
     }
   };
   return (

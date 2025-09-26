@@ -174,7 +174,7 @@ const HomeScreen: React.FC = () => {
       );
     }
 
-    if (noMoreData && listJob.length > 0) {
+    if (!isLoading && noMoreData && listJob.length > 0) {
       return (
         <View
           style={{
@@ -279,7 +279,7 @@ const HomeScreen: React.FC = () => {
           ref={flatListRef}
           data={listJob}
           ListEmptyComponent={
-            !isLoading ? (
+            !isLoading && listJob.length === 0 ? (
               <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
                 {t(`message.job_empty`)}
               </Text>

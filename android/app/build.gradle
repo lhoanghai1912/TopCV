@@ -87,12 +87,10 @@ android {
     }
     signingConfigs {
         release {
-            if (System.getenv("FOXC_RELEASE_STORE_FILE")) {
-                storeFile file(System.getenv("FOXC_RELEASE_STORE_FILE"))
-                storePassword System.getenv("FOXC_RELEASE_STORE_PASSWORD")
-                keyAlias System.getenv("FOXC_RELEASE_KEY_ALIAS")
-                keyPassword System.getenv("FOXC_RELEASE_KEY_PASSWORD")
-            }
+            storeFile file("/home/foxai13/Code/TopCV/android/app/fox-release.keystore") // Path to the keystore file
+            storePassword "fox.ai" // Replace with the keystore password
+            keyAlias "foxcv" // Replace with the alias you used when generating the keystore
+            keyPassword "fox.ai" // Replace with the key password
         }
     }
     buildTypes {

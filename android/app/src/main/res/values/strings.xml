@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">FOX CV</string>
     <string name="facebook_app_id">768517799444217</string>
-
+    <string name="fb_login_protocol_scheme">fb768517799444217</string>
+    <string name="facebook_client_token">ee55e55bfc8e343704ed546915c560c4</string>
 </resources>

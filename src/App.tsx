@@ -23,8 +23,17 @@ GoogleSignin.configure({
     '889651278132-9gqdqpcgvhrnlvehmuuhgcf2ilnb3uhf.apps.googleusercontent.com',
   offlineAccess: true,
 });
+import { Settings, AppEventsLogger } from 'react-native-fbsdk-next';
+import { useEffect } from 'react';
+
 enableScreens(); // Bật tính năng screens để sử dụng trong navigation
 function App() {
+  useEffect(() => {
+    // (tuỳ chọn) set App ID & bật auto init nếu muốn chủ động
+    // Settings.setAppID("YOUR_FACEBOOK_APP_ID");
+    Settings.setAutoLogAppEventsEnabled(true); // đảm bảo auto-log
+    Settings.initializeSDK(); // tương đương ghi sự kiện kích hoạt app (fb_mobile_activate_app)
+  }, []);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
